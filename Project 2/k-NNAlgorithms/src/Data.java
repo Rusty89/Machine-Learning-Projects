@@ -197,8 +197,14 @@ public class Data {
                 }
                 inputFileAsArray=inputFileAsArray;
                 break;
-            case "machine":
-
+            case "machine"://got rid of ERP value, vendor names and models
+                String [][] temp2= new String[inputFileAsArray.length][inputFileAsArray[0].length-3];
+                for (int i = 0; i <inputFileAsArray.length ; i++) {
+                    for (int j = 2; j <inputFileAsArray[0].length -1; j++) {
+                        temp2[i][j-2]=inputFileAsArray[i][j];
+                    }
+                }
+                inputFileAsArray=temp2;
                 break;
             case "segmentation":
                 for (int i = 0; i <inputFileAsArray.length ; i++) {//swaps first and last column to get class on right
