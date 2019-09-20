@@ -45,21 +45,9 @@ public class Data {
 
 
 
-        if(dataName.equals("forestFire")){//resizes the forestFire file because it needs to have a row eliminated before rows
-            //are shuffled
-            String [][]temp2=new String[data.length-1][data[0].length];
-            for (int i = 1; i < data.length ; i++) {
-                for (int j = 0; j < data[0].length; j++) {
-                    temp2[i-1][j]=data[i][j];
-                }
-            }
-            data=temp2;
-        }
+
         //randomize the order of the input array
         //by swapping rows n times
-
-
-
         for (int i = 0; i < data.length ; i++) {
             //generate random number within range of data
             int randomNum= (int)Math.floor((Math.random()*data.length));
@@ -210,10 +198,47 @@ public class Data {
                 inputFileAsArray=inputFileAsArray;
                 break;
             case "machine":
+
                 break;
             case "segmentation":
+                for (int i = 0; i <inputFileAsArray.length ; i++) {//swaps first and last column to get class on right
+                    String temp=inputFileAsArray[i][0];
+                    inputFileAsArray[i][0]=inputFileAsArray[i][inputFileAsArray[0].length-1];
+                    inputFileAsArray[i][inputFileAsArray[0].length-1]=temp;
+                    switch(inputFileAsArray[i][inputFileAsArray[0].length-1]){
+                        //brickface, sky, foliage, cement, window, path, grass
+                        case ("BRICKFACE"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="0";
+                            break;
+                        case ("SKY"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="1";
+                            break;
+                        case ("FOLIAGE"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="2";
+                            break;
+                        case ("CEMENT"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="3";
+                            break;
+                        case ("WINDOW"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="4";
+                            break;
+                        case ("PATH"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="5";
+                            break;
+                        case ("GRASS"):
+                            inputFileAsArray[i][inputFileAsArray[0].length-1]="6";
+                            break;
+
+                    }
+                }
+
                 break;
             case "wine":
+                for (int i = 0; i <inputFileAsArray.length ; i++) {//swaps first and last column to get class on right
+                    String temp = inputFileAsArray[i][0];
+                    inputFileAsArray[i][0] = inputFileAsArray[i][inputFileAsArray[0].length - 1];
+                    inputFileAsArray[i][inputFileAsArray[0].length - 1] = temp;
+                }
                 break;
         }
 

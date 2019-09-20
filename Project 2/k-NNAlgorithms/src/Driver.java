@@ -5,7 +5,7 @@ public class Driver {
     public static void main(String args[])throws Exception{
 
         //for testing purposes
-        Data d1 = new Data(new File("../DataSets/forestfires.data"),"forestFire");
+        Data d1 = new Data(new File("../DataSets/wine.data"),"wine");
         for (int k = 0; k <2 ; k++) {
             if(k%2==0){
                 System.out.println("Training Set");
