@@ -8,6 +8,7 @@
 *.so
 *.idea
 *.iml
+*.kotlin_module
 
 # Packages #
 ############
