@@ -4,23 +4,13 @@ public class Driver {
 
     public static void main(String args[])throws Exception{
 
-        //for testing purposes
-        Data d1 = new Data(new File("../DataSets/machine.data"),"machine");
-        for (int k = 0; k <2 ; k++) {
-            if(k%2==0){
-                System.out.println("Training Set");
-            }else{
-                System.out.println("Testing Set");
-            }
-            for (int i = 0; i <d1.splitData.get(k).size() ; i++) {
-                for (int j = 0; j <d1.splitData.get(k).get(0).size() ; j++) {
-                    System.out.print(d1.splitData.get(k).get(i).get(j)+ " , ");
-                }
-                System.out.println();
-            }
-
-
-        }
+        Data machine = new MachineData(new File("../DataSets/machine.data"));
+        Data car = new CarData(new File("../DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("../DataSets/abalone.data"));
+        Data forestFire = new FireData(new File("../DataSets/forestfires.data"));
+        Data segmentation = new ImageData(new File("../DataSets/segmentation.data"));
+        Data redWine = new WineData(new File("../DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
     }
 }
