@@ -9,13 +9,10 @@ public class Data {
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();
 
-    ///////////////////////////////////////////////////////////////
-    //function for input data to be changed into a 2d string arraylist
+
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
         //read in input  file as an array list
         Scanner sc = new Scanner(inputFile);
-        sc = new Scanner(inputFile);
-        //file is filled into the 2d array
         while (sc.hasNextLine()){
             ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;
             fullSet.add(line);
@@ -45,8 +42,17 @@ public class Data {
         }
         //go through the data set and normalize values between 0-1
         for (int i = 0; i <fullSet.size() ; i++) {
+
             for (int j = 0; j <fullSet.get(0).size()-1 ; j++) {
-                fullSet.get(i).set(j , (Double.parseDouble(fullSet.get(i).get(j))-min.get(j))/(max.get(j)-min.get(j)) +"");
+                //if max and min are the same, normalize it to a 1
+                if((max.get(j)-min.get(j))==0){
+                    fullSet.get(i).set(j, "1.0");
+                }else{
+                    //normalize using equation
+                    //(x-min)/(max-min)
+                    fullSet.get(i).set(j , (Double.parseDouble(fullSet.get(i).get(j))-min.get(j))/(max.get(j)-min.get(j)) +"");
+                }
+
             }
         }
 
