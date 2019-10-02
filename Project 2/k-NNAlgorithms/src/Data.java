@@ -41,9 +41,9 @@ public class Data {
             }
         }
         //go through the data set and normalize values between 0-1
+        int indiceOfLastTrait = fullSet.get(0).size()-1;
         for (int i = 0; i <fullSet.size() ; i++) {
-
-            for (int j = 0; j <fullSet.get(0).size()-1 ; j++) {
+            for (int j = 0; j <indiceOfLastTrait; j++) {
                 //if max and min are the same, normalize it to a 1
                 if((max.get(j)-min.get(j))==0){
                     fullSet.get(i).set(j, "1.0");
@@ -61,13 +61,18 @@ public class Data {
     public void bucketize(){
 
         int countTrainingSet=0;
+        double eightyPercentOfData = 0.8 * fullSet.size();
+        double twentyPercentOfData = 0.2 * fullSet.size();
+        double tenPercentOfData = 0.1 *fullSet.size();
+
+
         for (int i = 0; i <10 ; i++) {
             //initializes new ArrayLists to store sets in the CVS structure
             dataSets.trainingSets.add(new ArrayList<ArrayList<String>>());
             dataSets.validationSets.add(new ArrayList<ArrayList<String>>());
             dataSets.testSets.add(new ArrayList<ArrayList<String>>());
             //generates a training set with 80% of the data
-            for (int j = 0; j <fullSet.size()*.8 ; j++) {
+            for (int j = 0; j <eightyPercentOfData ; j++) {
                 if (countTrainingSet < fullSet.size()) {
                     dataSets.trainingSets.get(i).add(fullSet.get(countTrainingSet));
                     countTrainingSet++;
@@ -79,10 +84,10 @@ public class Data {
                 }
             }
             int countValidationAndTest=countTrainingSet;
-            for (int j = 0; j <fullSet.size()*.2 ; j++) {
+            for (int j = 0; j <twentyPercentOfData ; j++) {
 
                 //generates validation set with next 10% of data
-                if(j<fullSet.size()*.1){
+                if(j<tenPercentOfData){
                     if (countValidationAndTest < fullSet.size()) {
                         dataSets.validationSets.get(i).add(fullSet.get(countValidationAndTest));
                         countValidationAndTest++;

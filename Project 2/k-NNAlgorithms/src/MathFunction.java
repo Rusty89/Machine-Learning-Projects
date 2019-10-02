@@ -2,11 +2,15 @@ import java.util.ArrayList;
 
 public class MathFunction {
 
-    public static double euclideanDistance(ArrayList<String> in1, ArrayList<String> in2){
+    public static double euclideanDistance(ArrayList<String> X1Vector, ArrayList<String> X2Vector){
         double result = 0;
-        for (int i = 0; i <in1.size() ; i++) {
+        int sizeOfX1andX2 = X1Vector.size();
+        for (int i = 0; i <sizeOfX1andX2 ; i++) {
             //sqrt not used as it won't effect the result, but will cost computing time
-            result += Math.pow(Double.parseDouble(in1.get(i))-Double.parseDouble(in2.get(i)), 2);
+            double x = Double.parseDouble(X1Vector.get(i));
+            double y = Double.parseDouble(X2Vector.get(i));
+            //summation of (x1i-x2i)^2, euclidean distance
+            result += Math.pow((x-y), 2);
         }
         return result;
     }
