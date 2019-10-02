@@ -26,23 +26,24 @@ public class Data {
         //array lists to hold max and min values
         ArrayList<Double> max= new ArrayList<Double>();
         ArrayList<Double> min= new ArrayList<Double>();
-
+        int indiceOfLastTrait = fullSet.get(0).size()-1;
+        int sizeOfSet = fullSet.size();
         //initialized mins and maxes
-        for (int i = 0; i <fullSet.get(0).size()-1 ; i++) {
+        for (int i = 0; i <indiceOfLastTrait ; i++) {
             max.add(Double.MIN_VALUE);
             min.add(Double.MAX_VALUE);
         }
         //check down each column
-        for (int j = 0; j <fullSet.get(0).size()-1; j++) {
-            for (int i = 0; i <fullSet.size() ; i++) {
+        for (int j = 0; j <indiceOfLastTrait; j++) {
+            for (int i = 0; i <sizeOfSet ; i++) {
                 //find max and mins in each column of data
                 max.set(j , Double.max(max.get(j), Double.parseDouble(fullSet.get(i).get(j))));
                 min.set(j , Double.min(min.get(j), Double.parseDouble(fullSet.get(i).get(j))));
             }
         }
         //go through the data set and normalize values between 0-1
-        int indiceOfLastTrait = fullSet.get(0).size()-1;
-        for (int i = 0; i <fullSet.size() ; i++) {
+
+        for (int i = 0; i <sizeOfSet; i++) {
             for (int j = 0; j <indiceOfLastTrait; j++) {
                 //if max and min are the same, normalize it to a 1
                 if((max.get(j)-min.get(j))==0){
@@ -64,8 +65,6 @@ public class Data {
         double eightyPercentOfData = 0.8 * fullSet.size();
         double twentyPercentOfData = 0.2 * fullSet.size();
         double tenPercentOfData = 0.1 *fullSet.size();
-
-
         for (int i = 0; i <10 ; i++) {
             //initializes new ArrayLists to store sets in the CVS structure
             dataSets.trainingSets.add(new ArrayList<ArrayList<String>>());
