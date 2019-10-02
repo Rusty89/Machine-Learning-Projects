@@ -26,15 +26,15 @@ public class Data {
         //array lists to hold max and min values
         ArrayList<Double> max= new ArrayList<Double>();
         ArrayList<Double> min= new ArrayList<Double>();
-        int indiceOfLastTrait = fullSet.get(0).size()-1;
+        int indexOfLastTrait = fullSet.get(0).size()-1;
         int sizeOfSet = fullSet.size();
         //initialized mins and maxes
-        for (int i = 0; i <indiceOfLastTrait ; i++) {
+        for (int i = 0; i <indexOfLastTrait ; i++) {
             max.add(Double.MIN_VALUE);
             min.add(Double.MAX_VALUE);
         }
         //check down each column
-        for (int j = 0; j <indiceOfLastTrait; j++) {
+        for (int j = 0; j <indexOfLastTrait; j++) {
             for (int i = 0; i <sizeOfSet ; i++) {
                 //find max and mins in each column of data
                 max.set(j , Double.max(max.get(j), Double.parseDouble(fullSet.get(i).get(j))));
@@ -44,7 +44,7 @@ public class Data {
         //go through the data set and normalize values between 0-1
 
         for (int i = 0; i <sizeOfSet; i++) {
-            for (int j = 0; j <indiceOfLastTrait; j++) {
+            for (int j = 0; j <indexOfLastTrait; j++) {
                 //if max and min are the same, normalize it to a 1
                 if((max.get(j)-min.get(j))==0){
                     fullSet.get(i).set(j, "1.0");
