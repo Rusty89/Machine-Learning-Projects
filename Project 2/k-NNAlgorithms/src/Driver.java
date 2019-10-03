@@ -40,11 +40,12 @@ public class Driver {
             double accuracyAvg=0;
 
             for (int i = 0; i <10 ; i++) {
-                ArrayList<String> result1 = Algorithms.CondensedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i), k, false,false  );
+                ArrayList<String> result1 = Algorithms.EditedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i),abalone.dataSets.validationSets.get(i), k, false,true  );
                 result1=MathFunction.processConfusionMatrix(result1,abalone.dataSets.testSets.get(i));
                 precisionAvg+=Double.parseDouble(result1.get(0));
                 recallAvg+=Double.parseDouble(result1.get(1));
                 accuracyAvg+=Double.parseDouble(result1.get(2));
+                System.out.println("running");
             }
             System.out.println("Precision is: "+ precisionAvg/10+" Recall is:"+recallAvg/10+" Accuracy is: "+accuracyAvg/10);
 

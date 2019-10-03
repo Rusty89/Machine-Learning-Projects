@@ -13,7 +13,7 @@ public class Data {
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
         //read in input  file as an array list
         Scanner sc = new Scanner(inputFile);
-        int maxCount=300;//max number of lines of data, to keep test manageable
+        int maxCount=3000000;//max number of lines of data, to keep test manageable
         while (sc.hasNextLine()){
             ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;
             fullSet.add(line);

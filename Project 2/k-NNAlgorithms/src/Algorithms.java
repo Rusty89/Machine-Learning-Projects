@@ -82,7 +82,7 @@ public class Algorithms {
         ArrayList<ArrayList<String>> finalEditedTrainingData =new ArrayList<>();
 
 
-        while(currentAccuracy>prevAccuracy || currentPrecision>prevPrecision || currentRecall>prevRecall){//while edited set is still improving
+        while(currentAccuracy>prevAccuracy && currentPrecision>prevPrecision && currentRecall>prevRecall){//while edited set is still improving
 
             finalEditedTrainingData=(ArrayList<ArrayList<String>>) editedTrainingData.clone();//copy the editedData into a potential final set
             for (int i = 0; i < editedTrainingData.size(); i++) {//go through each point in the editedData
@@ -103,9 +103,9 @@ public class Algorithms {
 
             //set prevs and currs to determine if a decrease in accuracy,precision or recall has
             //occurred, exit while loop if so.
-            prevAccuracy= currentAccuracy;
-            prevPrecision=currentPrecision;
-            prevRecall=currentRecall;
+            prevAccuracy= currentAccuracy+.05;
+            prevPrecision=currentPrecision+.05;
+            prevRecall=currentRecall+.05;
 
             currentPrecision= Double.parseDouble(results.get(0));
             currentRecall = Double.parseDouble(results.get(1));
