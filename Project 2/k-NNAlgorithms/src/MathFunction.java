@@ -45,6 +45,7 @@ public class MathFunction {
             int countOfClass = Collections.frequency(input,input.get(i));
             if(countOfClass>=currMax){
                 maxIndex=i;
+                currMax=countOfClass;
             }
         }
         mode=input.get(maxIndex);
