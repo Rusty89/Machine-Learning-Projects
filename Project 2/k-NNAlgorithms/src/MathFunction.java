@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MathFunction {
 
@@ -56,9 +54,10 @@ public class MathFunction {
 
     public static String accuracy(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
 
+        int lengthOfData = results.size();
         double truePos=0;
         double total = 0;
-        for (int i = 0; i <testData.size() ; i++) {
+        for (int i = 0; i <lengthOfData ; i++) {
             String guess = results.get(i);
             String actual = testData.get(i).get(testData.get(0).size()-1);
 
@@ -70,6 +69,9 @@ public class MathFunction {
             }
 
         }
+
+
+
 
         return (truePos/total)+"";
     }
@@ -90,16 +92,22 @@ public class MathFunction {
                 min=actual;
             }
 
-            sum+=Math.sqrt(Math.pow((guess-actual),2));
+            sum+=Math.pow((guess-actual),2);
 
         }
-
+        //average the summation
         sum/=testData.size();
+        sum=Math.sqrt(sum);
+        //normalize to a percentage
         sum/=(max-min);
         return sum+"";
     }
 
-
+    public static <T> Set<T> convertListToSet(List<T> list)
+    {
+        // create a set from the List
+        return new HashSet<>(list);
+    }
 
 
 }

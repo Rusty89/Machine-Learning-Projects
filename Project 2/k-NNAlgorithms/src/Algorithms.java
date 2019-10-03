@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -5,11 +6,12 @@ import java.util.List;
 public class Algorithms {
 
 
+    //base KNN function
+    public static ArrayList<String> KNN(ArrayList<ArrayList<String>>trainingData, ArrayList<ArrayList<String>>testingData, int k, boolean regression, boolean euclidean){
 
-    public static ArrayList<String> KNN(ArrayList<ArrayList<String>> trainingData,ArrayList<ArrayList<String>> validationData,ArrayList<ArrayList<String>> testingData, int k, boolean regression, boolean euclidean){
         int lengthOfTrainingSet = trainingData.size();
         int lengthOfTestingSet = testingData.size();
-        int lengthOfFeatures = trainingData.get(0).size()-1;
+        int lengthOfFeatures = trainingData.get(0).size()-2;
         int classIndex = trainingData.get(0).size()-1;
         ArrayList<String> results = new ArrayList<String>();
 
@@ -22,7 +24,7 @@ public class Algorithms {
             for (int j = 0; j <lengthOfTrainingSet ; j++) {
                 //calculate distance between all training data points and one testing point
                 List<String> trainingFeatures = trainingData.get(j).subList(0,lengthOfFeatures);
-                List<String> testingFeatures = trainingData.get(i).subList(0,lengthOfFeatures);
+                List<String> testingFeatures = testingData.get(i).subList(0,lengthOfFeatures);
                 //uses euclidean or hamming distance as appropriate for  the data
                 if(euclidean){
                     distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, testingFeatures));
@@ -42,7 +44,7 @@ public class Algorithms {
                 distanceToAllPoints.set(indexOfMinValue, Double.MAX_VALUE+"");
             }
 
-            //put neighbors classifications in a list
+            //put neighbor's classification's in a list
             for (int j = 0; j < k ; j++) {
                 String classification = trainingData.get(indicesOfMinimumDistances.get(j)).get(classIndex);
                 classificationOfNeighbors.add(classification);
