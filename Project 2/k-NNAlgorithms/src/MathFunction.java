@@ -75,6 +75,31 @@ public class MathFunction {
     }
 
 
+    public static String rootMeanSquaredError(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
+        double sum=0;
+        double max=Double.MIN_VALUE;
+        double min=Double.MAX_VALUE;
+        for (int i = 0; i <testData.size() ; i++) {
+            double guess = Double.parseDouble(results.get(i));
+            double actual = Double.parseDouble(testData.get(i).get(testData.get(0).size()-1));
+            //max and min to normalize results
+            if(actual>=max){
+                max=actual;
+            }
+            if(actual<=min){
+                min=actual;
+            }
+
+            sum+=Math.sqrt(Math.pow((guess-actual),2));
+
+        }
+
+        sum/=testData.size();
+        sum/=(max-min);
+        return sum+"";
+    }
+
+
 
 
 }

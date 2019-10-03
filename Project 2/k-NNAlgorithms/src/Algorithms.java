@@ -13,9 +13,6 @@ public class Algorithms {
         int classIndex = trainingData.get(0).size()-1;
         ArrayList<String> results = new ArrayList<String>();
 
-        //if using euclidean distance
-
-
         for (int i = 0; i <lengthOfTestingSet; i++) {
 
             ArrayList<String> distanceToAllPoints = new ArrayList<String>();
@@ -26,6 +23,7 @@ public class Algorithms {
                 //calculate distance between all training data points and one testing point
                 List<String> trainingFeatures = trainingData.get(j).subList(0,lengthOfFeatures);
                 List<String> testingFeatures = trainingData.get(i).subList(0,lengthOfFeatures);
+                //uses euclidean or hamming distance as appropriate for  the data
                 if(euclidean){
                     distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, testingFeatures));
                 }else{
@@ -60,7 +58,7 @@ public class Algorithms {
             }
 
         }
-
+        //returns the list of guessed results for the test set
         return results;
     }
 }

@@ -13,8 +13,11 @@ public class Driver {
         Data redWine = new WineData(new File("../DataSets/winequality-red.csv"));
         Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
-        ArrayList<String> result1 = Algorithms.KNN(car.dataSets.trainingSets.get(0), car.dataSets.validationSets.get(0), car.dataSets.testSets.get(0), 1, false,false );
-        System.out.println(MathFunction.accuracy(result1,car.dataSets.testSets.get(0)));
+        for (int i = 0; i <10 ; i++) {
+            ArrayList<String> result1 = Algorithms.KNN(whiteWine.dataSets.trainingSets.get(i), whiteWine.dataSets.validationSets.get(i), whiteWine.dataSets.testSets.get(i), 3, false,false );
+            System.out.println(MathFunction.rootMeanSquaredError(result1, whiteWine.dataSets.testSets.get(i)));
+        }
+
         System.out.println();
 
     }
