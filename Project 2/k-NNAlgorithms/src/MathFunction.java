@@ -52,28 +52,71 @@ public class MathFunction {
     }
 
 
-    public static String accuracy(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
+    public static String processConfusionMatrix(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
 
         int lengthOfData = results.size();
-        double truePos=0;
-        double total = 0;
+        int classIndex = testData.get(0).size()-1;
+
+
+        //initialize classifications in the confusion matrix as the first row
+        ArrayList<ArrayList<String>> confusionMatrix= new ArrayList<>();
+        confusionMatrix.add(new ArrayList<>());
         for (int i = 0; i <lengthOfData ; i++) {
-            String guess = results.get(i);
-            String actual = testData.get(i).get(testData.get(0).size()-1);
-
-            if(guess.equals(actual)){
-                truePos++;
-                total++;
-            }else{
-                total++;
+            if(!confusionMatrix.get(0).contains(testData.get(i).get(classIndex))){
+                confusionMatrix.get(0).add(testData.get(i).get(classIndex));
             }
-
+            if(!confusionMatrix.get(0).contains(results.get(i))){
+                confusionMatrix.get(0).add(results.get(i));
+            }
+        }
+        for (int i = 0; i <confusionMatrix.get(0).size(); i++) {
+            confusionMatrix.add(new ArrayList<>());
+            for (int j = 0; j <confusionMatrix.get(0).size() ; j++) {
+                confusionMatrix.get(i+1).add("0");
+            }
         }
 
+        for (int i = 0; i <lengthOfData; i++) {
+            String guess = results.get(i);
+            String actual = testData.get(i).get(testData.get(0).size()-1);
+            int indexOfActual = confusionMatrix.get(0).indexOf(actual);
+            int indexOfGuess = confusionMatrix.get(0).indexOf(guess);
+
+            int currentValAtPos= Integer.parseInt(confusionMatrix.get(indexOfActual+1).get(indexOfGuess));
+            currentValAtPos++;
+            confusionMatrix.get(indexOfActual+1).set(indexOfGuess, currentValAtPos+"");
+        }
+
+        //calculate truePos
+        int truePos=0;
+        int totalPos=0;
+        int falsePos=0;
+        int falseNeg=0;
+        double accuracySum=0;
+        double precisionSum=0;
+        double recallSum=0;
+        for (int i = 1; i <confusionMatrix.size() ; i++) {
+            totalPos+=Integer.parseInt(confusionMatrix.get(i).get(i-1));
+            truePos=Integer.parseInt(confusionMatrix.get(i).get(i-1));
+            for (int j = 0; j <confusionMatrix.get(0).size() ; j++) {
+
+                falseNeg+=Integer.parseInt(confusionMatrix.get(i).get(j));
+                falsePos+=Integer.parseInt(confusionMatrix.get(j+1).get(i-1));
+            }
+
+            falseNeg-=truePos;//get rid of true pos value in these results
+            falsePos-=truePos;
+
+            precisionSum+= truePos*1.0/(truePos+falsePos);
+            recallSum+= truePos*1.0/(truePos+falseNeg);
 
 
+        }
+        precisionSum/=confusionMatrix.get(0).size();
+        recallSum/=confusionMatrix.get(0).size();
+        String accuracy = totalPos*1.0/results.size()+"";
 
-        return (truePos/total)+"";
+        return "Precision is: "+precisionSum+"  Recall is : "+ recallSum + " Accuracy is: "+ accuracy;
     }
 
 
@@ -103,11 +146,31 @@ public class MathFunction {
         return sum+"";
     }
 
-    public static <T> Set<T> convertListToSet(List<T> list)
-    {
-        // create a set from the List
-        return new HashSet<>(list);
+    public static String meanAbsoluteError(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
+        double sum=0;
+        double max=Double.MIN_VALUE;
+        double min=Double.MAX_VALUE;
+        for (int i = 0; i <testData.size() ; i++) {
+            double guess = Double.parseDouble(results.get(i));
+            double actual = Double.parseDouble(testData.get(i).get(testData.get(0).size()-1));
+            //max and min to normalize results
+            if(actual>=max){
+                max=actual;
+            }
+            if(actual<=min){
+                min=actual;
+            }
+            sum+=Math.abs(guess-actual);
+
+        }
+        //average the summation
+        sum/=testData.size();
+
+        //normalize to a percentage
+        sum/=(max-min);
+        return sum+"";
     }
+
 
 
 }
