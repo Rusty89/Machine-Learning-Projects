@@ -8,7 +8,7 @@ public class Algorithms {
 
     //base KNN function
     public static ArrayList<String> KNN(ArrayList<ArrayList<String>>trainingData, ArrayList<ArrayList<String>>testingData, int k, boolean regression, boolean euclidean){
-
+        //variables to hold sizes of things
         int lengthOfTrainingSet = trainingData.size();
         int lengthOfTestingSet = testingData.size();
         int lengthOfFeatures = trainingData.get(0).size()-2;

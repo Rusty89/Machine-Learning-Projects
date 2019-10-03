@@ -18,8 +18,8 @@ public class Driver {
 
         //test loop
         for (int i = 0; i <10 ; i++) {
-            ArrayList<String> result1 = Algorithms.KNN(forestFire.dataSets.trainingSets.get(i),forestFire.dataSets.testSets.get(i), 3, true,true   );
-            System.out.println(MathFunction.meanAbsoluteError(result1, forestFire.dataSets.testSets.get(i)));
+            ArrayList<String> result1 = Algorithms.KNN(redWine.dataSets.trainingSets.get(i),redWine.dataSets.testSets.get(i), 3, true,true   );
+            System.out.println(MathFunction.rootMeanSquaredError(result1, redWine.dataSets.testSets.get(i)));
         }
 
         System.out.println();

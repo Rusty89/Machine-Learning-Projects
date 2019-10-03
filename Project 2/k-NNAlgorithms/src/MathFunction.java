@@ -57,7 +57,6 @@ public class MathFunction {
         int lengthOfData = results.size();
         int classIndex = testData.get(0).size()-1;
 
-
         //initialize classifications in the confusion matrix as the first row
         ArrayList<ArrayList<String>> confusionMatrix= new ArrayList<>();
         confusionMatrix.add(new ArrayList<>());
@@ -69,6 +68,8 @@ public class MathFunction {
                 confusionMatrix.get(0).add(results.get(i));
             }
         }
+        //initialize the rest of the matrix as an n by n matrix below the classification row
+        //filled with 0 initially
         for (int i = 0; i <confusionMatrix.get(0).size(); i++) {
             confusionMatrix.add(new ArrayList<>());
             for (int j = 0; j <confusionMatrix.get(0).size() ; j++) {
@@ -76,23 +77,24 @@ public class MathFunction {
             }
         }
 
+        //populate the matrix by indexing guesses by their
+        //true value and the guess
         for (int i = 0; i <lengthOfData; i++) {
             String guess = results.get(i);
             String actual = testData.get(i).get(testData.get(0).size()-1);
             int indexOfActual = confusionMatrix.get(0).indexOf(actual);
             int indexOfGuess = confusionMatrix.get(0).indexOf(guess);
-
             int currentValAtPos= Integer.parseInt(confusionMatrix.get(indexOfActual+1).get(indexOfGuess));
             currentValAtPos++;
             confusionMatrix.get(indexOfActual+1).set(indexOfGuess, currentValAtPos+"");
         }
 
-        //calculate truePos
-        int truePos=0;
-        int totalPos=0;
-        int falsePos=0;
-        int falseNeg=0;
-        double accuracySum=0;
+        //calculate truePos, falsePos, falseNeg and totalPos by indexing the confusion
+        //matrix appropriately
+        double truePos=0;
+        double totalPos=0;
+        double falsePos=0;
+        double falseNeg=0;
         double precisionSum=0;
         double recallSum=0;
         for (int i = 1; i <confusionMatrix.size() ; i++) {
@@ -107,14 +109,22 @@ public class MathFunction {
             falseNeg-=truePos;//get rid of true pos value in these results
             falsePos-=truePos;
 
-            precisionSum+= truePos*1.0/(truePos+falsePos);
-            recallSum+= truePos*1.0/(truePos+falseNeg);
+            //calculates the precision and recall for each class
+            //adds it to the summation to later be divided by
+            //the number of classes
+            precisionSum+= truePos/(truePos+falsePos);
+            recallSum+= truePos/(truePos+falseNeg);
 
 
         }
+        //divides sums by number of classes to get
+        //overall precision and recall
         precisionSum/=confusionMatrix.get(0).size();
         recallSum/=confusionMatrix.get(0).size();
-        String accuracy = totalPos*1.0/results.size()+"";
+        //calculate overall accuracy by dividing all
+        //truePos results and dividing by all guessed
+        //data points.
+        double accuracy = totalPos/results.size();
 
         return "Precision is: "+precisionSum+"  Recall is : "+ recallSum + " Accuracy is: "+ accuracy;
     }
