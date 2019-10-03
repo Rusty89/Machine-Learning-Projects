@@ -17,7 +17,7 @@ public class Algorithms {
 
         for (int i = 0; i <lengthOfTestingSet; i++) {
 
-            ArrayList<String> distanceToAllPoints = new ArrayList<String>();
+            ArrayList<Double> distanceToAllPoints = new ArrayList<Double>();
             ArrayList<Integer> indicesOfMinimumDistances = new ArrayList<Integer>();
             ArrayList<String> classificationOfNeighbors = new ArrayList<String>();
 
@@ -31,7 +31,6 @@ public class Algorithms {
                 }else{
                     distanceToAllPoints.add(MathFunction.hammingDistance(trainingFeatures, testingFeatures));
                 }
-
             }
 
             //find indices of the k nearest neighbors
@@ -41,7 +40,7 @@ public class Algorithms {
                 indicesOfMinimumDistances.add(indexOfMinValue);
 
                 //set that index to max value so it will not be used twice
-                distanceToAllPoints.set(indexOfMinValue, Double.MAX_VALUE+"");
+                distanceToAllPoints.set(indexOfMinValue, Double.MAX_VALUE);
             }
 
             //put neighbor's classification's in a list
@@ -80,10 +79,12 @@ public class Algorithms {
         ArrayList<Integer> badSamplePoints= new ArrayList<>();
         //holds the edited training data
         ArrayList<ArrayList<String>> editedTrainingData =(ArrayList<ArrayList<String>>) trainingData.clone();
+        ArrayList<ArrayList<String>> finalEditedTrainingData =new ArrayList<>();
 
-        //while edited set still improving
-        while(currentAccuracy>prevAccuracy && currentPrecision>prevPrecision && currentRecall>prevRecall){
+        //while edited set is still improving
+        while(currentAccuracy>prevAccuracy || currentPrecision>prevPrecision || currentRecall>prevRecall){
             //run each point in the training data through KNN
+            finalEditedTrainingData=(ArrayList<ArrayList<String>>) editedTrainingData.clone();
             for (int i = 0; i < editedTrainingData.size(); i++) {
                 ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();
                 samplePoint.add(editedTrainingData.get(i));
@@ -96,9 +97,13 @@ public class Algorithms {
                     editedTrainingData.remove(editedTrainingData.get(i));
                 }
             }
-            ArrayList<String>results= new ArrayList<>();
-            results= MathFunction.processConfusionMatrix(KNN(editedTrainingData,validationSet,k,regression,euclidean), validationSet);
 
+            //run the editedTraining set with the validation set to determine if
+            //edited increased or decreased accuracy, precision or recall
+            ArrayList<String> results= MathFunction.processConfusionMatrix(KNN(editedTrainingData,validationSet,k,regression,euclidean), validationSet);
+
+            //set prevs and currs to determine if a decrease in accuracy,precision or recall has
+            //occurred, exit while loop if so.
             prevAccuracy= currentAccuracy;
             prevPrecision=currentPrecision;
             prevRecall=currentRecall;
@@ -108,12 +113,60 @@ public class Algorithms {
             currentAccuracy= Double.parseDouble(results.get(2));
 
         }
+        //return the set of edited training data just prior to run that had a decrease
+        //in precision, accuracy or recall
+        return  KNN(finalEditedTrainingData,testingData, k, regression, euclidean);
+    }
 
 
 
+    public static ArrayList<String> CondensedKNN(ArrayList<ArrayList<String>>trainingData, ArrayList<ArrayList<String>>testingData, int k, boolean regression, boolean euclidean){
+        //initialize empty set
+        ArrayList<ArrayList<String>> condensedTrainingData=new ArrayList<>();
+        int currSizeOfCondensed=-1;
+        int indexOfClassification=trainingData.get(0).size()-1;
+        int lengthOfFeatures = trainingData.get(0).size()-2;
+        //while  condensedTrainingData size is increasing
+        while(condensedTrainingData.size()>currSizeOfCondensed){
+            //randomize order
+            currSizeOfCondensed=condensedTrainingData.size();
+            Collections.shuffle(trainingData);
+            for (int i = 0; i <trainingData.size() ; i++) {
+                //if condensed has no elements, add the first
+                if(condensedTrainingData.size()==0){
+                    condensedTrainingData.add(trainingData.get(i));
+                }else{
+                    //find minimum distance between current point and points in the condensed set
+                    ArrayList<Double> distanceToAllPoints = new ArrayList<Double>();
+                    for (int j = 0; j <condensedTrainingData.size() ; j++) {
 
+                        List<String> condensedTrainingFeatures = condensedTrainingData.get(j).subList(0,lengthOfFeatures);
+                        List<String> trainingFeatures = trainingData.get(i).subList(0,lengthOfFeatures);
+                        if(euclidean){
+                            distanceToAllPoints.add(MathFunction.euclideanDistance(condensedTrainingFeatures, trainingFeatures));
+                        }else{
+                            distanceToAllPoints.add(MathFunction.hammingDistance(condensedTrainingFeatures, trainingFeatures));
+                        }
 
-        return  KNN(editedTrainingData,testingData, k, regression, euclidean);
+                    }
+                    int indexOfMinValue= distanceToAllPoints.indexOf(Collections.min(distanceToAllPoints));
+                    String classOfMinCondensedPoint = condensedTrainingData.get(indexOfMinValue).get(indexOfClassification);
+
+                    //add the point to condensed training data if it's classification doesn't equal the classification of the point that
+                    //is min distance from it, and it doesn't already exist in condensed
+                    if(condensedTrainingData.get(indexOfMinValue).get(indexOfClassification).equals(trainingData.get(i).get(indexOfClassification))){
+                        //do not add
+                    }else{
+                        if(condensedTrainingData.contains(trainingData.get(i))){
+                            //point is already in condensed, do not add
+                        }else{
+                            condensedTrainingData.add(trainingData.get(i));
+                        }
+                    }
+                }
+            }
+        }
+        return KNN(condensedTrainingData,testingData,k,regression,euclidean);
     }
 
 }

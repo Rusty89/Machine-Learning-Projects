@@ -18,4 +18,5 @@ public class FireData extends Data {
             fullSet.get(i).remove(2);
         }
     }
+
 }

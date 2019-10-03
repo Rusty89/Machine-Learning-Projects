@@ -2,7 +2,7 @@ import java.util.*;
 
 public class MathFunction {
 
-    public static String euclideanDistance(List<String> X1Vector, List<String> X2Vector){
+    public static double euclideanDistance(List<String> X1Vector, List<String> X2Vector){
         double result = 0;
         int sizeOfX1andX2 = X1Vector.size();
         for (int i = 0; i <sizeOfX1andX2 ; i++) {
@@ -10,13 +10,13 @@ public class MathFunction {
             double x = Double.parseDouble(X1Vector.get(i));
             double y = Double.parseDouble(X2Vector.get(i));
             //summation of (x1i-x2i)^2, euclidean distance
-            result += Math.pow((x-y), 2);
+            result += Math.pow((x-y),2);
         }
-        return result+"";
+        return result;
     }
 
 
-    public static String hammingDistance(List<String> in1, List<String> in2){
+    public static double hammingDistance(List<String> in1, List<String> in2){
         double result = 0;
         for (int i = 0; i <in1.size() ; i++) {
             if(in1.get(i).equals(in2.get(i))){
@@ -25,7 +25,7 @@ public class MathFunction {
                 result++;
             }
         }
-        return result+"";
+        return result;
     }
 
     public static String average (ArrayList<String> input){

@@ -17,7 +17,7 @@ public class Driver {
         Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
         //test loop for regression data
-
+        /*
         for (int k = 1; k <6 ; k+=2) {
             double RMSE=0;
             double absError=0;
@@ -30,6 +30,9 @@ public class Driver {
             System.out.println("Mean Absolute error is : "+absError/10+"  Root Mean Squared Error : "+RMSE/10);
         }
 
+        */
+
+
         //test loop for classification data
         for (int k = 1; k <6 ; k+=2) {
             double precisionAvg=0;
@@ -37,8 +40,8 @@ public class Driver {
             double accuracyAvg=0;
 
             for (int i = 0; i <10 ; i++) {
-                ArrayList<String> result1 = Algorithms.EditedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i),abalone.dataSets.validationSets.get(i), k, false,true );
-                result1=MathFunction.processConfusionMatrix(result1, abalone.dataSets.testSets.get(i));
+                ArrayList<String> result1 = Algorithms.CondensedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i),k, false,true );
+                result1=MathFunction.processConfusionMatrix(result1,abalone.dataSets.testSets.get(i));
                 precisionAvg+=Double.parseDouble(result1.get(0));
                 recallAvg+=Double.parseDouble(result1.get(1));
                 accuracyAvg+=Double.parseDouble(result1.get(2));
