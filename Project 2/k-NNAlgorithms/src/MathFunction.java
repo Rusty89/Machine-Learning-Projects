@@ -52,7 +52,7 @@ public class MathFunction {
     }
 
 
-    public static String processConfusionMatrix(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
+    public static ArrayList<String> processConfusionMatrix(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
 
         int lengthOfData = results.size();
         int classIndex = testData.get(0).size()-1;
@@ -112,8 +112,14 @@ public class MathFunction {
             //calculates the precision and recall for each class
             //adds it to the summation to later be divided by
             //the number of classes
-            precisionSum+= truePos/(truePos+falsePos);
-            recallSum+= truePos/(truePos+falseNeg);
+            //if statements to protect against 0/0 situations
+            if(!Double.isNaN(truePos/truePos+falsePos)){
+                precisionSum+= truePos/(truePos+falsePos);
+            }
+            if(!Double.isNaN(truePos/truePos+falseNeg)){
+                recallSum+= truePos/(truePos+falseNeg);
+            }
+
 
 
         }
@@ -125,8 +131,11 @@ public class MathFunction {
         //truePos results and dividing by all guessed
         //data points.
         double accuracy = totalPos/results.size();
-
-        return "Precision is: "+precisionSum+"  Recall is : "+ recallSum + " Accuracy is: "+ accuracy;
+        ArrayList<String> result = new ArrayList<String>();
+        result.add(precisionSum+"");
+        result.add(recallSum+"");
+        result.add(accuracy+"");
+        return result;
     }
 
 
