@@ -17,12 +17,20 @@ public class Driver {
         Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
         //test loop
-        for (int i = 0; i <10 ; i++) {
-            ArrayList<String> result1 = Algorithms.KNN(redWine.dataSets.trainingSets.get(i),redWine.dataSets.testSets.get(i), 3, true,true   );
-            System.out.println(MathFunction.rootMeanSquaredError(result1, redWine.dataSets.testSets.get(i)));
+
+        for (int k = 1; k <20 ; k++) {
+            double RMSE=0;
+            double absError=0;
+            for (int i = 0; i <10 ; i++) {
+                ArrayList<String> result1 = Algorithms.KNN(redWine.dataSets.trainingSets.get(i), redWine.dataSets.testSets.get(i), k, true,true   );
+                absError+= Double.parseDouble(MathFunction.meanAbsoluteError(result1, redWine.dataSets.testSets.get(i), redWine.fullSet));
+                RMSE+= Double.parseDouble(MathFunction.rootMeanSquaredError(result1, redWine.dataSets.testSets.get(i), redWine.fullSet));
+            }
+            System.out.println(absError/10);
+            System.out.println(RMSE/10);
+            System.out.println("End set k value ="+k);
         }
 
-        System.out.println();
 
     }
 }

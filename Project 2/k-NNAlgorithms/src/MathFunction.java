@@ -130,20 +130,23 @@ public class MathFunction {
     }
 
 
-    public static String rootMeanSquaredError(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
+    public static String rootMeanSquaredError(ArrayList<String> results, ArrayList<ArrayList<String>> testData,  ArrayList<ArrayList<String>> fullSet){
         double sum=0;
         double max=Double.MIN_VALUE;
         double min=Double.MAX_VALUE;
+
+        //get max and min values in the set to normalize results
+        for (int i = 0; i <fullSet.size() ; i++) {
+            if(max<=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1))){
+                max=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
+            }
+            if(min>=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1))){
+                min=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
+            }
+        }
         for (int i = 0; i <testData.size() ; i++) {
             double guess = Double.parseDouble(results.get(i));
             double actual = Double.parseDouble(testData.get(i).get(testData.get(0).size()-1));
-            //max and min to normalize results
-            if(actual>=max){
-                max=actual;
-            }
-            if(actual<=min){
-                min=actual;
-            }
 
             sum+=Math.pow((guess-actual),2);
 
@@ -156,20 +159,24 @@ public class MathFunction {
         return sum+"";
     }
 
-    public static String meanAbsoluteError(ArrayList<String> results, ArrayList<ArrayList<String>> testData){
+    public static String meanAbsoluteError(ArrayList<String> results, ArrayList<ArrayList<String>> testData,ArrayList<ArrayList<String>> fullSet){
         double sum=0;
         double max=Double.MIN_VALUE;
         double min=Double.MAX_VALUE;
+
+        //get max and min values in the set to normalize results
+        for (int i = 0; i <fullSet.size() ; i++) {
+            if(max<=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1))){
+                max=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
+            }
+            if(min>=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1))){
+                min=Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
+            }
+        }
         for (int i = 0; i <testData.size() ; i++) {
             double guess = Double.parseDouble(results.get(i));
             double actual = Double.parseDouble(testData.get(i).get(testData.get(0).size()-1));
-            //max and min to normalize results
-            if(actual>=max){
-                max=actual;
-            }
-            if(actual<=min){
-                min=actual;
-            }
+
             sum+=Math.abs(guess-actual);
 
         }
