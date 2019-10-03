@@ -15,6 +15,8 @@ public class AbaloneData extends Data {
             //Male, Female and Infant distances cannot be resolved
             //in a meaningful way
             fullSet.get(i).remove(0);
+
+
         }
     }
 }

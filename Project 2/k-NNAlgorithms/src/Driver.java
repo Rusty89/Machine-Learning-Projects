@@ -17,33 +17,31 @@ public class Driver {
         Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
         //test loop for regression data
-/*
-        for (int k = 1; k <20 ; k++) {
+
+        for (int k = 1; k <6 ; k+=2) {
             double RMSE=0;
             double absError=0;
             for (int i = 0; i <10 ; i++) {
-                ArrayList<String> result1 = Algorithms.KNN(redWine.dataSets.trainingSets.get(i), redWine.dataSets.testSets.get(i), k, true,true   );
-                absError+= Double.parseDouble(MathFunction.meanAbsoluteError(result1, redWine.dataSets.testSets.get(i), redWine.fullSet));
-                RMSE+= Double.parseDouble(MathFunction.rootMeanSquaredError(result1, redWine.dataSets.testSets.get(i), redWine.fullSet));
+                ArrayList<String> result1 = Algorithms.KNN(forestFire.dataSets.trainingSets.get(i), forestFire.dataSets.testSets.get(i), k, true,true   );
+                absError+= Double.parseDouble(MathFunction.meanAbsoluteError(result1, forestFire.dataSets.testSets.get(i), forestFire.fullSet));
+                RMSE+= Double.parseDouble(MathFunction.rootMeanSquaredError(result1, forestFire.dataSets.testSets.get(i), forestFire.fullSet));
             }
-            System.out.println(absError/10);
-            System.out.println(RMSE/10);
-            System.out.println("End set k value ="+k);
+
+            System.out.println("Mean Absolute error is : "+absError/10+"  Root Mean Squared Error : "+RMSE/10);
         }
-*/
+
         //test loop for classification data
-        for (int k = 1; k <40 ; k+=2) {
+        for (int k = 1; k <6 ; k+=2) {
             double precisionAvg=0;
             double recallAvg=0;
             double accuracyAvg=0;
 
             for (int i = 0; i <10 ; i++) {
-                ArrayList<String> result1 = Algorithms.KNN(segmentation.dataSets.trainingSets.get(i), segmentation.dataSets.testSets.get(i), k, false,true   );
-                result1=MathFunction.processConfusionMatrix(result1, segmentation.dataSets.testSets.get(i));
+                ArrayList<String> result1 = Algorithms.EditedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i),abalone.dataSets.validationSets.get(i), k, false,true );
+                result1=MathFunction.processConfusionMatrix(result1, abalone.dataSets.testSets.get(i));
                 precisionAvg+=Double.parseDouble(result1.get(0));
                 recallAvg+=Double.parseDouble(result1.get(1));
                 accuracyAvg+=Double.parseDouble(result1.get(2));
-
             }
             System.out.println("Precision is: "+ precisionAvg/10+" Recall is:"+recallAvg/10+" Accuracy is: "+accuracyAvg/10);
 

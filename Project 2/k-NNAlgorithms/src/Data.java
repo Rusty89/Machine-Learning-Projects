@@ -13,12 +13,19 @@ public class Data {
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
         //read in input  file as an array list
         Scanner sc = new Scanner(inputFile);
+        int maxCount=300;//max number of lines of data, to keep test manageable
         while (sc.hasNextLine()){
             ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;
             fullSet.add(line);
+
         }
         //shuffle the input data into a random order
         Collections.shuffle(fullSet);
+
+        //remove items to make dataset manageable
+        while(fullSet.size()>maxCount){
+            fullSet.remove(0);
+        }
 
     }
 
