@@ -17,20 +17,20 @@ public class Driver {
         Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
         //test loop for regression data
-        /*
+
         for (int k = 1; k <6 ; k+=2) {
             double RMSE=0;
             double absError=0;
             for (int i = 0; i <10 ; i++) {
-                ArrayList<String> result1 = Algorithms.KNN(forestFire.dataSets.trainingSets.get(i), forestFire.dataSets.testSets.get(i), k, true,true   );
-                absError+= Double.parseDouble(MathFunction.meanAbsoluteError(result1, forestFire.dataSets.testSets.get(i), forestFire.fullSet));
-                RMSE+= Double.parseDouble(MathFunction.rootMeanSquaredError(result1, forestFire.dataSets.testSets.get(i), forestFire.fullSet));
+                ArrayList<String> result1 = Algorithms.KNN(machine.dataSets.trainingSets.get(i), machine.dataSets.testSets.get(i), k, true,true   );
+                absError+= Double.parseDouble(MathFunction.meanAbsoluteError(result1, machine.dataSets.testSets.get(i), machine.fullSet));
+                RMSE+= Double.parseDouble(MathFunction.rootMeanSquaredError(result1, machine.dataSets.testSets.get(i), machine.fullSet));
             }
 
             System.out.println("Mean Absolute error is : "+absError/10+"  Root Mean Squared Error : "+RMSE/10);
         }
 
-        */
+
 
 
         //test loop for classification data
@@ -40,7 +40,7 @@ public class Driver {
             double accuracyAvg=0;
 
             for (int i = 0; i <10 ; i++) {
-                ArrayList<String> result1 = Algorithms.CondensedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i),k, false,true );
+                ArrayList<String> result1 = Algorithms.CondensedKNN(abalone.dataSets.trainingSets.get(i),abalone.dataSets.testSets.get(i), k, false,false  );
                 result1=MathFunction.processConfusionMatrix(result1,abalone.dataSets.testSets.get(i));
                 precisionAvg+=Double.parseDouble(result1.get(0));
                 recallAvg+=Double.parseDouble(result1.get(1));

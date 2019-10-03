@@ -75,26 +75,25 @@ public class Algorithms {
         double prevPrecision = 0;
         double prevRecall=0;
         double prevAccuracy=0;
-        //arraylist to hold the indexes of the points that were incorrectly classified
-        ArrayList<Integer> badSamplePoints= new ArrayList<>();
-        //holds the edited training data
-        ArrayList<ArrayList<String>> editedTrainingData =(ArrayList<ArrayList<String>>) trainingData.clone();
+
+        ArrayList<Integer> badSamplePoints= new ArrayList<>();//arraylist to hold the indexes of the points that were incorrectly classified
+
+        ArrayList<ArrayList<String>> editedTrainingData =(ArrayList<ArrayList<String>>) trainingData.clone();//holds the edited training data
         ArrayList<ArrayList<String>> finalEditedTrainingData =new ArrayList<>();
 
-        //while edited set is still improving
-        while(currentAccuracy>prevAccuracy || currentPrecision>prevPrecision || currentRecall>prevRecall){
-            //run each point in the training data through KNN
-            finalEditedTrainingData=(ArrayList<ArrayList<String>>) editedTrainingData.clone();
-            for (int i = 0; i < editedTrainingData.size(); i++) {
-                ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();
-                samplePoint.add(editedTrainingData.get(i));
+
+        while(currentAccuracy>prevAccuracy || currentPrecision>prevPrecision || currentRecall>prevRecall){//while edited set is still improving
+
+            finalEditedTrainingData=(ArrayList<ArrayList<String>>) editedTrainingData.clone();//copy the editedData into a potential final set
+            for (int i = 0; i < editedTrainingData.size(); i++) {//go through each point in the editedData
+                ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();//make a new sample point
+                samplePoint.add(editedTrainingData.get(i));//give it the value of editedTraining data at i
                 ArrayList<String> classification = KNN(editedTrainingData,samplePoint, k, regression,euclidean);
-                //sample point classified correctly
-                if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))){
+
+                if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))){ //sample point classified correctly
                     //do nothing
-                }else{
-                    //remove bad data from the set
-                    editedTrainingData.remove(editedTrainingData.get(i));
+                }else{//sample point not correctly classified
+                    editedTrainingData.remove(editedTrainingData.get(i));//remove bad data from the set
                 }
             }
 
