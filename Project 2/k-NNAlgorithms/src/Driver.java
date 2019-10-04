@@ -6,15 +6,15 @@ public class Driver {
     public static void main(String args[])throws Exception{
 
         //categorical sets
-        Data car = new CarData(new File("../DataSets/car.data"));//use hamming distance (euclidean= false) as all features are categorical
-        Data abalone = new AbaloneData(new File("../DataSets/abalone.data"));//use euclidean
-        Data segmentation = new ImageData(new File("../DataSets/segmentation.data"));//use euclidean
+        Data car = new CarData(new File("./DataSets/car.data"));//use hamming distance (euclidean= false) as all features are categorical
+        Data abalone = new AbaloneData(new File("./DataSets/abalone.data"));//use euclidean
+        Data segmentation = new ImageData(new File("./DataSets/segmentation.data"));//use euclidean
 
         //regresssion sets, use regression and euclidean for all these sets
-        Data forestFire = new FireData(new File("../DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("../DataSets/machine.data"));
-        Data redWine = new WineData(new File("../DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("./DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("./DataSets/machine.data"));
+        Data redWine = new WineData(new File("./DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
 
         //test loop for regression data
 
