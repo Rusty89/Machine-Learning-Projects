@@ -11,9 +11,9 @@ public class FireData extends Data {
 
     private void preProcess() {
         for (int i = 0; i < fullSet.size(); i++) {
-            //removes the data representing the months
-            //and days of the week as these will
-            //not be valid data points using euclidean distance
+            /*  removes the data representing the months
+                and days of the week as these will
+                not be valid data points using euclidean distance */
             fullSet.get(i).remove(2);
             fullSet.get(i).remove(2);
         }

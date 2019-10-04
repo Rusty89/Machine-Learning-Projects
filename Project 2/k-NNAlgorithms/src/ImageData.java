@@ -10,14 +10,13 @@ public class ImageData extends Data {
     }
 
     private void preProcess(){
-        for (int i = 0; i <fullSet.size() ; i++) {
-            int indiceOfLast= fullSet.get(i).size()-1;
-            //swap first and last column so that
-            //classifications are on the right
-            String temp=fullSet.get(i).get(0);
-            fullSet.get(i).set(0, fullSet.get(i).get(indiceOfLast));
-            fullSet.get(i).set(indiceOfLast, temp);
+        for (int i = 0; i < fullSet.size(); i++) {
+            int indexOfLast = fullSet.get(i).size() - 1;
 
+            //swap first and last column so that classifications are on the right
+            String temp=fullSet.get(i).get(0);
+            fullSet.get(i).set(0, fullSet.get(i).get(indexOfLast));
+            fullSet.get(i).set(indexOfLast, temp);
         }
     }
 }
