@@ -67,33 +67,29 @@ public class Algorithms {
 
     public static ArrayList<String> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> testingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
 
-        int lengthOfTrainingData= trainingData.size();
         int indexOfClassification = trainingData.get(0).size()-1;
-        double currentPrecision = 0.00000001;
-        double currentRecall=0.0000001;
-        double currentAccuracy=.0000001;
+        double currentPrecision = 0;
+        double currentRecall=0;
+        double currentAccuracy=0;
         double prevPrecision = 0;
         double prevRecall=0;
         double prevAccuracy=0;
 
-        ArrayList<Integer> badSamplePoints= new ArrayList<>();//arraylist to hold the indexes of the points that were incorrectly classified
-
         ArrayList<ArrayList<String>> editedTrainingData =(ArrayList<ArrayList<String>>) trainingData.clone();//holds the edited training data
-        ArrayList<ArrayList<String>> finalEditedTrainingData =new ArrayList<>();
+        ArrayList<ArrayList<String>> finalEditedTrainingData =(ArrayList<ArrayList<String>>) trainingData.clone();//holds the final edited training data
 
+        boolean improvementOccurred = true;
+        while(improvementOccurred){//while edited set is still improving
 
-        while(currentAccuracy>prevAccuracy && currentPrecision>prevPrecision && currentRecall>prevRecall){//while edited set is still improving
-
-            finalEditedTrainingData=(ArrayList<ArrayList<String>>) editedTrainingData.clone();//copy the editedData into a potential final set
+            finalEditedTrainingData =(ArrayList<ArrayList<String>>) editedTrainingData.clone();//holds the final edited training data
             for (int i = 0; i < editedTrainingData.size(); i++) {//go through each point in the editedData
                 ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();//make a new sample point
                 samplePoint.add(editedTrainingData.get(i));//give it the value of editedTraining data at i
+                editedTrainingData.remove(editedTrainingData.get(i));
                 ArrayList<String> classification = KNN(editedTrainingData,samplePoint, k, regression,euclidean);
 
                 if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))){ //sample point classified correctly
-                    //do nothing
-                }else{//sample point not correctly classified
-                    editedTrainingData.remove(editedTrainingData.get(i));//remove bad data from the set
+                    editedTrainingData.add(i,samplePoint.get(0));//put point back in data set if good
                 }
             }
 
@@ -103,13 +99,15 @@ public class Algorithms {
 
             //set prevs and currs to determine if a decrease in accuracy,precision or recall has
             //occurred, exit while loop if so.
-            prevAccuracy= currentAccuracy+.05;
-            prevPrecision=currentPrecision+.05;
-            prevRecall=currentRecall+.05;
+            prevAccuracy= currentAccuracy;
+            prevPrecision=currentPrecision;
+            prevRecall=currentRecall;
 
             currentPrecision= Double.parseDouble(results.get(0));
             currentRecall = Double.parseDouble(results.get(1));
             currentAccuracy= Double.parseDouble(results.get(2));
+
+            improvementOccurred=(currentAccuracy>prevAccuracy && currentPrecision>prevPrecision && currentRecall>prevRecall);//check if loop finished
 
         }
         //return the set of edited training data just prior to run that had a decrease
