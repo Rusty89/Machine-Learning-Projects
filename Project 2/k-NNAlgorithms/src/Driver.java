@@ -5,7 +5,7 @@ public class Driver {
 
     private static final int numTrainingSets = 10; // number of training sets for 10-fold cross validation
 
-    public static void main(String args[])throws Exception{
+    public static void main(String args[])throws Exception {
 
         // categorical sets
         Data car = new CarData(new File("./DataSets/car.data")); //use hamming distance (euclidean = false) as all features are categorical
@@ -23,10 +23,10 @@ public class Driver {
         // test loop for regression data
         // use odd k-values 1, 3, and 5
         for (int k : kValueSelections) {
-            double RMSE  = 0; // root mean squared error
+            double RMSE = 0; // root mean squared error
             double absError = 0;
-            for (int i = 0; i < numTrainingSets ; i++) {
-                ArrayList<String> result1 = Algorithms.KNN(machine.dataSets.trainingSets.get(i), machine.dataSets.testSets.get(i), k, true,true   );
+            for (int i = 0; i < numTrainingSets; i++) {
+                ArrayList<String> result1 = Algorithms.KNN(machine.dataSets.trainingSets.get(i), machine.dataSets.testSets.get(i), k, true, true);
                 absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, machine.dataSets.testSets.get(i), machine.fullSet));
                 RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, machine.dataSets.testSets.get(i), machine.fullSet));
             }
@@ -41,9 +41,9 @@ public class Driver {
             double recallAvg = 0;
             double accuracyAvg = 0;
 
-            for (int i = 0; i < numTrainingSets ; i++) {
-                ArrayList<String> result1 = Algorithms.EditedKNN(segmentation.dataSets.trainingSets.get(i),segmentation.dataSets.testSets.get(i),segmentation.dataSets.validationSets.get(i), k, false,true  );
-                result1 = MathFunction.processConfusionMatrix(result1,segmentation.dataSets.testSets.get(i));
+            for (int i = 0; i < numTrainingSets; i++) {
+                ArrayList<String> result1 = Algorithms.EditedKNN(segmentation.dataSets.trainingSets.get(i), segmentation.dataSets.testSets.get(i), segmentation.dataSets.validationSets.get(i), k, false, true);
+                result1 = MathFunction.processConfusionMatrix(result1, segmentation.dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
                 recallAvg += Double.parseDouble(result1.get(1));
                 accuracyAvg += Double.parseDouble(result1.get(2));
@@ -51,5 +51,16 @@ public class Driver {
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
+
+        // test for kmeans
+        // only need to do k = 1 NN because Kmeans should only produce 1 cluster point per class
+        double RMSE = 0; // root mean squared error
+        double absError = 0;
+        for (int i = 0; i < numTrainingSets; i++) {
+            ArrayList<String> result1 = Algorithms.Kmeans(abalone.dataSets.trainingSets.get(i), abalone.dataSets.testSets.get(i), 1, false, true, 29);
+            absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, abalone.dataSets.testSets.get(i), abalone.fullSet));
+            RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, abalone.dataSets.testSets.get(i), abalone.fullSet));
+        }
+        System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
     }
 }
