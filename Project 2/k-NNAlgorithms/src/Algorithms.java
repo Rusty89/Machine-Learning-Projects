@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -194,95 +195,108 @@ public class Algorithms {
                                             ArrayList<ArrayList<String>>testingData, int k, boolean regression,
                                             boolean euclidean, int numClasses){
 
-        int lengthOfFeatures = trainingData.get(0).size() - 1;
+        // Variables
+        ArrayList<ArrayList<String>> clusterCentroids = new ArrayList<>();
+        int numFeatures= trainingData.get(0).size() - 1;
 
-        ArrayList<ArrayList<String>> KMSet = new ArrayList<>(); // Eventual final set of cluster centroids
-        ArrayList<ArrayList<String>> compareSet = new ArrayList<>(); // Comparison set
-        ArrayList<ArrayList<ArrayList<String>>> clusters = new ArrayList<>();
-
-        // initialize cluster points randomly
-        for (int i = 0; i < numClasses; i++) {
-            ArrayList<String> point = new ArrayList<>();
-            for (int j = 0; j < lengthOfFeatures; j++){
-                point.add(Double.toString(Math.random())); // assign random feature values for random location
+        // 1) initialize cluster centroids randomly
+        for (int i = 0; i < numClasses; i++){ // Number of cluster centroids = number of classes
+            ArrayList<String> centroid = new ArrayList<>();
+            for (int j = 0; j < numFeatures; j++){
+                centroid.add(Double.toString(Math.random()));
             }
-            point.add(Integer.toString(i)); // arbitrary class value
-            KMSet.add(point);
+            centroid.add(Integer.toString(i));
+            clusterCentroids.add(centroid);
         }
-        for (ArrayList<String> cluster: KMSet
-             ) {
-            //System.out.println(cluster.toString());
-        }
-        // Update cluster centroids until no change happens
-        while (true){
-            System.out.println(KMSet.get(0).size());
 
-            // Variables
-            ArrayList<ArrayList<String>> clusterValues = new ArrayList<>();
-            int KMSetFeatureLastIndex = KMSet.get(0).size() - 1;
+        int preventEndless = 0; // Remove for final code
+        while (preventEndless < 50000) { // convert to while (true)
 
-            // First we find nearest points to each cluster centroid
-            for (int i = 0; i < numClasses; i++){ // for each cluster centroid
-                for (ArrayList<String> example: trainingData // find all examples that are closest
-                     ) {
-                    List<String> trainingFeatures = example.subList(0, lengthOfFeatures - 1);
-                    Double minDist = Double.MAX_VALUE;
-                    Double clusterNum = 0.0;
+            ArrayList<ArrayList<String>> compareSet = new ArrayList<>();
+            ArrayList<ArrayList<ArrayList<String>>> clusters = new ArrayList<>();
 
-                    // Compare each example to each cluster centroid
-                    for (int j = 0; j < numClasses; j++) {
-                        List<String> clusterFeatures = KMSet.get(j).subList(0, KMSetFeatureLastIndex);
-                        if (euclidean) {
-                            double distance = MathFunction.euclideanDistance(trainingFeatures, clusterFeatures);
-                            // Update which cluster point is closest, as found.
-                            if (distance < minDist) {
-                                minDist = distance;
-                                clusterNum = Double.parseDouble(example.get(example.size() - 1)); // grab classification
-                            }
-                        } else {
-                            double distance = MathFunction.hammingDistance(trainingFeatures, KMSet.get(j).subList(0, KMSetFeatureLastIndex));
-                            if (distance < minDist) {
-                                minDist = distance;
-                                clusterNum = Double.parseDouble(KMSet.get(j).get(KMSetFeatureLastIndex));
-                            }
+            for (int i = 0; i < numClasses; i++){
+                clusters.add(new ArrayList<>());
+            }
+
+            // 2) Compare example distances to centroids and assign to appropriate clusters
+            for (ArrayList<String> example: trainingData
+                 ) {
+
+                List<String> trainingFeatures = example.subList(0, numFeatures);
+                double minDist = Double.MAX_VALUE;
+                int clusterName = -1;
+
+                for (int j = 0; j < numClasses; j++){
+
+                    List<String> centroidFeatures = clusterCentroids.get(j).subList(0, numFeatures);
+
+                    if (euclidean) {
+                        double distance = MathFunction.euclideanDistance(trainingFeatures, centroidFeatures);
+                        // Update which cluster point is closest, as found.
+                        if (distance < minDist) {
+                            minDist = distance;
+                            clusterName = j; // grab classification
+                        }
+                    } else {
+                        double distance = MathFunction.hammingDistance(trainingFeatures, centroidFeatures);
+                        if (distance < minDist) {
+                            minDist = distance;
+                            clusterName = j;
                         }
                     }
-                    if (clusterNum == i){ // if the example was closest to centroid i
-                        clusterValues.add(example);
-                    }
                 }
-                clusters.add(clusterValues); // add Arraylist of examples to Arraylist of clusters
-            }
+                // check to make sure clusterName is being assigned
+                if (clusterName >= 0) {
+                    clusters.get(clusterName).add(example);
+                }
+                else {
+                    System.out.println("ERROR: Example not assigned to cluster");
+                }
 
-            // Then we update the positions of the cluster centroids
-            for (ArrayList<ArrayList<String>> clusterGroups: clusters // For each cluster
+            }
+            // 3) update cluster centroid locations
+            int centroidNum = 0;
+            for (ArrayList<ArrayList<String>> cluster: clusters
                  ) {
-                ArrayList<String> newCentroid = new ArrayList<>();
-                for (ArrayList<String> example: clusterGroups // for each example in a cluster group
-                     ) {
 
-                    double featureVal = 0.0;
-                    for (String feature: example.subList(0, lengthOfFeatures) // for each feature in an example, excluding classIndex
-                         ) {
-                        featureVal += Double.parseDouble(feature);
+                ArrayList<String> updatedCentroid = new ArrayList<>();
+
+                // if a cluster contains no values, reassign values randomly for next pass
+                if (cluster.size() < 1){
+                    for (int j = 0; j < numFeatures; j++){
+                        updatedCentroid.add(Double.toString(Math.random()));
                     }
-                    double meanFeature = featureVal / (lengthOfFeatures); // mean of featureVal... i.e. k MEANS
-                    String newCentroidFeature = Double.toString(meanFeature); // convert to string
-                    newCentroid.add(newCentroidFeature); // build new cluster centroid values
+                    updatedCentroid.add(Integer.toString(centroidNum));
+                    compareSet.add(updatedCentroid);
+                    centroidNum++;
                 }
-                compareSet.add(newCentroid);
+                else {
+                    for (int i = 0; i < numFeatures; i++) {
+                        double updatedCentroidVal = 0.0;
+                        for (ArrayList<String> example : cluster
+                        ) {
+                            updatedCentroidVal += Double.parseDouble(example.get(i));
+                        }
+                        updatedCentroidVal = updatedCentroidVal / cluster.size(); // mean value for that feature of examples in cluster
+                        updatedCentroid.add(Double.toString(updatedCentroidVal));
+                    }
+                    updatedCentroid.add(Integer.toString(centroidNum));
+                    compareSet.add(updatedCentroid);
+                    centroidNum++;
+                }
             }
 
-            // compare new cluster centroids with old to see if their was a change
-            if (compareSet.equals(KMSet)){ // ideal set found, finished
-                //convert arbitrary class values to real values
-                int numToUpdate = 0;
-                for (ArrayList<ArrayList<String>> clusterGroups: clusters
-                     ) {
+            // See if clusterCentroids have changed
+            if (compareSet.equals(clusterCentroids)){
+                //convert arbitrary class values to real class values
+                int centroidToUpdate = 0;
+                for (ArrayList<ArrayList<String>> cluster: clusters
+                ) {
                     Map<String, Integer> classNames = new HashMap<>();
-                    for (ArrayList<String> example: clusterGroups
+                    for (ArrayList<String> example : cluster
                     ) {
-                        String key = example.get(lengthOfFeatures);
+                        String key = example.get(numFeatures);
                         // Tally up frequencies of classes in clusters (ideally, 100% one class per clusters)
                         if (classNames.containsKey(key)) {
                             int freq = classNames.get(key);
@@ -300,125 +314,18 @@ public class Algorithms {
                             max = val.getValue();
                         }
                     }
-                    ArrayList<String> fullCentroid = (ArrayList<String>)KMSet.get(numToUpdate).clone();
-                    fullCentroid.add(res);
-                    KMSet.set(numToUpdate, fullCentroid); // update KMSet to have classes of centroid
-                    numToUpdate++;
+                    clusterCentroids.get(centroidToUpdate).set(numFeatures, res);
+                    centroidToUpdate++;
                 }
-                return KNN(KMSet, testingData, 1, regression, euclidean);
+
+                return KNN(clusterCentroids, testingData,1, false,true); // call to whatever other function we want.
             }
             else {
-                KMSet = compareSet; // update KMSet
-                compareSet.clear(); // clear compare set for future iteration
+                clusterCentroids = compareSet;
+                preventEndless++;
             }
         }
-
-        /*
-        // variables to hold sizes of things
-        int lengthOfTrainingSet = trainingData.size();
-        int lengthOfTestingSet = testingData.size();
-        int lengthOfFeatures = trainingData.get(0).size() - 1;
-        int classIndex = trainingData.get(0).size() - 1;
-
-        ArrayList<ArrayList<String>> KMSet = new ArrayList<>(); // final set of cluster points (to be returned)
-        ArrayList<ArrayList<String>> updatedKMSet = new ArrayList<>(); // used to see if KMSet is changing
-        ArrayList<ArrayList<ArrayList<String>>> clusters = new ArrayList<>(); // Stores examples in nearest current clusters
-
-        // initialize cluster points randomly
-        for (int i = 0; i < numClasses; i++) {
-            ArrayList<String> point = new ArrayList<>();
-            for (int j = 0; j < lengthOfFeatures; j++){
-                point.add(Double.toString(Math.random())); // assign random feature values for random location
-            }
-            point.add(Integer.toString(i)); // arbitrary class value
-            KMSet.add(point);
-            clusters.add(new ArrayList<>());
-            System.out.println("Created point...");
-        }
-
-        // Until cluster points have no change
-        while (true) {
-
-            // Go through examples in training set, and see which cluster point they are closest to.
-            for (ArrayList<String> example : trainingData
-            ) {
-                List<String> trainingFeatures = example.subList(0, lengthOfFeatures - 1);
-                int KMSetFeatureLastIndex = KMSet.get(0).size() - 2;
-
-                String clusterNum = "0";
-                Double minDist = Double.MAX_VALUE;
-
-                // Compare each example to each cluster point
-                for (int i = 0; i < numClasses; i++) {
-                    if (euclidean) {
-                        double distance = MathFunction.euclideanDistance(trainingFeatures, KMSet.get(i).subList(0, KMSetFeatureLastIndex));
-                        // Update which cluster point is closest, as found.
-                        if (distance < minDist) {
-                            minDist = distance;
-                            clusterNum = KMSet.get(i).get(KMSetFeatureLastIndex + 1); // grab classification
-                        }
-                    } else {
-                        double distance = MathFunction.hammingDistance(trainingFeatures, KMSet.get(i).subList(0, KMSetFeatureLastIndex));
-                        if (distance < minDist) {
-                            minDist = distance;
-                            clusterNum = KMSet.get(i).get(KMSetFeatureLastIndex + 1);
-                        }
-                    }
-                }
-                clusters.get(Integer.parseInt(clusterNum)).add(example);
-            }
-            // Recalculate new clusters
-
-            for (int i = 0; i < numClasses; i++) { // each cluster point
-                ArrayList<String> updatedCluster = new ArrayList<>();
-                for (int j = 0; j < clusters.get(i).get(0).size() - 1; j++){ // for each feature
-                    double val = 0.0;
-                    for (ArrayList<String> example: clusters.get(i)
-                         ) { // for each example
-                        val += Double.parseDouble(example.get(j)); // tally the feature value
-                    }
-                    String updatedVal = Double.toString(val / (clusters.get(i).size() - 1)); // take the mean
-                    updatedCluster.add(updatedVal);
-                }
-                updatedCluster.add(Integer.toString(i));
-                updatedKMSet.add(updatedCluster);
-            }
-            // Check if there's been any change to the clusters
-            if (updatedKMSet.equals(KMSet)) {
-                //convert arbitrary class values to real values
-                for (int i = 0; i < numClasses; i++){
-                    Map<String, Integer> classNames = new HashMap<>();
-                    for (ArrayList<String> example: clusters.get(i)
-                         ) {
-                        String key = example.get(classIndex);
-                        // Tally up frequencies of classes in clusters (ideally, 100% one class per clusters)
-                        if (classNames.containsKey(key)){
-                            int freq = classNames.get(key);
-                            freq++;
-                            classNames.put(key, freq);
-                        }
-                        else{
-                            classNames.put(key, 1);
-                        }
-                    }
-                    int max = 0;
-                    String res = "";
-
-                    for(Entry<String, Integer> val : classNames.entrySet())
-                    {
-                        if (max < val.getValue())
-                        {
-                            res = val.getKey();
-                            max = val.getValue();
-                        }
-                    }
-                    KMSet.get(i).set(classIndex, res); // set class name to actual string
-                }
-                return KNN(KMSet, testingData, 1, regression, euclidean);
-            } else {
-                KMSet = updatedKMSet;
-                updatedKMSet.clear();
-            }
-        } */
+        System.out.println("ERROR: Something went wrong");
+        return null; // should never be reached
     }
 }

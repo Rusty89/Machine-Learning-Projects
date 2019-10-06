@@ -52,12 +52,14 @@ public class Driver {
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
 
-        // test for kmeans
+        // test(s) for KMeans
         // only need to do k = 1 NN because Kmeans should only produce 1 cluster point per class
+
+        // KMeans on abalone
         double RMSE = 0; // root mean squared error
         double absError = 0;
-        for (int i = 0; i < numTrainingSets; i++) {
-            ArrayList<String> result1 = Algorithms.Kmeans(abalone.dataSets.trainingSets.get(i), abalone.dataSets.testSets.get(i), 1, false, true, 29);
+        for (int i = 0; i < numTrainingSets; i++) { // change to numTrainingSets
+            ArrayList<String> result1 = Algorithms.Kmeans(abalone.dataSets.trainingSets.get(i), abalone.dataSets.testSets.get(i), 1, false, true, 11); // ~91% of data in 11 out of 29 classes. Using 11 just to save time for now.
             absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, abalone.dataSets.testSets.get(i), abalone.fullSet));
             RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, abalone.dataSets.testSets.get(i), abalone.fullSet));
         }
