@@ -259,7 +259,7 @@ public class Algorithms {
             }
             // See if clusterCentroids have changed
             if (compareSet.equals(clusterCentroids)){
-                //convert arbitrary class values to real class values
+                // convert arbitrary class values to real class values
                 int centroidToUpdate = 0;
                 for (ArrayList<ArrayList<String>> cluster: clusters
                 ) {
@@ -301,47 +301,47 @@ public class Algorithms {
     public static ArrayList<ArrayList<String>> KMedoidsPAM(ArrayList<ArrayList<String>>trainingData,boolean euclidean, int numMedoids){
 
         ArrayList<ArrayList<String>> clusterMedoids = new ArrayList<>();
-        //initalize random medoids
-        for (int i = 0; i <numMedoids ; i++) {
+        // initalize random medoids
+        for (int i = 0; i < numMedoids; i++) {
             int randNum = (int) (Math.random()*trainingData.size());
             if(clusterMedoids.contains(trainingData.get(randNum))){
-                /*decrement the loop and keep looking for new medoid
-                if medoid is already in the set */
+                /* decrement the loop and keep looking for new medoid
+                   if medoid is already in the set */
                 i--;
             }else{
                 //add new random medoid to set
                 clusterMedoids.add(trainingData.get(randNum));
             }
         }
-        boolean medoidsChange= true;
+        boolean medoidsChange = true;
         while(medoidsChange){
             ArrayList<ArrayList<String>> prevMedoids = (ArrayList<ArrayList<String>>) clusterMedoids.clone();
 
-            double distortion=0;
-            //caluclate distortion
+            double distortion = 0;
+            // caluclate distortion
             distortion = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
 
-            for (int i = 0; i <numMedoids ; i++) {
-                for (int j = 0; j <trainingData.size() ; j++) {
-                    //if point is not contained in cluster medoids
+            for (int i = 0; i < numMedoids; i++) {
+                for (int j = 0; j < trainingData.size(); j++) {
+                    // if point is not contained in cluster medoids
                     if(!clusterMedoids.contains(trainingData.get(j))){
-                        //swap each medoid point with each point in the training data
-                        ArrayList<String>  temp = (ArrayList<String>) clusterMedoids.get(i).clone();
+                        // swap each medoid point with each point in the training data
+                        ArrayList<String> temp = (ArrayList<String>) clusterMedoids.get(i).clone();
                         clusterMedoids.set(i, trainingData.get(j));
-                        double distortionNew=0;
-                        //calculate new distortion with swapped medoid
+                        double distortionNew = 0;
+                        // calculate new distortion with swapped medoid
                         distortionNew = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
-                        //swap back if distortion increased by swapping medoid
-                        if(distortionNew>distortion){
+                        // swap back if distortion increased by swapping medoid
+                        if(distortionNew > distortion){
                             clusterMedoids.set(i,temp);
                         }else{
-                            distortion=distortionNew;
+                            distortion = distortionNew;
                         }
                     }
                 }
             }
-            //if medoids change, this will be true
-            medoidsChange= !clusterMedoids.equals(prevMedoids);
+            // if medoids change, this will be true
+            medoidsChange = !clusterMedoids.equals(prevMedoids);
 
         }
 
