@@ -73,7 +73,7 @@ public class Algorithms {
 
 
 
-    public static ArrayList<String> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> testingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
 
         int indexOfClassification = trainingData.get(0).size() - 1;
         double currentPrecision = 0;
@@ -130,10 +130,10 @@ public class Algorithms {
 
         }
         // return the set of edited training data just prior to run that saw a decrease in any metric
-        return KNN(finalEditedTrainingData, testingData, k, regression, euclidean);
+        return finalEditedTrainingData;
     }
 
-    public static ArrayList<String> CondensedKNN(ArrayList<ArrayList<String>>trainingData, ArrayList<ArrayList<String>>testingData, int k, boolean regression, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>>trainingData, boolean euclidean) {
 
         //initialize empty set
         ArrayList<ArrayList<String>> condensedTrainingData=new ArrayList<>();
@@ -175,7 +175,6 @@ public class Algorithms {
                     }
 
                     int indexOfMinValue= distanceToAllPoints.indexOf(Collections.min(distanceToAllPoints));
-                    String classOfMinCondensedPoint = condensedTrainingData.get(indexOfMinValue).get(indexOfClassification);
 
                     // add the point to condensed training data if it's classification doesn't equal the classification
                     // of the point that is min distance from it, and it doesn't already exist in condensed
@@ -191,7 +190,7 @@ public class Algorithms {
                 }
             }
         }
-        return KNN(condensedTrainingData, testingData, k, regression, euclidean);
+        return condensedTrainingData;
     }
 
     public static ArrayList<ArrayList<String>> Kmeans (ArrayList<ArrayList<String>>trainingData, int numClasses){
@@ -297,5 +296,55 @@ public class Algorithms {
             }
         }
         return null;
+    }
+
+    public static ArrayList<ArrayList<String>> KMedoidsPAM(ArrayList<ArrayList<String>>trainingData,boolean euclidean, int numMedoids){
+
+        ArrayList<ArrayList<String>> clusterMedoids = new ArrayList<>();
+        //initalize random medoids
+        for (int i = 0; i <numMedoids ; i++) {
+            int randNum = (int) (Math.random()*trainingData.size());
+            if(clusterMedoids.contains(trainingData.get(randNum))){
+                /*decrement the loop and keep looking for new medoid
+                if medoid is already in the set */
+                i--;
+            }else{
+                //add new random medoid to set
+                clusterMedoids.add(trainingData.get(randNum));
+            }
+        }
+        boolean medoidsChange= true;
+        while(medoidsChange){
+            ArrayList<ArrayList<String>> prevMedoids = (ArrayList<ArrayList<String>>) clusterMedoids.clone();
+
+            double distortion=0;
+            //caluclate distortion
+            distortion = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
+
+            for (int i = 0; i <numMedoids ; i++) {
+                for (int j = 0; j <trainingData.size() ; j++) {
+                    //if point is not contained in cluster medoids
+                    if(!clusterMedoids.contains(trainingData.get(j))){
+                        //swap each medoid point with each point in the training data
+                        ArrayList<String>  temp = (ArrayList<String>) clusterMedoids.get(i).clone();
+                        clusterMedoids.set(i, trainingData.get(j));
+                        double distortionNew=0;
+                        //calculate new distortion with swapped medoid
+                        distortionNew = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
+                        //swap back if distortion increased by swapping medoid
+                        if(distortionNew>distortion){
+                            clusterMedoids.set(i,temp);
+                        }else{
+                            distortion=distortionNew;
+                        }
+                    }
+                }
+            }
+            //if medoids change, this will be true
+            medoidsChange= !clusterMedoids.equals(prevMedoids);
+
+        }
+
+        return clusterMedoids;
     }
 }

@@ -211,4 +211,35 @@ public class MathFunction {
         return centroid;
     }
 
+    public static double distortion(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> clusterMedoids, boolean euclidean){
+
+        int numMedoids= clusterMedoids.size();
+        int lengthOfFeatures= trainingData.get(0).size()-2;
+        double distortion = 0;
+        for (int i = 0; i <trainingData.size(); i++) {
+            ArrayList<Double> distanceToAllPoints= new ArrayList<>();
+            for (int j = 0; j <numMedoids ; j++) {
+
+                // calculate distance between all training data points and a medoid
+                List<String> trainingFeatures = trainingData.get(i).subList(0, lengthOfFeatures);
+                List<String> medoidFeatures = clusterMedoids.get(j).subList(0, lengthOfFeatures);
+
+                //uses euclidean or hamming distance as appropriate for  the data
+                if(euclidean){
+                    distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, medoidFeatures));
+                }else{
+                    distanceToAllPoints.add(MathFunction.hammingDistance(trainingFeatures, medoidFeatures));
+                }
+
+            }
+
+            //add min distance to distortion total
+            distortion+= Collections.min(distanceToAllPoints);
+        }
+
+
+
+        return distortion;
+    }
+
 }
