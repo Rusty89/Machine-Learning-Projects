@@ -18,61 +18,11 @@ public class Driver {
         Data redWine = new WineData(new File("./DataSets/winequality-red.csv"));
         Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
 
-        int kValueSelections[] = {1, 3, 5}; // choose odd values for k to avoid tie-breakers
 
-        // test loop for regression data
-        // use odd k-values 1, 3, and 5
-        for (int k : kValueSelections) {
-            double RMSE = 0; // root mean squared error
-            double absError = 0;
-            for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<String> result1 = Algorithms.KNN(machine.dataSets.trainingSets.get(i), machine.dataSets.testSets.get(i), k, true, true);
-                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, machine.dataSets.testSets.get(i), machine.fullSet));
-                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, machine.dataSets.testSets.get(i), machine.fullSet));
-            }
-
-            System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
+        //run through all test with abalone
+        for (int i = 5; i <12 ; i++) {
+            segmentation.runTests(false,true,i);
         }
 
-        // test loop for classification data
-        // use odd k-values 1, 3, and 5
-        for (int k : kValueSelections) {
-            double precisionAvg = 0;
-            double recallAvg = 0;
-            double accuracyAvg = 0;
-
-            for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<ArrayList<String>> editedSet = Algorithms.EditedKNN(segmentation.dataSets.trainingSets.get(i), segmentation.dataSets.validationSets.get(i), k, false, true);
-                ArrayList<String>result1=Algorithms.KNN(editedSet,segmentation.dataSets.testSets.get(i), k, false, true);;
-                result1 = MathFunction.processConfusionMatrix(result1, segmentation.dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result1.get(0));
-                recallAvg += Double.parseDouble(result1.get(1));
-                accuracyAvg += Double.parseDouble(result1.get(2));
-
-            }
-            System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
-        }
-
-        // test(s) for KMeans
-        // only need to do k = 1 NN because Kmeans should only produce 1 cluster point per class
-
-        // KMeans on abalone
-        double RMSE = 0; // root mean squared error
-        double absError = 0;
-        double precisionAvg = 0;
-        double recallAvg = 0;
-        double accuracyAvg = 0;
-        for (int i = 0; i < numTrainingSets; i++) { // change to numTrainingSets
-            ArrayList<ArrayList<String>> result1 = Algorithms.Kmeans(car.dataSets.trainingSets.get(i), 4); // ~91% of data in 11 out of 29 classes. Using 11 just to save time for now.
-            //result1 = MathFunction.processConfusionMatrix(result1, car.dataSets.testSets.get(i));
-            //precisionAvg += Double.parseDouble(result1.get(0));
-            //recallAvg += Double.parseDouble(result1.get(1));
-            //accuracyAvg += Double.parseDouble(result1.get(2));
-
-            //absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, car.dataSets.testSets.get(i), car.fullSet));
-            //RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, car.dataSets.testSets.get(i), car.fullSet));
-        }
-        System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
-        System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
     }
 }
