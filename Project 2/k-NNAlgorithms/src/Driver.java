@@ -58,11 +58,20 @@ public class Driver {
         // KMeans on abalone
         double RMSE = 0; // root mean squared error
         double absError = 0;
+        double precisionAvg = 0;
+        double recallAvg = 0;
+        double accuracyAvg = 0;
         for (int i = 0; i < numTrainingSets; i++) { // change to numTrainingSets
-            ArrayList<String> result1 = Algorithms.Kmeans(abalone.dataSets.trainingSets.get(i), abalone.dataSets.testSets.get(i), 1, false, true, 11); // ~91% of data in 11 out of 29 classes. Using 11 just to save time for now.
-            absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, abalone.dataSets.testSets.get(i), abalone.fullSet));
-            RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, abalone.dataSets.testSets.get(i), abalone.fullSet));
+            ArrayList<ArrayList<String>> result1 = Algorithms.Kmeans(car.dataSets.trainingSets.get(i), 4); // ~91% of data in 11 out of 29 classes. Using 11 just to save time for now.
+            //result1 = MathFunction.processConfusionMatrix(result1, car.dataSets.testSets.get(i));
+            //precisionAvg += Double.parseDouble(result1.get(0));
+            //recallAvg += Double.parseDouble(result1.get(1));
+            //accuracyAvg += Double.parseDouble(result1.get(2));
+
+            //absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, car.dataSets.testSets.get(i), car.fullSet));
+            //RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, car.dataSets.testSets.get(i), car.fullSet));
         }
+        System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
     }
 }

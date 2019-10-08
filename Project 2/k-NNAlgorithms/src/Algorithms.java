@@ -106,6 +106,9 @@ public class Algorithms {
                 if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))) {
                     editedTrainingData.add(i,samplePoint.get(0));
                 }
+                else{
+                    i--;
+                }
             }
 
             // run the editedTraining set with the validation set
@@ -191,59 +194,34 @@ public class Algorithms {
         return KNN(condensedTrainingData, testingData, k, regression, euclidean);
     }
 
-    public static ArrayList<String> Kmeans (ArrayList<ArrayList<String>>trainingData,
-                                            ArrayList<ArrayList<String>>testingData, int k, boolean regression,
-                                            boolean euclidean, int numClasses){
-
+    public static ArrayList<ArrayList<String>> Kmeans (ArrayList<ArrayList<String>>trainingData, int numClasses){
         // Variables
         ArrayList<ArrayList<String>> clusterCentroids = new ArrayList<>();
         int numFeatures= trainingData.get(0).size() - 1;
-
         // 1) initialize cluster centroids randomly
         for (int i = 0; i < numClasses; i++){ // Number of cluster centroids = number of classes
-            ArrayList<String> centroid = new ArrayList<>();
-            for (int j = 0; j < numFeatures; j++){
-                centroid.add(Double.toString(Math.random()));
-            }
-            centroid.add(Integer.toString(i));
-            clusterCentroids.add(centroid);
+            clusterCentroids.add(MathFunction.randomCentroid(numFeatures));
         }
-
         int preventEndless = 0; // Remove for final code
         while (preventEndless < 50000) { // convert to while (true)
-
             ArrayList<ArrayList<String>> compareSet = new ArrayList<>();
             ArrayList<ArrayList<ArrayList<String>>> clusters = new ArrayList<>();
-
             for (int i = 0; i < numClasses; i++){
                 clusters.add(new ArrayList<>());
             }
-
             // 2) Compare example distances to centroids and assign to appropriate clusters
             for (ArrayList<String> example: trainingData
                  ) {
-
                 List<String> trainingFeatures = example.subList(0, numFeatures);
                 double minDist = Double.MAX_VALUE;
                 int clusterName = -1;
-
                 for (int j = 0; j < numClasses; j++){
-
                     List<String> centroidFeatures = clusterCentroids.get(j).subList(0, numFeatures);
-
-                    if (euclidean) {
-                        double distance = MathFunction.euclideanDistance(trainingFeatures, centroidFeatures);
-                        // Update which cluster point is closest, as found.
-                        if (distance < minDist) {
-                            minDist = distance;
-                            clusterName = j; // grab classification
-                        }
-                    } else {
-                        double distance = MathFunction.hammingDistance(trainingFeatures, centroidFeatures);
-                        if (distance < minDist) {
-                            minDist = distance;
-                            clusterName = j;
-                        }
+                    double distance = MathFunction.euclideanDistance(trainingFeatures, centroidFeatures);
+                    // Update which cluster point is closest, as found.
+                    if (distance < minDist) {
+                        minDist = distance;
+                        clusterName = j; // grab classification
                     }
                 }
                 // check to make sure clusterName is being assigned
@@ -253,22 +231,16 @@ public class Algorithms {
                 else {
                     System.out.println("ERROR: Example not assigned to cluster");
                 }
-
             }
             // 3) update cluster centroid locations
             int centroidNum = 0;
             for (ArrayList<ArrayList<String>> cluster: clusters
                  ) {
-
                 ArrayList<String> updatedCentroid = new ArrayList<>();
-
                 // if a cluster contains no values, reassign values randomly for next pass
                 if (cluster.size() < 1){
-                    for (int j = 0; j < numFeatures; j++){
-                        updatedCentroid.add(Double.toString(Math.random()));
-                    }
-                    updatedCentroid.add(Integer.toString(centroidNum));
-                    compareSet.add(updatedCentroid);
+
+                    compareSet.add(MathFunction.randomCentroid(numFeatures));
                     centroidNum++;
                 }
                 else {
@@ -286,7 +258,6 @@ public class Algorithms {
                     centroidNum++;
                 }
             }
-
             // See if clusterCentroids have changed
             if (compareSet.equals(clusterCentroids)){
                 //convert arbitrary class values to real class values
@@ -318,14 +289,13 @@ public class Algorithms {
                     centroidToUpdate++;
                 }
 
-                return KNN(clusterCentroids, testingData,1, false,true); // call to whatever other function we want.
+                return clusterCentroids;
             }
             else {
                 clusterCentroids = compareSet;
                 preventEndless++;
             }
         }
-        System.out.println("ERROR: Something went wrong");
-        return null; // should never be reached
+        return null;
     }
 }

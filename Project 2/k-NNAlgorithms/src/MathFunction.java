@@ -202,4 +202,13 @@ public class MathFunction {
         sum /= (max - min);
         return String.valueOf((sum));
     }
+
+    public static ArrayList<String> randomCentroid(int numFeatures){
+        ArrayList<String> centroid = new ArrayList<>();
+        for (int i = 0; i < numFeatures; i++){
+            centroid.add(Double.toString(Math.random()));
+        }
+        return centroid;
+    }
+
 }
