@@ -20,6 +20,7 @@ public class Driver {
 
         int kValueSelections[] = {1, 3, 5}; // choose odd values for k to avoid tie-breakers
 
+        /*
         // test loop for regression data
         // use odd k-values 1, 3, and 5
         for (int k : kValueSelections) {
@@ -33,6 +34,7 @@ public class Driver {
 
             System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
         }
+        */
 
         // test loop for classification data
         // use odd k-values 1, 3, and 5
@@ -42,7 +44,7 @@ public class Driver {
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets ; i++) {
-                ArrayList<String> result1 = Algorithms.EditedKNN(segmentation.dataSets.trainingSets.get(i),segmentation.dataSets.testSets.get(i),segmentation.dataSets.validationSets.get(i), k, false,true  );
+                ArrayList<String> result1 = Algorithms.PAM(segmentation.dataSets.trainingSets.get(i),segmentation.dataSets.testSets.get(i), k, false,7  );
                 result1 = MathFunction.processConfusionMatrix(result1,segmentation.dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
                 recallAvg += Double.parseDouble(result1.get(1));
