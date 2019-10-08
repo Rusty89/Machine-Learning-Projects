@@ -26,7 +26,7 @@ public class Data {
         System.out.println("Begin KMeans test");
         runKMeans(regression,euclidean,numClusters);
         System.out.println("End test\n\n");
-        System.out.println("Beging K Medoids PAM test");
+        System.out.println("Begin K Medoids PAM test");
         runKPAM(regression,euclidean,numClusters);
         System.out.println("End test");
     }

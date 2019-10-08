@@ -402,8 +402,8 @@ public class Algorithms {
                 for (Cluster cluster: clusters)
                 {
                     //euclidean distance between point in training data and medoid of the cluster
-                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-2),
-                                      cluster.getMedoid().subList(0, cluster.getMedoid().size()-2));
+                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
+                                      cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
                     if (distance < shortestDistance)
                     {
                         shortestDistance = distance;
