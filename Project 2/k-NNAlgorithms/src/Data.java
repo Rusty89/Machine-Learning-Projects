@@ -152,7 +152,8 @@ public class Data {
 
         if(regression){
             for (int k : kValueSelections) {
-                double RMSE = 0; // root mean squared error
+                // root mean squared error and mean absolute error for 10 fold cross validation
+                double RMSE = 0; 
                 double absError = 0;
                 for (int i = 0; i < numTrainingSets; i++) {
                     ArrayList<String> result1 = Algorithms.KNN(dataSets.trainingSets.get(i), dataSets.testSets.get(i), k, regression, euclidean);
@@ -164,6 +165,7 @@ public class Data {
             }
         }else{
             for (int k : kValueSelections) {
+                // confusion matrix results for 10 fold cross validation
                 double precisionAvg = 0;
                 double recallAvg = 0;
                 double accuracyAvg = 0;
@@ -186,6 +188,7 @@ public class Data {
     public void runEditedKNN(boolean euclidean){
 
         for (int k : kValueSelections) {
+            // confusion matrix results for 10 fold cross validation
             double precisionAvg = 0;
             double recallAvg = 0;
             double accuracyAvg = 0;
@@ -205,18 +208,18 @@ public class Data {
 
     public void runCondensedKNN( boolean euclidean){
         for (int k : kValueSelections) {
-
+            // confusion matrix results for 10 fold cross validation
             double precisionAvg = 0;
             double recallAvg = 0;
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets; i++) {
                 ArrayList<ArrayList<String>> condensedSet = Algorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
-                ArrayList<String>result1=Algorithms.KNN(condensedSet,dataSets.testSets.get(i), k, false, euclidean);
-                result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result1.get(0));
-                recallAvg += Double.parseDouble(result1.get(1));
-                accuracyAvg += Double.parseDouble(result1.get(2));
+                ArrayList<String>result = Algorithms.KNN(condensedSet,dataSets.testSets.get(i), k, false, euclidean);
+                result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
+                precisionAvg += Double.parseDouble(result.get(0));
+                recallAvg += Double.parseDouble(result.get(1));
+                accuracyAvg += Double.parseDouble(result.get(2));
 
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
@@ -225,19 +228,19 @@ public class Data {
 
     public void runKMeans(boolean regression, boolean euclidean, int numClusters){
         if(regression){
-
-            double RMSE = 0; // root mean squared error
+            // root mean squared error and mean absolute error for 10 fold cross validation
+            double RMSE = 0; 
             double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
                 ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
-                ArrayList<String> result1 = Algorithms.KNN(KmeansSet, dataSets.testSets.get(i), 1, regression, euclidean);
-                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
-                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
+                ArrayList<String> result = Algorithms.KNN(KmeansSet, dataSets.testSets.get(i), 1, regression, euclidean);
+                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result, dataSets.testSets.get(i), fullSet));
+                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result, dataSets.testSets.get(i), fullSet));
             }
             System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
 
         }else{
-
+            // confusion matrix results for 10 fold cross validation
             double precisionAvg = 0;
             double recallAvg = 0;
             double accuracyAvg = 0;
@@ -245,7 +248,7 @@ public class Data {
             for (int i = 0; i < numTrainingSets; i++) {
                 ArrayList<ArrayList<String>> condensedSet = Algorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
                 ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(condensedSet, numClusters );
-                ArrayList<String>result1=Algorithms.KNN(KmeansSet,dataSets.testSets.get(i), 1, regression, euclidean);
+                ArrayList<String>result = Algorithms.KNN(KmeansSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
                 recallAvg += Double.parseDouble(result1.get(1));
@@ -259,19 +262,18 @@ public class Data {
 
     public void runKPAM(boolean regression, boolean euclidean, int numClusters){
         if(regression){
-
             double RMSE = 0; // root mean squared error
-            double absError = 0;
+            double absError = 0; // mean absolute error
             for (int i = 0; i < numTrainingSets; i++) {
                 ArrayList<ArrayList<String>> KPAMSet = Algorithms.KMedoidsPAM(dataSets.trainingSets.get(i), euclidean, numClusters );
-                ArrayList<String> result1 = Algorithms.KNN(KPAMSet, dataSets.testSets.get(i), 1, regression, euclidean);
-                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
-                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
+                ArrayList<String> result = Algorithms.KNN(KPAMSet, dataSets.testSets.get(i), 1, regression, euclidean);
+                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result, dataSets.testSets.get(i), fullSet));
+                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result, dataSets.testSets.get(i), fullSet));
             }
             System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
 
         }else{
-
+            // confusion matrix results for 10 fold cross validation
             double precisionAvg = 0;
             double recallAvg = 0;
             double accuracyAvg = 0;
@@ -279,11 +281,11 @@ public class Data {
             for (int i = 0; i < numTrainingSets; i++) {
                 ArrayList<ArrayList<String>> condensedSet = Algorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
                 ArrayList<ArrayList<String>> KPAMSet = Algorithms.KMedoidsPAM(condensedSet,euclidean, numClusters );
-                ArrayList<String>result1=Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
-                result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result1.get(0));
-                recallAvg += Double.parseDouble(result1.get(1));
-                accuracyAvg += Double.parseDouble(result1.get(2));
+                ArrayList<String>result=Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
+                result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
+                precisionAvg += Double.parseDouble(result.get(0));
+                recallAvg += Double.parseDouble(result.get(1));
+                accuracyAvg += Double.parseDouble(result.get(2));
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
