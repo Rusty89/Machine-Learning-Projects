@@ -9,6 +9,27 @@ public class Data {
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();
     private final int numTrainingSets = 10;
+    private final int kValueSelections[] = {1, 3, 5}; // choose odd values for k to avoid tie-breakers
+
+    public void runTests(boolean regression, boolean euclidean, int numClusters){
+        System.out.println("Begin KNN test");
+        runKNN(regression,euclidean);
+        System.out.println("End test\n\n");
+        if(!regression){
+            System.out.println("Begin Condensed KNN test");
+            runCondensedKNN(euclidean);
+            System.out.println("End test\n\n");
+            System.out.println("Begin Edited KNN test");
+            runEditedKNN(euclidean);
+            System.out.println("End test\n\n");
+        }
+        System.out.println("Begin KMeans test");
+        runKMeans(regression,euclidean,numClusters);
+        System.out.println("End test\n\n");
+        System.out.println("Beging K Medoids PAM test");
+        runKPAM(regression,euclidean,numClusters);
+        System.out.println("End test");
+    }
 
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
 
@@ -123,6 +144,10 @@ public class Data {
             }
         }
     }
+
+
+
+
     public void runKNN(boolean regression, boolean euclidean){
 
         if(regression){

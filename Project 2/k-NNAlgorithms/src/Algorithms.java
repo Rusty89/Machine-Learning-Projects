@@ -1,6 +1,11 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.lang.Math;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Algorithms {
 
@@ -68,7 +73,7 @@ public class Algorithms {
 
 
 
-    public static ArrayList<String> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> testingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
 
         int indexOfClassification = trainingData.get(0).size() - 1;
         double currentPrecision = 0;
@@ -101,6 +106,9 @@ public class Algorithms {
                 if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))) {
                     editedTrainingData.add(i,samplePoint.get(0));
                 }
+                else{
+                    i--;
+                }
             }
 
             // run the editedTraining set with the validation set
@@ -122,10 +130,10 @@ public class Algorithms {
 
         }
         // return the set of edited training data just prior to run that saw a decrease in any metric
-        return KNN(finalEditedTrainingData, testingData, k, regression, euclidean);
+        return finalEditedTrainingData;
     }
 
-    public static ArrayList<String> CondensedKNN(ArrayList<ArrayList<String>>trainingData, ArrayList<ArrayList<String>>testingData, int k, boolean regression, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>>trainingData, boolean euclidean) {
 
         //initialize empty set
         ArrayList<ArrayList<String>> condensedTrainingData=new ArrayList<>();
@@ -167,7 +175,6 @@ public class Algorithms {
                     }
 
                     int indexOfMinValue= distanceToAllPoints.indexOf(Collections.min(distanceToAllPoints));
-                    String classOfMinCondensedPoint = condensedTrainingData.get(indexOfMinValue).get(indexOfClassification);
 
                     // add the point to condensed training data if it's classification doesn't equal the classification
                     // of the point that is min distance from it, and it doesn't already exist in condensed
