@@ -67,7 +67,7 @@ public class MathFunction {
         ArrayList<ArrayList<String>> confusionMatrix= new ArrayList<>();
         confusionMatrix.add(new ArrayList<>());
 
-        // generating a list of all unique classes in the training and test sets
+        // TODO: document what is happening here a bit better
         for (int i = 0; i < lengthOfData ; i++) {
             if(!confusionMatrix.get(0).contains(testData.get(i).get(classIndex))) {
                 confusionMatrix.get(0).add(testData.get(i).get(classIndex));
@@ -104,16 +104,13 @@ public class MathFunction {
         double precisionSum=0;
         double recallSum=0;
 
-        // iterating through the confusion matrix 
+        // TODO: document what is happening here
         for (int i = 1; i <confusionMatrix.size(); i++) {
-            // grabbing all positive values from the diagonal
             totalPos += Integer.parseInt(confusionMatrix.get(i).get(i - 1));
-            // grabbing the current true positive from this point for class i
             truePos = Integer.parseInt(confusionMatrix.get(i).get(i - 1));
             for (int j = 0; j < confusionMatrix.get(0).size(); j++) {
-                // false negatives grabbed by row
+
                 falseNeg += Integer.parseInt(confusionMatrix.get(i).get(j));
-                // false positives are grabbed from column
                 falsePos += Integer.parseInt(confusionMatrix.get(j + 1).get(i - 1));
             }
 
@@ -205,38 +202,4 @@ public class MathFunction {
         sum /= (max - min);
         return String.valueOf((sum));
     }
-
-    public static ArrayList<String> randomCentroid(int numFeatures){
-        ArrayList<String> centroid = new ArrayList<>();
-        for (int i = 0; i < numFeatures; i++){
-            centroid.add(Double.toString(Math.random()));
-        }
-        return centroid;
-    }
-
-    public static double distortion(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> clusterMedoids, boolean euclidean){
-        int numMedoids= clusterMedoids.size();
-        int lengthOfFeatures= trainingData.get(0).size()-2;
-        double distortion = 0;
-        for (int i = 0; i <trainingData.size(); i++) {
-            ArrayList<Double> distanceToAllPoints= new ArrayList<>();
-            for (int j = 0; j < numMedoids; j++) {
-
-                // calculate distance between all training data points and a medoid
-                List<String> trainingFeatures = trainingData.get(i).subList(0, lengthOfFeatures);
-                List<String> medoidFeatures = clusterMedoids.get(j).subList(0, lengthOfFeatures);
-
-                // uses euclidean or hamming distance as appropriate for  the data
-                if(euclidean){
-                    distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, medoidFeatures));
-                }else{
-                    distanceToAllPoints.add(MathFunction.hammingDistance(trainingFeatures, medoidFeatures));
-                }
-            }
-            // add min distance to distortion total
-            distortion += Collections.min(distanceToAllPoints);
-        }
-        return distortion;
-    }
-
 }
