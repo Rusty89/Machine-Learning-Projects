@@ -18,22 +18,22 @@ public class AbaloneData extends Data {
         }
 
         for (int i = 0; i < fullSet.size(); i++) {
-            double classification = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
+            double classification = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size() - 1));
             double firstThird = 8;
             double secondThird = 12;
-            int classIndex = fullSet.get(0).size()-1;
+            int classIndex = fullSet.get(0).size() - 1;
             
             // if num rings less than 8, set to class 0, young
-            if(classification<firstThird){
-                fullSet.get(i).set(classIndex,"0");
+            if(classification < firstThird){
+                fullSet.get(i).set(classIndex, "0");
             }
             // if num rings greater than or equal to 8 but less than 12, set to class 1, intermediate
-            else if(classification<secondThird){
-                fullSet.get(i).set(classIndex,"1");
+            else if(classification < secondThird){
+                fullSet.get(i).set(classIndex, "1");
             }
             // if num rings greater than 11, set to class 2, old
             else{
-                fullSet.get(i).set(classIndex,"2");
+                fullSet.get(i).set(classIndex, "2");
             }
         }
     }
