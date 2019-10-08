@@ -10,14 +10,14 @@ public class AbaloneData extends Data {
     }
 
     private void preProcess(){
-        for (int i = 0; i <  fullSet.size(); i++) {
+        for (int i = 0; i < fullSet.size(); i++) {
             /*  remove the first first column of data in the set
                 Male, Female and Infant distances cannot be resolved
                 in a meaningful way */
             fullSet.get(i).remove(0);
         }
 
-        for (int i = 0; i <fullSet.size() ; i++) {
+        for (int i = 0; i < fullSet.size(); i++) {
             double classification = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
             double firstThird = 8;
             double secondThird = 12;
