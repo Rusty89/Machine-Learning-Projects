@@ -1,6 +1,11 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.lang.Math;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Algorithms {
 
@@ -68,7 +73,7 @@ public class Algorithms {
 
 
 
-    public static ArrayList<String> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> testingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
 
         int indexOfClassification = trainingData.get(0).size() - 1;
         double currentPrecision = 0;
@@ -101,6 +106,9 @@ public class Algorithms {
                 if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))) {
                     editedTrainingData.add(i,samplePoint.get(0));
                 }
+                else{
+                    i--;
+                }
             }
 
             // run the editedTraining set with the validation set
@@ -122,10 +130,10 @@ public class Algorithms {
 
         }
         // return the set of edited training data just prior to run that saw a decrease in any metric
-        return KNN(finalEditedTrainingData, testingData, k, regression, euclidean);
+        return finalEditedTrainingData;
     }
 
-    public static ArrayList<String> CondensedKNN(ArrayList<ArrayList<String>>trainingData, ArrayList<ArrayList<String>>testingData, int k, boolean regression, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>>trainingData, boolean euclidean) {
 
         //initialize empty set
         ArrayList<ArrayList<String>> condensedTrainingData=new ArrayList<>();
@@ -167,7 +175,6 @@ public class Algorithms {
                     }
 
                     int indexOfMinValue= distanceToAllPoints.indexOf(Collections.min(distanceToAllPoints));
-                    String classOfMinCondensedPoint = condensedTrainingData.get(indexOfMinValue).get(indexOfClassification);
 
                     // add the point to condensed training data if it's classification doesn't equal the classification
                     // of the point that is min distance from it, and it doesn't already exist in condensed
@@ -183,6 +190,161 @@ public class Algorithms {
                 }
             }
         }
-        return KNN(condensedTrainingData, testingData, k, regression, euclidean);
+        return condensedTrainingData;
+    }
+
+    public static ArrayList<ArrayList<String>> Kmeans (ArrayList<ArrayList<String>>trainingData, int numClasses){
+        // Variables
+        ArrayList<ArrayList<String>> clusterCentroids = new ArrayList<>();
+        int numFeatures= trainingData.get(0).size() - 1;
+        // 1) initialize cluster centroids randomly
+        for (int i = 0; i < numClasses; i++){ // Number of cluster centroids = number of classes
+            clusterCentroids.add(MathFunction.randomCentroid(numFeatures));
+        }
+        int preventEndless = 0; // Remove for final code
+        while (preventEndless < 50000) { // convert to while (true)
+            ArrayList<ArrayList<String>> compareSet = new ArrayList<>();
+            ArrayList<ArrayList<ArrayList<String>>> clusters = new ArrayList<>();
+            for (int i = 0; i < numClasses; i++){
+                clusters.add(new ArrayList<>());
+            }
+            // 2) Compare example distances to centroids and assign to appropriate clusters
+            for (ArrayList<String> example: trainingData
+                 ) {
+                List<String> trainingFeatures = example.subList(0, numFeatures);
+                double minDist = Double.MAX_VALUE;
+                int clusterName = -1;
+                for (int j = 0; j < numClasses; j++){
+                    List<String> centroidFeatures = clusterCentroids.get(j).subList(0, numFeatures);
+                    double distance = MathFunction.euclideanDistance(trainingFeatures, centroidFeatures);
+                    // Update which cluster point is closest, as found.
+                    if (distance < minDist) {
+                        minDist = distance;
+                        clusterName = j; // grab classification
+                    }
+                }
+                // check to make sure clusterName is being assigned
+                if (clusterName >= 0) {
+                    clusters.get(clusterName).add(example);
+                }
+                else {
+                    System.out.println("ERROR: Example not assigned to cluster");
+                }
+            }
+            // 3) update cluster centroid locations
+            int centroidNum = 0;
+            for (ArrayList<ArrayList<String>> cluster: clusters
+                 ) {
+                ArrayList<String> updatedCentroid = new ArrayList<>();
+                // if a cluster contains no values, reassign values randomly for next pass
+                if (cluster.size() < 1){
+
+                    compareSet.add(MathFunction.randomCentroid(numFeatures));
+                    centroidNum++;
+                }
+                else {
+                    for (int i = 0; i < numFeatures; i++) {
+                        double updatedCentroidVal = 0.0;
+                        for (ArrayList<String> example : cluster
+                        ) {
+                            updatedCentroidVal += Double.parseDouble(example.get(i));
+                        }
+                        updatedCentroidVal = updatedCentroidVal / cluster.size(); // mean value for that feature of examples in cluster
+                        updatedCentroid.add(Double.toString(updatedCentroidVal));
+                    }
+                    updatedCentroid.add(Integer.toString(centroidNum));
+                    compareSet.add(updatedCentroid);
+                    centroidNum++;
+                }
+            }
+            // See if clusterCentroids have changed
+            if (compareSet.equals(clusterCentroids)){
+                // convert arbitrary class values to real class values
+                int centroidToUpdate = 0;
+                for (ArrayList<ArrayList<String>> cluster: clusters
+                ) {
+                    Map<String, Integer> classNames = new HashMap<>();
+                    for (ArrayList<String> example : cluster
+                    ) {
+                        String key = example.get(numFeatures);
+                        // Tally up frequencies of classes in clusters (ideally, 100% one class per clusters)
+                        if (classNames.containsKey(key)) {
+                            int freq = classNames.get(key);
+                            freq++;
+                            classNames.put(key, freq);
+                        } else {
+                            classNames.put(key, 1);
+                        }
+                    }
+                    int max = 0;
+                    String res = ""; // class name after found
+                    for (Entry<String, Integer> val : classNames.entrySet()) {
+                        if (max < val.getValue()) {
+                            res = val.getKey();
+                            max = val.getValue();
+                        }
+                    }
+                    clusterCentroids.get(centroidToUpdate).set(numFeatures, res);
+                    centroidToUpdate++;
+                }
+
+                return clusterCentroids;
+            }
+            else {
+                clusterCentroids = compareSet;
+                preventEndless++;
+            }
+        }
+        return null;
+    }
+
+    public static ArrayList<ArrayList<String>> KMedoidsPAM(ArrayList<ArrayList<String>>trainingData,boolean euclidean, int numMedoids){
+
+        ArrayList<ArrayList<String>> clusterMedoids = new ArrayList<>();
+        // initalize random medoids
+        for (int i = 0; i < numMedoids; i++) {
+            int randNum = (int) (Math.random()*trainingData.size());
+            if(clusterMedoids.contains(trainingData.get(randNum))){
+                /* decrement the loop and keep looking for new medoid
+                   if medoid is already in the set */
+                i--;
+            }else{
+                //add new random medoid to set
+                clusterMedoids.add(trainingData.get(randNum));
+            }
+        }
+        boolean medoidsChange = true;
+        while(medoidsChange){
+            ArrayList<ArrayList<String>> prevMedoids = (ArrayList<ArrayList<String>>) clusterMedoids.clone();
+
+            double distortion = 0;
+            // caluclate distortion
+            distortion = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
+
+            for (int i = 0; i < numMedoids; i++) {
+                for (int j = 0; j < trainingData.size(); j++) {
+                    // if point is not contained in cluster medoids
+                    if(!clusterMedoids.contains(trainingData.get(j))){
+                        // swap each medoid point with each point in the training data
+                        ArrayList<String> temp = (ArrayList<String>) clusterMedoids.get(i).clone();
+                        clusterMedoids.set(i, trainingData.get(j));
+                        double distortionNew = 0;
+                        // calculate new distortion with swapped medoid
+                        distortionNew = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
+                        // swap back if distortion increased by swapping medoid
+                        if(distortionNew > distortion){
+                            clusterMedoids.set(i,temp);
+                        }else{
+                            distortion = distortionNew;
+                        }
+                    }
+                }
+            }
+            // if medoids change, this will be true
+            medoidsChange = !clusterMedoids.equals(prevMedoids);
+
+        }
+
+        return clusterMedoids;
     }
 }
