@@ -15,7 +15,7 @@ public class Algorithms {
         // variables to hold sizes of things
         int lengthOfTrainingSet = trainingData.size();
         int lengthOfTestingSet = testingData.size();
-        int lengthOfFeatures = trainingData.get(0).size() - 2;
+        int lengthOfFeatures = trainingData.get(0).size() - 1;
         int classIndex = trainingData.get(0).size() - 1;
         ArrayList<String> results = new ArrayList<String>();
 
@@ -135,9 +135,9 @@ public class Algorithms {
 
     public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>>trainingData, boolean euclidean) {
 
-        //initialize empty set
+        // initialize empty set
         ArrayList<ArrayList<String>> condensedTrainingData=new ArrayList<>();
-        int currSizeOfCondensed = -1;
+        int currSizeOfCondensed = - 1;
         int indexOfClassification = trainingData.get(0).size() - 1;
         int lengthOfFeatures = trainingData.get(0).size() - 2;
 
@@ -332,7 +332,7 @@ public class Algorithms {
                    if medoid is already in the set */
                 i--;
             }else{
-                //add new random medoid to set
+                // add new random medoid to set
                 clusterMedoids.add(trainingData.get(randNum));
             }
         }
@@ -370,4 +370,89 @@ public class Algorithms {
 
         return clusterMedoids;
     }
+   
+    public static ArrayList<ArrayList<String>> PAM (ArrayList<ArrayList<String>> trainingData, int totalClasses)
+	{
+        ArrayList<ArrayList<String>> medoids = new ArrayList<>();
+        ArrayList<Cluster> clusters = new ArrayList<>();
+
+        // pick one random point per class to center each cluster around
+        int counter = 0;
+        while (counter < totalClasses)
+        {
+            int index = (int)(Math.random()*totalClasses);
+            if (!medoids.contains(trainingData.get(index)))    // if we haven't already added the point
+            {
+                medoids.add(trainingData.get(index));
+                clusters.add(new Cluster(trainingData.get(index)));
+                counter++;
+            }
+        }
+
+        // loop until there is no change in medoids
+        while (true)
+        {
+            // add each point in the training data to one of the clusters
+            for (ArrayList<String> point: trainingData)
+            {
+                double shortestDistance = Double.MAX_VALUE;
+                Cluster closestCluster = null;
+
+                // find which cluster the point should belong to
+                for (Cluster cluster: clusters)
+                {
+                    // euclidean distance between point in training data and medoid of the cluster
+                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
+                                      cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        closestCluster = cluster;
+                    }
+                }
+                // after going through every cluster, add the point to the one with the nearest medoid
+                closestCluster.points.add(point);
+            }
+
+            // all points are now assigned to a cluster
+            // calculate the center of each cluster
+            for (Cluster cluster: clusters)
+            {
+                ArrayList<String> average = cluster.getAverage();
+                double shortestDistance = Double.MAX_VALUE;
+                ArrayList<String> closestPoint = null;
+
+                // find the point closest to the average and set it as the new medoid
+                for (ArrayList<String> point: cluster.points)
+                {
+                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1), average);
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        closestPoint = point;
+                    }
+                }
+                cluster.setMedoid(closestPoint);
+            }
+            // break out of the loop if all clusters have the same medoid as they did last time
+            boolean anyMoved = false;
+            for (Cluster cluster: clusters)
+            {
+                cluster.points.clear();     // clear the list of assigned points for the next iteration
+                if (cluster.medoidMoved())
+                    anyMoved = true;
+            }
+            if (!anyMoved)  // if none moved
+                break;
+        }
+
+        // make a new ArrayList of just the medoid from each cluster
+        medoids.clear();
+        for (Cluster cluster: clusters)
+            medoids.add(cluster.getMedoid());
+
+        // send it off to KNN as the only training data and return the result
+        return medoids;
+	}
 }
+

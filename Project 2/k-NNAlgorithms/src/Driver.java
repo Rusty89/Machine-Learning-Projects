@@ -38,6 +38,5 @@ public class Driver {
 
         System.out.println("\nBegin White Wine tests:");
         whiteWine.runTests(true,true,10);
-
     }
 }
