@@ -42,7 +42,8 @@ public class Driver {
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<String> result1 = Algorithms.EditedKNN(segmentation.dataSets.trainingSets.get(i), segmentation.dataSets.testSets.get(i), segmentation.dataSets.validationSets.get(i), k, false, true);
+                ArrayList<ArrayList<String>> editedSet = Algorithms.EditedKNN(segmentation.dataSets.trainingSets.get(i), segmentation.dataSets.validationSets.get(i), k, false, true);
+                ArrayList<String>result1=Algorithms.KNN(editedSet,segmentation.dataSets.testSets.get(i), k, false, true);;
                 result1 = MathFunction.processConfusionMatrix(result1, segmentation.dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
                 recallAvg += Double.parseDouble(result1.get(1));

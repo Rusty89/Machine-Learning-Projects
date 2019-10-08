@@ -21,15 +21,15 @@ public class AbaloneData extends Data {
             Double classification = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size()-1));
             //if num rings less than 10, set to class 0, young
             if(classification<10){
-                fullSet.get(i).set(i,"0");
+                fullSet.get(i).set(fullSet.get(0).size()-1,"0");
             }
             //if num rings greater than or equal to 10 but less than 20, set to class 1, intermediate
             else if(classification<20){
-                fullSet.get(i).set(i,"1");
+                fullSet.get(i).set(fullSet.get(0).size()-1,"1");
             }
             //if num rings greater than 20, set to class 2, old
             else{
-                fullSet.get(i).set(i,"2");
+                fullSet.get(i).set(fullSet.get(0).size()-1,"2");
             }
         }
     }
