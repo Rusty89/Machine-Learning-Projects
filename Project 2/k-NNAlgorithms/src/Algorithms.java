@@ -371,8 +371,7 @@ public class Algorithms {
         return clusterMedoids;
     }
    
-    public static ArrayList<String> PAM (ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> testingData,
-                                         int k, boolean regression, int totalClasses)
+    public static ArrayList<ArrayList<String>> PAM (ArrayList<ArrayList<String>> trainingData, int totalClasses)
 	{
         ArrayList<ArrayList<String>> medoids = new ArrayList<>();
         ArrayList<Cluster> clusters = new ArrayList<>();
@@ -453,7 +452,7 @@ public class Algorithms {
             medoids.add(cluster.getMedoid());
 
         //send it off to KNN as the only training data and return the result
-        return KNN(medoids, testingData, k, regression, true);
+        return medoids;
 	}
 }
 
