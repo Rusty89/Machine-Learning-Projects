@@ -98,7 +98,10 @@ public class Algorithms {
 
                 ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();
                 samplePoint.add(editedTrainingData.get(i));
-                editedTrainingData.remove(editedTrainingData.get(i));
+                //prevent error if removing last point from the edited data
+                if(editedTrainingData.size() > 1){
+                    editedTrainingData.remove(editedTrainingData.get(i));
+                }
 
                 ArrayList<String> classification = KNN(editedTrainingData,samplePoint, k, regression,euclidean);
 
@@ -126,7 +129,7 @@ public class Algorithms {
             currentAccuracy = Double.parseDouble(results.get(2));
 
             // check if an improvement occured in all of the three categories.
-            improvementOccurred = (currentAccuracy > prevAccuracy && currentPrecision > prevPrecision && currentRecall > prevRecall);
+            improvementOccurred = (currentAccuracy > prevAccuracy || currentPrecision > prevPrecision || currentRecall > prevRecall);
 
         }
         // return the set of edited training data just prior to run that saw a decrease in any metric
