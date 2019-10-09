@@ -278,6 +278,16 @@ public class Algorithms {
             }
             // See if clusterCentroids have changed
             if (compareSet.equals(clusterCentroids)){
+                // remove any centroid that has no related cluster in final set
+                for (int i = 0; i < numClasses; i++){
+                    if (clusters.get(i).size() < 1){
+                        clusters.remove(i);
+                        clusterCentroids.remove(i);
+                        numClasses--;
+                        i--; // to repeat on index
+                    }
+                }
+
                 // convert arbitrary class values to real class values
                 int centroidToUpdate = 0;
 
