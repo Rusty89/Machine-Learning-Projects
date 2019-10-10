@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -371,7 +370,7 @@ public class Algorithms {
         return clusterMedoids;
     }
    
-    public static ArrayList<ArrayList<String>> PAM (ArrayList<ArrayList<String>> trainingData, int totalClasses)
+    public static ArrayList<ArrayList<String>> AlternativePAM (ArrayList<ArrayList<String>> trainingData, int totalClasses)
 	{
         ArrayList<ArrayList<String>> medoids = new ArrayList<>();
         ArrayList<Cluster> clusters = new ArrayList<>();
@@ -451,7 +450,7 @@ public class Algorithms {
         for (Cluster cluster: clusters)
             medoids.add(cluster.getMedoid());
 
-        // send it off to KNN as the only training data and return the result
+        // return the medoids. KNN will be called using them inside the Driver.
         return medoids;
 	}
 }

@@ -1,4 +1,9 @@
 import java.util.ArrayList;
+/*
+This object is currently only used by Algorithms.AlternativePAM, but
+could prove beneficial to use in our other algorithms as well,
+especially KMedoidsPAM!
+*/
 
 public class Cluster
 {
