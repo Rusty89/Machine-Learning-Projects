@@ -16,7 +16,7 @@ public class Data {
     private ArrayList<ArrayList<ArrayList<String>>> editedSets = new ArrayList<>();
     private ArrayList<ArrayList<ArrayList<String>>> condensedSets = new ArrayList<>();
 
-    public void runTests(boolean regression, boolean euclidean, int numClusters, String dataName) throws IOException {
+    public void runTests(boolean regression, boolean euclidean, String dataName) throws IOException {
 
         FileWriter filer = new FileWriter(dataName + " results.txt");
         printer = new PrintWriter(filer);
@@ -39,12 +39,12 @@ public class Data {
         }
         System.out.println("Begin KMeans test");
         printer.println("Begin KMeans test");
-        runKMeans(regression,euclidean, numClusters);
+        runKMeans(regression,euclidean);
         System.out.println("End test\n\n");
         printer.println("End test\n\n");
         System.out.println("Begin K Medoids PAM test");
         printer.println("Begin K Medoids PAM test");
-        runKPAM(regression,euclidean, numClusters);
+        runKPAM(regression,euclidean);
         System.out.println("End test");
         printer.println("End test");
         printer.close();
@@ -54,7 +54,7 @@ public class Data {
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
 
         Scanner sc = new Scanner(inputFile); // read in input file as an array list
-        int maxCount = 400; // max number of lines of data, to keep test manageable
+        int maxCount = 100; // max number of lines of data, to keep test manageable
 
         while (sc.hasNextLine()){
             ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;
@@ -250,12 +250,13 @@ public class Data {
         }
     }
 
-    public void runKMeans(boolean regression, boolean euclidean, int numClusters){
+    public void runKMeans(boolean regression, boolean euclidean){
         if(regression){
 
             double RMSE = 0; // root mean squared error
             double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
+                int numClusters = dataSets.trainingSets.size() / 4;
                 ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String> result1 = Algorithms.KNN(KmeansSet, dataSets.testSets.get(i), 1, regression, euclidean);
                 absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
@@ -271,7 +272,8 @@ public class Data {
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(condensedSets.get(i), numClusters );
+                int numClusters = editedSets.get(i).size();
+                ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1 = Algorithms.KNN(KmeansSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
@@ -285,12 +287,13 @@ public class Data {
 
     }
 
-    public void runKPAM(boolean regression, boolean euclidean, int numClusters){
+    public void runKPAM(boolean regression, boolean euclidean){
         if(regression){
 
             double RMSE = 0; // root mean squared error
             double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
+                int numClusters = dataSets.trainingSets.size() / 4;
                 ArrayList<ArrayList<String>> KPAMSet = Algorithms.PAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String> result1 = Algorithms.KNN(KPAMSet, dataSets.testSets.get(i), 1, regression, euclidean);
                 absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
@@ -306,7 +309,8 @@ public class Data {
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<ArrayList<String>> KPAMSet = Algorithms.PAM(condensedSets.get(i), numClusters );
+                int numClusters = editedSets.get(i).size();
+                ArrayList<ArrayList<String>> KPAMSet = Algorithms.PAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1=Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));

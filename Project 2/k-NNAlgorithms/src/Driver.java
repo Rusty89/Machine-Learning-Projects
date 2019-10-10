@@ -19,24 +19,24 @@ public class Driver {
         Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
 
         System.out.println("\nBegin Car tests:");
-        car.runTests(false,false,5, "Car");
+        car.runTests(false,false, "Car");
 
         System.out.println("\nBegin Abalone tests:");
-        abalone.runTests(false,true, 3,"Abalone");
+        abalone.runTests(false,true,"Abalone");
 
         System.out.println("\nBegin Segmentation tests:");
-        segmentation.runTests(false,true, 7,"Segmentation");
+        segmentation.runTests(false,true,"Segmentation");
 
         System.out.println("\nBegin Forest Fire tests:");
-        forestFire.runTests(true,true,10, "ForestFire");
+        forestFire.runTests(true,true, "ForestFire");
 
         System.out.println("\nBegin Machine HW tests:");
-        machine.runTests(true,true,10, "MachineData");
+        machine.runTests(true,true,"MachineData");
 
         System.out.println("\nBegin Red Wine tests:");
-        redWine.runTests(true,true,10, "RedWine");
+        redWine.runTests(true,true,"RedWine");
 
         System.out.println("\nBegin White Wine tests:");
-        whiteWine.runTests(true,true, 10,"WhiteWine");
+        whiteWine.runTests(true,true, "WhiteWine");
     }
 }
