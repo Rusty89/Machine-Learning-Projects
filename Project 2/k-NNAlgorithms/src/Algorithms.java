@@ -424,7 +424,7 @@ public class Algorithms {
                 for (Cluster cluster: clusters)
                 {
                     // euclidean distance between point in training data and medoid of the cluster
-                    if(!cluster.getMedoid().equals(null)){
+                    try{
                         double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
                                 cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
                         if (distance < shortestDistance)
@@ -432,10 +432,9 @@ public class Algorithms {
                             shortestDistance = distance;
                             closestCluster = cluster;
                         }
+                    }catch(Exception e){
+
                     }
-
-
-
                 }
                 /* after going through every cluster, add the point to the one with the nearest medoid
                     making sure that point doesn't already exist within the cluster */
