@@ -53,7 +53,7 @@ public class Data {
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
 
         Scanner sc = new Scanner(inputFile); // read in input file as an array list
-        int maxCount = 100000; // max number of lines of data, to keep test manageable
+        int maxCount = 500; // max number of lines of data, to keep test manageable
 
         while (sc.hasNextLine()){
             ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;

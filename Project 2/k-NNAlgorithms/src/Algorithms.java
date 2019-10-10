@@ -279,6 +279,17 @@ public class Algorithms {
                     centroidNum++;
                 }
             }
+
+            /* if a cluster centroid has no points, remove it and reduce the
+                number of clusters */
+            for (int i = 0; i < clusters.size() ; i++) {
+                if(clusters.get(i).size()==0){
+                    clusters.remove(i);
+                    i--;
+                    numClasses--;
+                }
+            }
+
             // See if clusterCentroids have changed
             if (compareSet.equals(clusterCentroids)){
                 // remove any centroid that has no related cluster in final set
@@ -414,6 +425,7 @@ public class Algorithms {
                 // find which cluster the point should belong to
                 for (Cluster cluster: clusters)
                 {
+
                     // euclidean distance between point in training data and medoid of the cluster
                     double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
                                       cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
