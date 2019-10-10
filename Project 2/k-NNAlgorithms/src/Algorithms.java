@@ -433,8 +433,11 @@ public class Algorithms {
                             closestCluster = cluster;
                         }
                     }catch(Exception e){
-
+                        // something must have been bad about this cluster for this error to occur
+                        System.out.println(cluster);
+                        clusters.remove(cluster);
                     }
+
                 }
                 /* after going through every cluster, add the point to the one with the nearest medoid
                     making sure that point doesn't already exist within the cluster */
