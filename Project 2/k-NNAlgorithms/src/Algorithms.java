@@ -97,7 +97,10 @@ public class Algorithms {
 
                 ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();
                 samplePoint.add(editedTrainingData.get(i));
-                editedTrainingData.remove(editedTrainingData.get(i));
+                //prevent error if removing last point from the edited data
+                if(editedTrainingData.size() > 1){
+                    editedTrainingData.remove(editedTrainingData.get(i));
+                }
 
                 ArrayList<String> classification = KNN(editedTrainingData,samplePoint, k, regression,euclidean);
 
@@ -125,7 +128,7 @@ public class Algorithms {
             currentAccuracy = Double.parseDouble(results.get(2));
 
             // check if an improvement occured in all of the three categories.
-            improvementOccurred = (currentAccuracy > prevAccuracy && currentPrecision > prevPrecision && currentRecall > prevRecall);
+            improvementOccurred = (currentAccuracy > prevAccuracy || currentPrecision > prevPrecision || currentRecall > prevRecall);
 
         }
         // return the set of edited training data just prior to run that saw a decrease in any metric
@@ -248,14 +251,12 @@ public class Algorithms {
             // 3) update cluster centroid locations
             int centroidNum = 0; // keep track of which centroid we're working with
 
-            for (ArrayList<ArrayList<String>> cluster: clusters
-            ) {
+            for (ArrayList<ArrayList<String>> cluster: clusters) {
                 ArrayList<String> updatedCentroid = new ArrayList<>();
 
                 // if a cluster contains no examples, reassign location of the related centroid to a random alternative centroid location
                 if (cluster.size() < 1){
-                    compareSet.add(clusterCentroids.get((int)(Math.random() * numClasses)));
-                    centroidNum++;
+                    continue;
                 }
                 // for clusters with examples (common)
                 else {
@@ -275,8 +276,29 @@ public class Algorithms {
                     centroidNum++;
                 }
             }
+
+            // remove any centroid that has no related cluster in final set
+            for (int i = 0; i < numClasses; i++){
+                if (clusters.get(i).size() < 1){
+                    clusters.remove(i);
+                    clusterCentroids.remove(i);
+                    numClasses--;
+                    i--; // to repeat on index
+                }
+            }
+
             // See if clusterCentroids have changed
             if (compareSet.equals(clusterCentroids)){
+                // remove any centroid that has no related cluster in final set
+                for (int i = 0; i < numClasses; i++){
+                    if (clusters.get(i).size() < 1){
+                        clusters.remove(i);
+                        clusterCentroids.remove(i);
+                        numClasses--;
+                        i--; // to repeat on index
+                    }
+                }
+
                 // convert arbitrary class values to real class values
                 int centroidToUpdate = 0;
 
@@ -401,16 +423,27 @@ public class Algorithms {
                 for (Cluster cluster: clusters)
                 {
                     // euclidean distance between point in training data and medoid of the cluster
-                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
-                                      cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        closestCluster = cluster;
+                    try{
+                        double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
+                                cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
+                        if (distance < shortestDistance)
+                        {
+                            shortestDistance = distance;
+                            closestCluster = cluster;
+                        }
+                    }catch(Exception e){
+                        // something must have been bad about this cluster for this error to occur
+                        System.out.println(cluster);
+                        clusters.remove(cluster);
                     }
+
                 }
-                // after going through every cluster, add the point to the one with the nearest medoid
-                closestCluster.points.add(point);
+                /* after going through every cluster, add the point to the one with the nearest medoid
+                    making sure that point doesn't already exist within the cluster */
+                if(!closestCluster.points.contains(point)){
+                    closestCluster.points.add(point);
+                }
+
             }
 
             // all points are now assigned to a cluster
@@ -431,7 +464,9 @@ public class Algorithms {
                         closestPoint = point;
                     }
                 }
+
                 cluster.setMedoid(closestPoint);
+
             }
             // break out of the loop if all clusters have the same medoid as they did last time
             boolean anyMoved = false;

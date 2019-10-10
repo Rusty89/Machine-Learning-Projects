@@ -1,40 +1,60 @@
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Scanner;
 
 public class Data {
-
+    private static PrintWriter printer;
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();
     private final int numTrainingSets = 10;
     private final int kValueSelections[] = {1, 3, 5}; // choose odd values for k to avoid tie-breakers
+    private ArrayList<ArrayList<ArrayList<String>>> editedSets = new ArrayList<>();
+    private ArrayList<ArrayList<ArrayList<String>>> condensedSets = new ArrayList<>();
 
-    public void runTests(boolean regression, boolean euclidean, int numClusters){
+    public void runTests(boolean regression, boolean euclidean, String dataName) throws IOException {
+
+        FileWriter filer = new FileWriter(dataName + " results.txt");
+        printer = new PrintWriter(filer);
         System.out.println("Begin KNN test");
+        printer.println("Begin KNN test");
         runKNN(regression,euclidean);
         System.out.println("End test\n\n");
+        printer.println("End test\n\n");
         if(!regression){
             System.out.println("Begin Condensed KNN test");
+            printer.println("Begin Condensed KNN test");
             runCondensedKNN(euclidean);
             System.out.println("End test\n\n");
+            printer.println("End test\n\n");
             System.out.println("Begin Edited KNN test");
+            printer.println("Begin Edited KNN test");
             runEditedKNN(euclidean);
             System.out.println("End test\n\n");
+            printer.println("End test\n\n");
         }
         System.out.println("Begin KMeans test");
-        runKMeans(regression,euclidean,numClusters);
+        printer.println("Begin KMeans test");
+        runKMeans(regression,euclidean);
         System.out.println("End test\n\n");
+        printer.println("End test\n\n");
         System.out.println("Begin K Medoids PAM test");
-        runKPAM(regression,euclidean,numClusters);
+        printer.println("Begin K Medoids PAM test");
+        runKPAM(regression,euclidean);
         System.out.println("End test");
+        printer.println("End test");
+        printer.close();
+        filer.close();
     }
 
     public void fileTo2dStringArrayList(File inputFile) throws Exception{
 
         Scanner sc = new Scanner(inputFile); // read in input file as an array list
-        int maxCount = 250; // max number of lines of data, to keep test manageable
+        int maxCount = 100; // max number of lines of data, to keep test manageable
 
         while (sc.hasNextLine()){
             ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;
@@ -161,6 +181,7 @@ public class Data {
                 }
 
                 System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
+                printer.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
             }
         }else{
             for (int k : kValueSelections) {
@@ -177,6 +198,7 @@ public class Data {
 
                 }
                 System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
+                printer.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
             }
         }
 
@@ -198,8 +220,12 @@ public class Data {
                 recallAvg += Double.parseDouble(result.get(1));
                 accuracyAvg += Double.parseDouble(result.get(2));
 
+
+                editedSets.add(editedSet);
+
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
+            printer.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
     }
 
@@ -217,24 +243,27 @@ public class Data {
                 precisionAvg += Double.parseDouble(result1.get(0));
                 recallAvg += Double.parseDouble(result1.get(1));
                 accuracyAvg += Double.parseDouble(result1.get(2));
-
+                condensedSets.add(condensedSet);
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
+            printer.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
     }
 
-    public void runKMeans(boolean regression, boolean euclidean, int numClusters){
+    public void runKMeans(boolean regression, boolean euclidean){
         if(regression){
 
             double RMSE = 0; // root mean squared error
             double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
+                int numClusters = dataSets.trainingSets.size() / 4;
                 ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String> result1 = Algorithms.KNN(KmeansSet, dataSets.testSets.get(i), 1, regression, euclidean);
                 absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
                 RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
             }
             System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
+            printer.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
 
         }else{
 
@@ -243,12 +272,8 @@ public class Data {
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<ArrayList<String>> condensedSet = Algorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
-                if (condensedSet.size() <= numClusters){
-                    numClusters = condensedSet.size();
-                    System.out.println(numClusters);
-                }
-                ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(condensedSet, numClusters );
+                int numClusters = editedSets.get(i).size();
+                ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1 = Algorithms.KNN(KmeansSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
@@ -256,23 +281,26 @@ public class Data {
                 accuracyAvg += Double.parseDouble(result1.get(2));
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
+            printer.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
 
 
     }
 
-    public void runKPAM(boolean regression, boolean euclidean, int numClusters){
+    public void runKPAM(boolean regression, boolean euclidean){
         if(regression){
 
             double RMSE = 0; // root mean squared error
             double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
+                int numClusters = dataSets.trainingSets.size() / 4;
                 ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String> result1 = Algorithms.KNN(KPAMSet, dataSets.testSets.get(i), 1, regression, euclidean);
                 absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
                 RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
             }
             System.out.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
+            printer.println("Mean Absolute error is : " + absError / 10 + "  Root Mean Squared Error : " + RMSE / 10);
 
         }else{
 
@@ -281,8 +309,8 @@ public class Data {
             double accuracyAvg = 0;
 
             for (int i = 0; i < numTrainingSets; i++) {
-                ArrayList<ArrayList<String>> condensedSet = Algorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
-                ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(condensedSet, numClusters );
+                int numClusters = editedSets.get(i).size();
+                ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1=Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
@@ -290,6 +318,7 @@ public class Data {
                 accuracyAvg += Double.parseDouble(result1.get(2));
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
+            printer.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
         }
 
 
