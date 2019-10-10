@@ -14,6 +14,7 @@ public class Data {
     private final int numTrainingSets = 10;
     private final int kValueSelections[] = {1, 3, 5}; // choose odd values for k to avoid tie-breakers
     private ArrayList<ArrayList<ArrayList<String>>> editedSets = new ArrayList<>();
+    private ArrayList<ArrayList<ArrayList<String>>> condensedSets = new ArrayList<>();
 
     public void runTests(boolean regression, boolean euclidean, String dataName) throws IOException {
 
@@ -242,7 +243,7 @@ public class Data {
                 precisionAvg += Double.parseDouble(result1.get(0));
                 recallAvg += Double.parseDouble(result1.get(1));
                 accuracyAvg += Double.parseDouble(result1.get(2));
-
+                condensedSets.add(condensedSet);
             }
             System.out.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
             printer.println("Precision is: " + precisionAvg / 10 + " Recall is:" + recallAvg / 10 + " Accuracy is: " + accuracyAvg / 10);
@@ -273,7 +274,7 @@ public class Data {
 
             for (int i = 0; i < numTrainingSets; i++) {
                 // use the size of the edited set as the number of clusters
-                int numClusters = editedSets.get(i).size();
+                int numClusters = condensedSets.get(i).size();
                 ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1 = Algorithms.KNN(KmeansSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
@@ -312,7 +313,7 @@ public class Data {
 
             for (int i = 0; i < numTrainingSets; i++) {
                 // use the size of the edited set as the number of clusters
-                int numClusters = editedSets.get(i).size();
+                int numClusters = condensedSets.get(i).size();
                 ArrayList<ArrayList<String>> KPAMSet = Algorithms.PAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1=Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));

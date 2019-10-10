@@ -252,8 +252,7 @@ public class Algorithms {
             // 3) update cluster centroid locations
             int centroidNum = 0; // keep track of which centroid we're working with
 
-            for (ArrayList<ArrayList<String>> cluster: clusters
-            ) {
+            for (ArrayList<ArrayList<String>> cluster: clusters) {
                 ArrayList<String> updatedCentroid = new ArrayList<>();
 
                 // if a cluster contains no examples, reassign location of the related centroid to a random alternative centroid location
@@ -280,13 +279,13 @@ public class Algorithms {
                 }
             }
 
-            /* if a cluster centroid has no points, remove it and reduce the
-                number of clusters */
-            for (int i = 0; i < clusters.size() ; i++) {
-                if(clusters.get(i).size()==0){
+            // remove any centroid that has no related cluster in final set
+            for (int i = 0; i < numClasses; i++){
+                if (clusters.get(i).size() < 1){
                     clusters.remove(i);
-                    i--;
+                    clusterCentroids.remove(i);
                     numClasses--;
+                    i--; // to repeat on index
                 }
             }
 
@@ -425,18 +424,26 @@ public class Algorithms {
                 // find which cluster the point should belong to
                 for (Cluster cluster: clusters)
                 {
-
                     // euclidean distance between point in training data and medoid of the cluster
-                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
-                                      cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
-                    if (distance < shortestDistance)
-                    {
-                        shortestDistance = distance;
-                        closestCluster = cluster;
+                    if(!cluster.getMedoid().equals(null)){
+                        double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
+                                cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
+                        if (distance < shortestDistance)
+                        {
+                            shortestDistance = distance;
+                            closestCluster = cluster;
+                        }
                     }
+
+
+
                 }
-                // after going through every cluster, add the point to the one with the nearest medoid
-                closestCluster.points.add(point);
+                /* after going through every cluster, add the point to the one with the nearest medoid
+                    making sure that point doesn't already exist within the cluster */
+                if(!closestCluster.points.contains(point)){
+                    closestCluster.points.add(point);
+                }
+
             }
 
             // all points are now assigned to a cluster
@@ -457,7 +464,9 @@ public class Algorithms {
                         closestPoint = point;
                     }
                 }
+
                 cluster.setMedoid(closestPoint);
+
             }
             // break out of the loop if all clusters have the same medoid as they did last time
             boolean anyMoved = false;
