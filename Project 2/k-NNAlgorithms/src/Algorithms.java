@@ -257,8 +257,7 @@ public class Algorithms {
 
                 // if a cluster contains no examples, reassign location of the related centroid to a random alternative centroid location
                 if (cluster.size() < 1){
-                    compareSet.add(clusterCentroids.get((int)(Math.random() * numClasses)));
-                    centroidNum++;
+                    continue;
                 }
                 // for clusters with examples (common)
                 else {
