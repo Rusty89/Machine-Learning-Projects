@@ -14,6 +14,15 @@ public class MathFunction {
             // summation of (x1i-x2i)^2, euclidean distance
             result += Math.pow((x - y), 2);
         }
+
+        // prevent returning bad values
+        if(Double.isInfinite(result)){
+            result=Double.MAX_VALUE;
+        }
+        if(Double.isNaN(result)){
+            result=Double.MAX_VALUE;
+        }
+
         return result;
     }
 
@@ -28,6 +37,14 @@ public class MathFunction {
             if(!distanceIsZero){
                 result++;
             }
+        }
+
+        // prevent returning bad values
+        if(Double.isInfinite(result)){
+            result=Double.MAX_VALUE;
+        }
+        if(Double.isNaN(result)){
+            result=Double.MAX_VALUE;
         }
         return result;
     }
