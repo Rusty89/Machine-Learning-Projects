@@ -294,7 +294,7 @@ public class Data {
             double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
                 int numClusters = dataSets.trainingSets.size() / 4;
-                ArrayList<ArrayList<String>> KPAMSet = Algorithms.PAM(dataSets.trainingSets.get(i), numClusters );
+                ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String> result1 = Algorithms.KNN(KPAMSet, dataSets.testSets.get(i), 1, regression, euclidean);
                 absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
                 RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
@@ -310,7 +310,7 @@ public class Data {
 
             for (int i = 0; i < numTrainingSets; i++) {
                 int numClusters = editedSets.get(i).size();
-                ArrayList<ArrayList<String>> KPAMSet = Algorithms.PAM(dataSets.trainingSets.get(i), numClusters );
+                ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters );
                 ArrayList<String>result1=Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
                 result1 = MathFunction.processConfusionMatrix(result1, dataSets.testSets.get(i));
                 precisionAvg += Double.parseDouble(result1.get(0));
