@@ -2,9 +2,12 @@ import java.util.*;
 
 public class MathFunction {
 
+    // calculates euclidean distance defined by (x1 - x2)^2
     public static double euclideanDistance(List<String> X1Vector, List<String> X2Vector){
         double result = 0;
         int sizeOfX1andX2 = X1Vector.size();
+
+        // iterates through the length of the passed in vector
         for (int i = 0; i < sizeOfX1andX2; i++) {
 
             // sqrt not used as it won't effect the result, but will cost computing time
@@ -17,10 +20,10 @@ public class MathFunction {
 
         // prevent returning bad values
         if(Double.isInfinite(result)){
-            result=Double.MAX_VALUE;
+            result = Double.MAX_VALUE;
         }
         if(Double.isNaN(result)){
-            result=Double.MAX_VALUE;
+            result = Double.MAX_VALUE;
         }
 
         return result;
@@ -29,6 +32,8 @@ public class MathFunction {
     // calculates hamming distance between two points
     public static double hammingDistance(List<String> point1, List<String> point2){
         double result = 0;
+
+        // iterates over the point vector
         for (int i = 0; i < point1.size(); i++) {
 
             boolean distanceIsZero = point1.get(i).equals(point2.get(i));
@@ -41,29 +46,36 @@ public class MathFunction {
 
         // prevent returning bad values
         if(Double.isInfinite(result)){
-            result=Double.MAX_VALUE;
+            result = Double.MAX_VALUE;
         }
         if(Double.isNaN(result)){
-            result=Double.MAX_VALUE;
+            result = Double.MAX_VALUE;
         }
         return result;
     }
 
-
+    // calculates the average of inputted data points
     public static String average(ArrayList<String> input) {
         double sum = 0;
+
+        // sums over all data points
         for (int i = 0; i < input.size(); i++) {
             sum += Double.parseDouble(input.get(i));
         }
-        sum /= input.size();
+        sum /= input.size(); // divides by number of data points to get mean
+
         return String.valueOf(sum);
     }
 
+    // calculates the mode: the value which occurs the most
     public static String mode(ArrayList<String> input) {
         String mode = "";
         int maxIndex = 0;
         int currMax = 0;
+
+        // iterates over each data point and determines value
         for (int i = 0; i < input.size(); i++) {
+
             int countOfClass = Collections.frequency(input, input.get(i));
             if(countOfClass >= currMax){
                 maxIndex = i;
@@ -71,10 +83,11 @@ public class MathFunction {
             }
         }
         mode = input.get(maxIndex);
+
         return mode;
     }
 
-
+    // method to use a confusion matrix to calculate our loss functions
     public static ArrayList<String> processConfusionMatrix(ArrayList<String> results, ArrayList<ArrayList<String>> testData) {
 
         int lengthOfData = results.size();
@@ -114,12 +127,12 @@ public class MathFunction {
         }
 
         // calculate truePos, falsePos, falseNeg, and totalPos by indexing the confusion matrix
-        double truePos=0;
-        double totalPos=0;
-        double falsePos=0;
-        double falseNeg=0;
-        double precisionSum=0;
-        double recallSum=0;
+        double truePos = 0;
+        double totalPos = 0;
+        double falsePos = 0;
+        double falseNeg =  0;
+        double precisionSum = 0;
+        double recallSum = 0;
 
         // iterating through the confusion matrix 
         for (int i = 1; i <confusionMatrix.size(); i++) {
@@ -164,7 +177,7 @@ public class MathFunction {
         return result;
     }
 
-
+    // calculate the regression loss function for root mean squared error
     public static String rootMeanSquaredError(ArrayList<String> results, ArrayList<ArrayList<String>> testData,  ArrayList<ArrayList<String>> fullSet) {
         double sum = 0;
         double max = Double.MIN_VALUE;
@@ -179,7 +192,9 @@ public class MathFunction {
                 min = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size() - 1));
             }
         }
-        for (int i = 0; i <testData.size(); i++) {
+
+        // find the guess and actual value for each data point
+        for (int i = 0; i < testData.size(); i++) {
             double guess = Double.parseDouble(results.get(i));
             double actual = Double.parseDouble(testData.get(i).get(testData.get(0).size() - 1));
 
@@ -195,6 +210,7 @@ public class MathFunction {
         return String.valueOf(sum);
     }
 
+    // calculates the regression loss function for mean absolute error
     public static String meanAbsoluteError(ArrayList<String> results, ArrayList<ArrayList<String>> testData,ArrayList<ArrayList<String>> fullSet){
         double sum = 0;
         double max = Double.MIN_VALUE;
@@ -209,6 +225,8 @@ public class MathFunction {
                 min = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size() - 1));
             }
         }
+
+        // calculates guess and actual result for each data point
         for (int i = 0; i < testData.size(); i++) {
             double guess = Double.parseDouble(results.get(i));
             double actual = Double.parseDouble(testData.get(i).get(testData.get(0).size() - 1));
@@ -223,17 +241,21 @@ public class MathFunction {
         return String.valueOf((sum));
     }
 
+    // finds and returns a random centroid for K-Means
     public static ArrayList<String> randomCentroid(int numFeatures){
         ArrayList<String> centroid = new ArrayList<>();
+
+        // picks a random centroid for each feature
         for (int i = 0; i < numFeatures; i++){
             centroid.add(Double.toString(Math.random()));
         }
         return centroid;
     }
 
+    // distortion calculation used in the traditional PAM algorithm for determining distances from the medoid
     public static double distortion(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> clusterMedoids, boolean euclidean){
-        int numMedoids= clusterMedoids.size();
-        int lengthOfFeatures= trainingData.get(0).size()-2;
+        int numMedoids = clusterMedoids.size();
+        int lengthOfFeatures = trainingData.get(0).size() - 2;
         double distortion = 0;
         for (int i = 0; i <trainingData.size(); i++) {
             ArrayList<Double> distanceToAllPoints= new ArrayList<>();
@@ -255,5 +277,4 @@ public class MathFunction {
         }
         return distortion;
     }
-
 }

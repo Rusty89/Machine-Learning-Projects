@@ -18,6 +18,7 @@ public class Algorithms {
         int classIndex = trainingData.get(0).size() - 1;
         ArrayList<String> results = new ArrayList<String>();
 
+        // iterates over the training set to calculate distances between each data set
         for (int i = 0; i < lengthOfTestingSet; i++) {
 
             ArrayList<Double> distanceToAllPoints = new ArrayList<Double>();
@@ -30,7 +31,7 @@ public class Algorithms {
                 List<String> trainingFeatures = trainingData.get(j).subList(0, lengthOfFeatures);
                 List<String> testingFeatures = testingData.get(i).subList(0, lengthOfFeatures);
 
-                //uses euclidean or hamming distance as appropriate for  the data
+                // uses euclidean or hamming distance as appropriate for the data
                 if(euclidean){
                     distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, testingFeatures));
                 }else{
@@ -55,23 +56,22 @@ public class Algorithms {
                 classificationOfNeighbors.add(classification);
             }
 
-
             // find average if using regression data
             if(regression) {
                 results.add(MathFunction.average(classificationOfNeighbors));
 
-                //find mode with classifcation data
+            // find mode with classification data
             } else {
                 results.add(MathFunction.mode(classificationOfNeighbors));
             }
 
         }
+
         // returns the list of guessed results for the test set
         return results;
     }
 
-
-
+    // implmentation of Edited KNN algorithm
     public static ArrayList<ArrayList<String>> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
 
         int indexOfClassification = trainingData.get(0).size() - 1;
@@ -97,12 +97,14 @@ public class Algorithms {
 
                 ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();
                 samplePoint.add(editedTrainingData.get(i));
+
                 //prevent error if removing last point from the edited data
                 if(editedTrainingData.size() > 1){
                     editedTrainingData.remove(editedTrainingData.get(i));
                 }
 
-                ArrayList<String> classification = KNN(editedTrainingData,samplePoint, k, regression,euclidean);
+                // passes edited training data into KNN algorithm
+                ArrayList<String> classification = KNN(editedTrainingData, samplePoint, k, regression,euclidean);
 
                 // if the sample point was classified correctly, add the point back to the dataset
                 if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))) {

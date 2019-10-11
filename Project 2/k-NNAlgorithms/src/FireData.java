@@ -2,6 +2,7 @@ import java.io.File;
 
 public class FireData extends Data {
 
+    // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     FireData(File inputFileName) throws Exception {
         fileTo2dStringArrayList(inputFileName);
         preProcess();
@@ -18,5 +19,4 @@ public class FireData extends Data {
             fullSet.get(i).remove(2);
         }
     }
-
 }

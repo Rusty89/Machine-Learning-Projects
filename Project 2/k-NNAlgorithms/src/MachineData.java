@@ -2,6 +2,7 @@ import java.io.File;
 
 public class MachineData extends Data{
 
+    // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     MachineData(File inputFileName) throws Exception {
         fileTo2dStringArrayList(inputFileName);
         preProcess();
