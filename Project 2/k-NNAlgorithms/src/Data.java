@@ -232,8 +232,8 @@ public class Data {
                 }
 
                 System.out.println("Calculating regression loss functions for k = " + k);
-                System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "  Root Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-                printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "  Root Mean Squared Error : " + df.format(RMSE / numTrainingSets));
+                System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
+                printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
             }
         }
 
@@ -366,8 +366,8 @@ public class Data {
             }
 
             System.out.println("Calculating regression loss functions");
-            System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "  Root Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-            printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "  Root Mean Squared Error : " + df.format(RMSE / numTrainingSets));
+            System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
+            printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
 
         }
 
