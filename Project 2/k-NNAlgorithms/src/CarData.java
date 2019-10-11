@@ -1,8 +1,9 @@
+/* Inherits from Data class. Defines how we pre-process the Car data set and holds the data from it
+ */
+
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class CarData extends Data {
 

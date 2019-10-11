@@ -1,3 +1,6 @@
+/* Inherits from Data class. Defines how we pre-process the Image data set and holds the data from it
+ */
+
 import java.io.File;
 
 public class ImageData extends Data {

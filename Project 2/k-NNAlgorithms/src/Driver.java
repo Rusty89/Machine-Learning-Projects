@@ -1,3 +1,7 @@
+/* A class that holds our main method for running our algorithms on the dataset. It uses the methods of the Data class
+    to perform the algorithms on all data sets after reading in the data from files in the directory.
+ */
+
 import java.io.File;
 
 public class Driver {

@@ -1,3 +1,8 @@
+/* A class that holds the implementation of each of the five algorithms: KNN, Edited KNN, Condensed KNN, K-Means, and
+    two PAM implementations. These are the actual algorithms, as opposed to the run methods in the Data class
+    that define the routine with running the data through the algorithms.
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -1,3 +1,7 @@
+/* A class that holds a Cluster object. Clusters are groups of points that define a region in a data set that
+    share a classification. They are used in the K-Means and PAM algorithms.
+ */
+
 import java.util.ArrayList;
 
 // clusters are an objects used to group data points in the K-Means and PAM algorithms

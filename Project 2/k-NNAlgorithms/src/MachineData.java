@@ -1,3 +1,6 @@
+/* Inherits from Data class. Defines how we pre-process the Machine data set and holds the data from it
+ */
+
 import java.io.File;
 
 public class MachineData extends Data{

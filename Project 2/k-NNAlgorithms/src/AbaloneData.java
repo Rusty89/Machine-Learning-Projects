@@ -1,3 +1,6 @@
+/* Inherits from Data class. Defines how we pre-process the Abalone data set and holds the data from it
+ */
+
 import java.io.File;
 
 public class AbaloneData extends Data {

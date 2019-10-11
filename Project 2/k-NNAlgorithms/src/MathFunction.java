@@ -1,3 +1,7 @@
+/* A class that holds helper Math functions for our algorithms. They are statically called whenever needed in the algorithm
+    implementations or when running the algorithm in the Data class methods.
+ */
+
 import java.util.*;
 
 public class MathFunction {

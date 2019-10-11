@@ -1,3 +1,7 @@
+/* The Data Class is a parent to inheriting classes that are defined for each data set. It handles reading in files, pre-processing
+    normalizing data, bucketizing for 10-fold cross validation, and methods for running each of the algorithms.
+ */
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
