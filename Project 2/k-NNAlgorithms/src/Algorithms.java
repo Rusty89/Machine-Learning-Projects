@@ -1,3 +1,8 @@
+/* A class that holds the implementation of each of the five algorithms: KNN, Edited KNN, Condensed KNN, K-Means, and
+    two PAM implementations. These are the actual algorithms, as opposed to the run methods in the Data class
+    that define the routine with running the data through the algorithms.
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -6,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+// a class that contains an implementation for each of the KNN algorithms, a K-Means algorithm, and two PAM algorithms
 public class Algorithms {
 
     // base K-Nearest Neighbor algorithm
@@ -18,6 +24,7 @@ public class Algorithms {
         int classIndex = trainingData.get(0).size() - 1;
         ArrayList<String> results = new ArrayList<String>();
 
+        // iterates over the training set to calculate distances between each data set
         for (int i = 0; i < lengthOfTestingSet; i++) {
 
             ArrayList<Double> distanceToAllPoints = new ArrayList<Double>();
@@ -30,7 +37,7 @@ public class Algorithms {
                 List<String> trainingFeatures = trainingData.get(j).subList(0, lengthOfFeatures);
                 List<String> testingFeatures = testingData.get(i).subList(0, lengthOfFeatures);
 
-                //uses euclidean or hamming distance as appropriate for  the data
+                // uses euclidean or hamming distance as appropriate for the data
                 if(euclidean){
                     distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, testingFeatures));
                 }else{
@@ -55,32 +62,31 @@ public class Algorithms {
                 classificationOfNeighbors.add(classification);
             }
 
-
             // find average if using regression data
             if(regression) {
                 results.add(MathFunction.average(classificationOfNeighbors));
 
-                //find mode with classifcation data
+            // find mode with classification data
             } else {
                 results.add(MathFunction.mode(classificationOfNeighbors));
             }
 
         }
+
         // returns the list of guessed results for the test set
         return results;
     }
 
-
-
+    // implementation of Edited KNN algorithm
     public static ArrayList<ArrayList<String>> EditedKNN(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>>validationSet, int k, boolean regression, boolean euclidean) {
 
         int indexOfClassification = trainingData.get(0).size() - 1;
         double currentPrecision = 0;
         double currentRecall = 0;
         double currentAccuracy = 0;
-        double prevPrecision = 0;
-        double prevRecall = 0;
-        double prevAccuracy = 0;
+        double prevPrecision;
+        double prevRecall;
+        double prevAccuracy;
 
         ArrayList<ArrayList<String>> editedTrainingData = (ArrayList<ArrayList<String>>) trainingData.clone();
         ArrayList<ArrayList<String>> finalEditedTrainingData = (ArrayList<ArrayList<String>>) trainingData.clone();
@@ -97,12 +103,14 @@ public class Algorithms {
 
                 ArrayList<ArrayList<String>> samplePoint = new ArrayList<>();
                 samplePoint.add(editedTrainingData.get(i));
+
                 //prevent error if removing last point from the edited data
                 if(editedTrainingData.size() > 1){
                     editedTrainingData.remove(editedTrainingData.get(i));
                 }
 
-                ArrayList<String> classification = KNN(editedTrainingData,samplePoint, k, regression,euclidean);
+                // passes edited training data into KNN algorithm
+                ArrayList<String> classification = KNN(editedTrainingData, samplePoint, k, regression,euclidean);
 
                 // if the sample point was classified correctly, add the point back to the dataset
                 if(classification.get(0).equals(samplePoint.get(0).get(indexOfClassification))) {
@@ -127,7 +135,7 @@ public class Algorithms {
             currentRecall = Double.parseDouble(results.get(1));
             currentAccuracy = Double.parseDouble(results.get(2));
 
-            // check if an improvement occured in all of the three categories.
+            // check if an improvement occurred in all of the three categories.
             improvementOccurred = (currentAccuracy > prevAccuracy || currentPrecision > prevPrecision || currentRecall > prevRecall);
 
         }
@@ -135,6 +143,7 @@ public class Algorithms {
         return finalEditedTrainingData;
     }
 
+    // implementation of Condensed KNN algorithm
     public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>>trainingData, boolean euclidean) {
 
         // initialize empty set
@@ -195,9 +204,10 @@ public class Algorithms {
         return condensedTrainingData;
     }
 
-    public static ArrayList<ArrayList<String>> Kmeans (ArrayList<ArrayList<String>>trainingData, int numClasses){
+    // implementation of the K-Means algorithm
+    public static ArrayList<ArrayList<String>> Kmeans(ArrayList<ArrayList<String>>trainingData, int numClasses){
 
-        // Variables
+        // local variables
         ArrayList<ArrayList<String>> clusterCentroids = new ArrayList<>(); // Holds the found cluster centroids
         int numFeatures= trainingData.get(0).size() - 1; // number of features (not index)
 
@@ -222,14 +232,14 @@ public class Algorithms {
             for (ArrayList<String> example: trainingData
             ) {
 
-                // Variables
+                // local variables
                 List<String> trainingFeatures = example.subList(0, numFeatures);
                 double minDist = Double.MAX_VALUE;
                 int clusterName = -1;
 
                 for (int j = 0; j < numClasses; j++){
 
-                    // Variables
+                    // local variables
                     List<String> centroidFeatures = clusterCentroids.get(j).subList(0, numFeatures);
                     double distance = MathFunction.euclideanDistance(trainingFeatures, centroidFeatures);
 
@@ -268,8 +278,8 @@ public class Algorithms {
                         ) {
                             updatedCentroidVal += Double.parseDouble(example.get(i));
                         }
-                        updatedCentroidVal = updatedCentroidVal / cluster.size(); // Mean value for that feature of examples in cluster
-                        updatedCentroid.add(Double.toString(updatedCentroidVal)); // Keep class variable consistent when updated
+                        updatedCentroidVal = updatedCentroidVal / cluster.size(); // mean value for that feature of examples in cluster
+                        updatedCentroid.add(Double.toString(updatedCentroidVal)); // keep class variable consistent when updated
                     }
                     updatedCentroid.add(Integer.toString(centroidNum));
                     compareSet.add(updatedCentroid);
@@ -302,16 +312,14 @@ public class Algorithms {
                 // convert arbitrary class values to real class values
                 int centroidToUpdate = 0;
 
-                for (ArrayList<ArrayList<String>> cluster: clusters
-                ) {
+                for (ArrayList<ArrayList<String>> cluster: clusters) {
 
-                    Map<String, Integer> classNames = new HashMap<>(); // Track frequency of class names in clusters
+                    Map<String, Integer> classNames = new HashMap<>(); // track frequency of class names in clusters
 
-                    for (ArrayList<String> example : cluster
-                    ) {
+                    for (ArrayList<String> example : cluster) {
                         String key = example.get(numFeatures);
 
-                        // Tally up frequencies of classes in clusters (ideally, 100% one class per clusters)
+                        // tally up frequencies of classes in clusters (ideally, 100% one class per clusters)
                         if (classNames.containsKey(key)) {
                             int freq = classNames.get(key);
                             freq++; // increase tally
@@ -320,31 +328,39 @@ public class Algorithms {
                             classNames.put(key, 1);
                         }
                     }
+
                     int max = 0;
                     String res = ""; // class name after found
-                    // Find the most common class in the cluster
+
+                    // find the most common class in the cluster
                     for (Entry<String, Integer> val : classNames.entrySet()) {
                         if (max < val.getValue()) {
                             res = val.getKey();
                             max = val.getValue();
                         }
                     }
-                    clusterCentroids.get(centroidToUpdate).set(numFeatures, res); // Say that centroid represents the most common class in the related cluster
+
+                    // set the centroid that represents the most common class in the related cluster
+                    clusterCentroids.get(centroidToUpdate).set(numFeatures, res); //
                     centroidToUpdate++;
                 }
 
                 return clusterCentroids;
             }
-            // Otherwise, keep repeating
+            // otherwise, keep repeating
             else {
-                clusterCentroids = compareSet; // Update cluster centroids
+                clusterCentroids = compareSet; // update cluster centroids
             }
         }
     }
 
+    // proper implementation of the Partitioning Around Medoids algorithm
+    // this proper version calculates distortion to find medoids by comparison to the median of a cluster
+    // however, it has a very long runtime
     public static ArrayList<ArrayList<String>> KMedoidsPAM(ArrayList<ArrayList<String>>trainingData,boolean euclidean, int numMedoids){
 
         ArrayList<ArrayList<String>> clusterMedoids = new ArrayList<>();
+
         // initalize random medoids
         for (int i = 0; i < numMedoids; i++) {
             int randNum = (int) (Math.random()*trainingData.size());
@@ -357,42 +373,50 @@ public class Algorithms {
                 clusterMedoids.add(trainingData.get(randNum));
             }
         }
+
         boolean medoidsChange = true;
         while(medoidsChange){
             ArrayList<ArrayList<String>> prevMedoids = (ArrayList<ArrayList<String>>) clusterMedoids.clone();
 
-            double distortion = 0;
+            double distortion;
+
             // caluclate distortion
             distortion = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
 
             for (int i = 0; i < numMedoids; i++) {
                 for (int j = 0; j < trainingData.size(); j++) {
+
                     // if point is not contained in cluster medoids
                     if(!clusterMedoids.contains(trainingData.get(j))){
                         // swap each medoid point with each point in the training data
                         ArrayList<String> temp = (ArrayList<String>) clusterMedoids.get(i).clone();
                         clusterMedoids.set(i, trainingData.get(j));
                         double distortionNew = 0;
+
                         // calculate new distortion with swapped medoid
                         distortionNew = MathFunction.distortion(trainingData,clusterMedoids,euclidean);
+
                         // swap back if distortion increased by swapping medoid
-                        if(distortionNew > distortion){
+                        if(distortionNew > distortion) {
                             clusterMedoids.set(i,temp);
-                        }else{
+                        } else {
                             distortion = distortionNew;
                         }
                     }
                 }
             }
+
             // if medoids change, this will be true
             medoidsChange = !clusterMedoids.equals(prevMedoids);
-
         }
 
         return clusterMedoids;
     }
-   
-    public static ArrayList<ArrayList<String>> AlternativePAM (ArrayList<ArrayList<String>> trainingData, int totalClasses)
+
+    // custom implementation of the Partitioning Around Medoids algorithm
+    // this version calculates the true average of the cluster and finds the closest data point to it
+    // this runtime is much faster, but makes a small variation from the proper PAM
+    public static ArrayList<ArrayList<String>> AlternativePAM(ArrayList<ArrayList<String>> trainingData, int totalClasses)
 	{
         ArrayList<ArrayList<String>> medoids = new ArrayList<>();
         ArrayList<Cluster> clusters = new ArrayList<>();
@@ -402,7 +426,9 @@ public class Algorithms {
         while (counter < totalClasses)
         {
             int index = (int)(Math.random()*totalClasses);
-            if (!medoids.contains(trainingData.get(index)))    // if we haven't already added the point
+
+            // if we haven't already added the point
+            if (!medoids.contains(trainingData.get(index)))
             {
                 medoids.add(trainingData.get(index));
                 clusters.add(new Cluster(trainingData.get(index)));
@@ -426,24 +452,26 @@ public class Algorithms {
                     try{
                         double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1),
                                 cluster.getMedoid().subList(0, cluster.getMedoid().size()-1));
+
                         if (distance < shortestDistance)
                         {
                             shortestDistance = distance;
                             closestCluster = cluster;
                         }
-                    }catch(Exception e){
+
+                    } catch(Exception e) {
                         // something must have been bad about this cluster for this error to occur
                         System.out.println(cluster);
                         clusters.remove(cluster);
                     }
 
                 }
+
                 /* after going through every cluster, add the point to the one with the nearest medoid
                     making sure that point doesn't already exist within the cluster */
                 if(!closestCluster.points.contains(point)){
                     closestCluster.points.add(point);
                 }
-
             }
 
             // all points are now assigned to a cluster
@@ -457,26 +485,27 @@ public class Algorithms {
                 // find the point closest to the average and set it as the new medoid
                 for (ArrayList<String> point: cluster.points)
                 {
-                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size()-1), average);
+                    double distance = MathFunction.euclideanDistance(point.subList(0, point.size() - 1), average);
                     if (distance < shortestDistance)
                     {
                         shortestDistance = distance;
                         closestPoint = point;
                     }
                 }
-
                 cluster.setMedoid(closestPoint);
-
             }
+
             // break out of the loop if all clusters have the same medoid as they did last time
             boolean anyMoved = false;
             for (Cluster cluster: clusters)
             {
                 cluster.points.clear();     // clear the list of assigned points for the next iteration
+
                 if (cluster.medoidMoved())
                     anyMoved = true;
             }
-            if (!anyMoved)  // if none moved
+
+            if (!anyMoved)
                 break;
         }
 

@@ -1,7 +1,11 @@
+/* Inherits from Data class. Defines how we pre-process the Abalone data set and holds the data from it
+ */
+
 import java.io.File;
 
 public class AbaloneData extends Data {
 
+    // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     AbaloneData(File inputFileName) throws Exception{
         fileTo2dStringArrayList(inputFileName);
         preProcess();
@@ -37,6 +41,4 @@ public class AbaloneData extends Data {
             }
         }
     }
-
-
 }

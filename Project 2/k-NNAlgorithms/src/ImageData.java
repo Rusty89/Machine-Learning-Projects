@@ -1,7 +1,11 @@
+/* Inherits from Data class. Defines how we pre-process the Image data set and holds the data from it
+ */
+
 import java.io.File;
 
 public class ImageData extends Data {
 
+    // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     ImageData(File inputFileName) throws Exception{
         fileTo2dStringArrayList(inputFileName);
         preProcess();
