@@ -22,4 +22,9 @@ public class FireData extends Data {
             fullSet.get(i).remove(2);
         }
     }
+
+    @Override
+    public String toString() {
+        return "fire";
+    }
 }

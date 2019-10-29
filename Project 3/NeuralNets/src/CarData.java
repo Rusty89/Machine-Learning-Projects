@@ -42,4 +42,9 @@ public class CarData extends Data {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "car";
+    }
 }

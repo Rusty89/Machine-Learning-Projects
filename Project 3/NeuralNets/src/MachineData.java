@@ -22,4 +22,9 @@ public class MachineData extends Data{
             fullSet.get(i).remove(0);
         }
     }
+
+    @Override
+    public String toString() {
+        return "machine";
+    }
 }

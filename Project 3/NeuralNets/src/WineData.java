@@ -11,4 +11,9 @@ public class WineData extends Data {
         normalizeData();
         bucketize();
     }
+
+    @Override
+    public String toString() {
+        return "wine";
+    }
 }

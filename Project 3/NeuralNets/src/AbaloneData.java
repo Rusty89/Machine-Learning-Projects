@@ -41,4 +41,10 @@ public class AbaloneData extends Data {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "abalone";
+    }
+
 }

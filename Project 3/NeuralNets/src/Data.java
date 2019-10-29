@@ -1,5 +1,5 @@
 /* The Data Class is a parent to inheriting classes that are defined for each data set. It handles reading in files, pre-processing
-    normalizing data, bucketizing for 10-fold cross validation, and methods for running each of the algorithms.
+    normalizing data, bucketizing for 10-fold cross validation, and methods for running each of the KNNAlgorithms.
  */
 
 import java.io.File;
@@ -17,53 +17,52 @@ public class Data {
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();
     private final int numTrainingSets = 10; // defines training sets for 10-fold cross validation
-    private final int kValueSelections[] = {1, 3, 5}; // choose odd values for k to avoid tie-breakers
-    private ArrayList<ArrayList<ArrayList<String>>> editedSets = new ArrayList<>();
-    private ArrayList<ArrayList<ArrayList<String>>> condensedSets = new ArrayList<>();
-    private DecimalFormat df = new DecimalFormat("#.###");
+    private ArrayList<ArrayList<ArrayList<String>>> condensedSet = new ArrayList<>(); // full condensed set from after cross-validation
+    private ArrayList<ArrayList<ArrayList<String>>> kMeansSet = new ArrayList<>(); // full condensed set from after cross-validation
+    private ArrayList<ArrayList<ArrayList<String>>> kPAMSet = new ArrayList<>(); // full condensed set from after cross-validation
+    // private DecimalFormat df = new DecimalFormat("#.###");
 
-    // drives the running of each test
-    public void runTests(boolean regression, boolean euclidean, String dataName) throws IOException {
+    public ArrayList<ArrayList<ArrayList<String>>> getCondensedSet() {
+        return condensedSet;
+    }
+
+    public ArrayList<ArrayList<ArrayList<String>>> getKMeansSet() {
+        return kMeansSet;
+    }
+
+    public ArrayList<ArrayList<ArrayList<String>>> getKPAMSet() {
+        return kPAMSet;
+    }
+
+    // drives the condensing of each data set
+    public void condenseSets(boolean regression, boolean euclidean, String dataName) throws IOException {
 
         FileWriter filer = new FileWriter(dataName + " results.txt");
         printer = new PrintWriter(filer);
 
-        // begin our K-Nearest Neighbor Test, print to output and .txt
-        System.out.println("Begin KNN test for " + dataName);
-        printer.println("Begin KNN test for " + dataName);
-        runKNN(regression, euclidean);
-        System.out.println("\nEnd test\n");
-        printer.println("\nEnd test\n");
-
-        // only run Condensed & Edited KNN on classification (non-regression) sets
-        if(!regression){
+        // only run Condensed on classification (non-regression) sets
+        if (!regression) {
 
             // begin our Condensed K-Nearest Neighbor Test, print to output and .txt
-            System.out.println("Begin Condensed KNN test for " + dataName);
-            printer.println("Begin Condensed KNN test for " + dataName);
+            System.out.println("Begin Condensed KNN condensing for " + dataName);
+            printer.println("Begin Condensed KNN condensing for " + dataName);
             runCondensedKNN(euclidean);
             System.out.println("\nEnd test\n");
             printer.println("\nEnd test\n");
 
-            // begin our Edited K-Nearest Neighbor Test, print to output and .txt
-            System.out.println("Begin Edited KNN test for " + dataName);
-            printer.println("Begin Edited KNN test for " + dataName);
-            runEditedKNN(euclidean);
-            System.out.println("\nEnd test\n");
-            printer.println("\nEnd test\n");
         }
 
-        // begin our K-Means Test, print to output and .txt
-        System.out.println("Begin KMeans test for " + dataName);
-        printer.println("Begin KMeans test for " + dataName);
-        runKMeans(regression,euclidean);
+        // begin our K-Means condensing, print to output and .txt
+        System.out.println("Begin KMeans condensing for " + dataName);
+        printer.println("Begin KMeans condensing for " + dataName);
+        runKMeans(regression);
         System.out.println("\nEnd test\n");
         printer.println("\nEnd test\n");
 
-        // begin our K Medoids PAM Test, print to output and .txt
-        System.out.println("Begin K Medoids PAM test for " + dataName);
-        printer.println("Begin K Medoids PAM test for " + dataName);
-        runKPAM(regression,euclidean);
+        // begin our K Medoids PAM condensing, print to output and .txt
+        System.out.println("Begin K Medoids PAM condensing for " + dataName);
+        printer.println("Begin K Medoids PAM condensing for " + dataName);
+        runKPAM(regression);
         System.out.println("\nEnd test\n");
         printer.println("\nEnd test\n");
 
@@ -81,8 +80,9 @@ public class Data {
         System.out.println("Reading in the " + inputFile.getName() + " and converting to an ArrayList");
 
         // convert dataset to an ArrayList
-        while (sc.hasNextLine()){
-            ArrayList<String> line= new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));;
+        while (sc.hasNextLine()) {
+            ArrayList<String> line = new ArrayList<>(Arrays.asList(sc.nextLine().split(",")));
+            ;
             fullSet.add(line);
         }
 
@@ -91,14 +91,14 @@ public class Data {
         Collections.shuffle(fullSet);
 
         // remove data points if we don't want to run the full data set
-        while(fullSet.size() > maxExamplesToRun){
+        while (fullSet.size() > maxExamplesToRun) {
             fullSet.remove(0);
         }
 
     }
 
     // normalize continuous data to a range between 0-1
-    public void normalizeData(){
+    public void normalizeData() {
 
         // local variables
         ArrayList<Double> max = new ArrayList<Double>();
@@ -107,14 +107,14 @@ public class Data {
         int sizeOfSet = fullSet.size();
 
         // find the maximum and minimum value of the original data sets
-        for (int i = 0; i < indexOfLastTrait ; i++) {
+        for (int i = 0; i < indexOfLastTrait; i++) {
             max.add(Double.MIN_VALUE);
             min.add(Double.MAX_VALUE);
         }
 
         // iterate through each column of the dataset
         for (int j = 0; j < indexOfLastTrait; j++) {
-            for (int i = 0; i < sizeOfSet ; i++) {
+            for (int i = 0; i < sizeOfSet; i++) {
 
                 // find max and min values in each column of dataset
                 max.set(j, Double.max(max.get(j), Double.parseDouble(fullSet.get(i).get(j))));
@@ -128,7 +128,7 @@ public class Data {
             for (int j = 0; j < indexOfLastTrait; j++) {
 
                 // if max and min are the same, normalize it to a 1
-                if((max.get(j) - min.get(j)) == 0){
+                if ((max.get(j) - min.get(j)) == 0) {
                     fullSet.get(i).set(j, "1.0");
                 } else {
 
@@ -168,8 +168,7 @@ public class Data {
                 if (countTrainingSet < fullSet.size()) {
                     dataSets.trainingSets.get(i).add(fullSet.get(countTrainingSet));
                     countTrainingSet++;
-                }
-                else{
+                } else {
                     countTrainingSet = 0;
                     dataSets.trainingSets.get(i).add(fullSet.get(countTrainingSet));
                     countTrainingSet++;
@@ -181,12 +180,11 @@ public class Data {
             for (int j = 0; j < twentyPercentOfData; j++) {
 
                 // generates validation set with the next 10% of data
-                if(j < tenPercentOfData){
+                if (j < tenPercentOfData) {
                     if (countValidationAndTest < fullSet.size()) {
                         dataSets.validationSets.get(i).add(fullSet.get(countValidationAndTest));
                         countValidationAndTest++;
-                    }
-                    else{
+                    } else {
                         countValidationAndTest = 0;
                         dataSets.validationSets.get(i).add(fullSet.get(countValidationAndTest));
                         countValidationAndTest++;
@@ -194,12 +192,11 @@ public class Data {
                 }
 
                 // generates test sets with the last 10% of data
-                else{
+                else {
                     if (countValidationAndTest < fullSet.size()) {
                         dataSets.testSets.get(i).add(fullSet.get(countValidationAndTest));
                         countValidationAndTest++;
-                    }
-                    else{
+                    } else {
                         countValidationAndTest = 0;
                         dataSets.testSets.get(i).add(fullSet.get(countValidationAndTest));
                         countValidationAndTest++;
@@ -209,268 +206,89 @@ public class Data {
         }
     }
 
-    // drives the running of the K-Nearest Neighbor Algorithm
-    public void runKNN(boolean regression, boolean euclidean){
-
-        // calculates and returns loss functions for regression data sets
-        if(regression) {
-
-            for (int k : kValueSelections) {
-                System.out.println("\n---");
-                System.out.println("Performing the algorithm with 10-fold cross validation for k = " + k + "\n");
-
-                // calculate the root mean squared and absolute error
-                double RMSE = 0;
-                double absError = 0;
-                for (int i = 0; i < numTrainingSets; i++) {
-
-                    // actually runs the algorithm
-                    System.out.println("Running KNN on training set " + (i + 1));
-                    ArrayList<String> result1 = Algorithms.KNN(dataSets.trainingSets.get(i), dataSets.testSets.get(i), k, regression, euclidean);
-
-                    // calculate the loss functions
-                    absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
-                    RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
-
-                    System.out.println();
-                }
-
-                System.out.println("Calculating regression loss functions for k = " + k);
-                System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-                printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-            }
-        }
-
-        // calculates loss functions for classification sets
-        else {
-
-            for (int k : kValueSelections) {
-                System.out.println("\n---");
-                System.out.println("Performing the algorithm with 10-fold cross validation for k = " + k + "\n");
-                double precisionAvg = 0;
-                double recallAvg = 0;
-                double accuracyAvg = 0;
-
-                for (int i = 0; i < numTrainingSets; i++) {
-
-                    // actually runs the algorithm
-                    System.out.println("Running KNN on training set " + (i + 1));
-                    ArrayList<String>result=Algorithms.KNN(dataSets.trainingSets.get(i),dataSets.testSets.get(i), k, regression, euclidean);
-
-                    // loss function calculations
-                    result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
-                    precisionAvg += Double.parseDouble(result.get(0));
-                    recallAvg += Double.parseDouble(result.get(1));
-                    accuracyAvg += Double.parseDouble(result.get(2));
-
-                    System.out.println();
-
-                }
-                System.out.println("Calculating classification loss functions for k = " + k);
-                System.out.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-                printer.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-            }
-        }
-    }
-
-    // drives the running of the Edited K-Nearest Neighbor Algorithm
-    public void runEditedKNN(boolean euclidean){
-
-        for (int k : kValueSelections) {
-            System.out.println("\n---");
-            System.out.println("Performing the algorithm with 10-fold cross validation for k = " + k + "\n");
-            double precisionAvg = 0;
-            double recallAvg = 0;
-            double accuracyAvg = 0;
-
-            for (int i = 0; i < numTrainingSets; i++) {
-
-                // actually runs the algorithms
-                System.out.println("Editing the training set " + (i + 1));
-                ArrayList<ArrayList<String>> editedSet = Algorithms.EditedKNN(dataSets.trainingSets.get(i), dataSets.validationSets.get(i), k, false, true);
-                System.out.println("Passing the edited data set " + (i + 1) + " into KNN");
-                ArrayList<String>result=Algorithms.KNN(editedSet,dataSets.testSets.get(i), k, false, euclidean);
-
-                // loss function calculations
-                result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result.get(0));
-                recallAvg += Double.parseDouble(result.get(1));
-                accuracyAvg += Double.parseDouble(result.get(2));
-
-                editedSets.add(editedSet);
-                System.out.println();
-
-            }
-            System.out.println("Calculating classification loss functions for k = " + k);
-            System.out.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-            printer.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-        }
-    }
-
     // drives the running of the Condensed K-Nearest Neighbor Algorithm
-    public void runCondensedKNN( boolean euclidean){
-        for (int k : kValueSelections) {
-            System.out.println("\n---");
-            System.out.println("Performing the algorithm with 10-fold cross validation for k = " + k + "\n");
+    public void runCondensedKNN(boolean euclidean) {
 
-            double precisionAvg = 0;
-            double recallAvg = 0;
-            double accuracyAvg = 0;
+        int k = 1; // k with value 1 performed the best on most of our data sets
 
-            for (int i = 0; i < numTrainingSets; i++) {
+        System.out.println("\n---");
+        System.out.println("Performing the algorithm with 10-fold cross validation for k = " + k + "\n");
 
-                // actually runs the algorithms
-                System.out.println("Condensing the training set " + (i + 1));
-                ArrayList<ArrayList<String>> condensedSet = Algorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
-                System.out.println("Passing the condensed data set " + (i + 1) + " into KNN");
-                ArrayList<String> result = Algorithms.KNN(condensedSet,dataSets.testSets.get(i), k, false, euclidean);
+        for (int i = 0; i < numTrainingSets; i++) {
 
-                // calculate loss functions
-                result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result.get(0));
-                recallAvg += Double.parseDouble(result.get(1));
-                accuracyAvg += Double.parseDouble(result.get(2));
-
-                condensedSets.add(condensedSet);
-                System.out.println();
-            }
-            System.out.println("Calculating classification loss functions for k = " + k);
-            System.out.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-            printer.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
+            // actually runs condensed KNN condensing
+            System.out.println("Condensing the training set " + (i + 1));
+            ArrayList<ArrayList<String>> condensedSubset = KNNAlgorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
+            condensedSet.add(condensedSubset); // add subset to the final condensed set to be passed into network
+            System.out.println();
         }
     }
 
     // driver for K-Means algorithm 
-    public void runKMeans(boolean regression, boolean euclidean) {
+    public void runKMeans(boolean regression) {
 
         System.out.println("\n---");
         System.out.println("Performing the algorithm with 10-fold cross validation\n");
-        
-        // calculates and returns loss functions for regression data sets
-        if(regression){
 
-            // calculate the root mean squared and absolute error
-            double RMSE = 0; 
-            double absError = 0;
+        if (regression) {
             for (int i = 0; i < numTrainingSets; i++) {
 
-                
                 int numClusters = dataSets.trainingSets.size() / 4; // only uses n / 4 as per instruction
 
-                // actually runs the algorithms
+                // actually runs the KNNAlgorithms
                 System.out.println("Running K-Means on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
-                System.out.println("Passing the condensed data set " + (i + 1) + " into KNN");
-                ArrayList<String> result1 = Algorithms.KNN(KmeansSet, dataSets.testSets.get(i), 1, regression, euclidean);
-
-                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result1, dataSets.testSets.get(i), fullSet));
-                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result1, dataSets.testSets.get(i), fullSet));
-
+                ArrayList<ArrayList<String>> KmeansSubset = KNNAlgorithms.Kmeans(dataSets.trainingSets.get(i), numClusters);
+                kMeansSet.add(KmeansSubset); // add subset to the final condensed set to be passed into network
                 System.out.println();
             }
-
-            System.out.println("Calculating regression loss functions");
-            System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-            printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
 
         }
 
-        // calculates and returns loss functions for classification data sets
         else {
 
-            double precisionAvg = 0;
-            double recallAvg = 0;
-            double accuracyAvg = 0;
-
-            // calculate the loss functions
             for (int i = 0; i < numTrainingSets; i++) {
-                int numClusters = editedSets.get(i).size();
+                int numClusters = condensedSet.get(i).size();
 
-                // actually runs the algorithms
+                // actually runs the KNNAlgorithms
                 System.out.println("Running K-Means on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KmeansSet = Algorithms.Kmeans(dataSets.trainingSets.get(i), numClusters );
-                System.out.println("Passing the condensed data set " + (i + 1) + " into KNN");
-                ArrayList<String> result = Algorithms.KNN(KmeansSet,dataSets.testSets.get(i), 1, regression, euclidean);
-
-                result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result.get(0));
-                recallAvg += Double.parseDouble(result.get(1));
-                accuracyAvg += Double.parseDouble(result.get(2));
-
+                ArrayList<ArrayList<String>> KmeansSubset = KNNAlgorithms.Kmeans(dataSets.trainingSets.get(i), numClusters);
+                kMeansSet.add(KmeansSubset); // add subset to the final condensed set to be passed into network
                 System.out.println();
             }
-
-            System.out.println("Calculating classification loss functions");
-            System.out.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-            printer.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
         }
     }
 
     // driver for Partioning Around Medoids algorithm
-    public void runKPAM(boolean regression, boolean euclidean){
+    public void runKPAM(boolean regression) {
 
         System.out.println("\n---");
         System.out.println("Performing the algorithm with 10-fold cross validation\n");
 
-        // calculates and returns loss functions for regression data sets
-        if(regression){
+        if (regression) {
 
-            System.out.println("\nCalculating regression loss functions");
-
-            // calculate the root mean squared and absolute error
-            double RMSE = 0;
-            double absError = 0;
             for (int i = 0; i < numTrainingSets; i++) {
 
                 int numClusters = dataSets.trainingSets.size() / 4; // only uses n / 4 as per instruction
 
-                // actually runs the algorithms
+                // actually runs the KNNAlgorithms
                 System.out.println("Running PAM on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters);
-                System.out.println("Passing the condensed data set " + (i + 1) + " into KNN");
-                ArrayList<String> result = Algorithms.KNN(KPAMSet, dataSets.testSets.get(i), 1, regression, euclidean);
-
-                absError += Double.parseDouble(MathFunction.meanAbsoluteError(result, dataSets.testSets.get(i), fullSet));
-                RMSE += Double.parseDouble(MathFunction.rootMeanSquaredError(result, dataSets.testSets.get(i), fullSet));
-
+                ArrayList<ArrayList<String>> KPAMSubset = KNNAlgorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters);
+                kPAMSet.add(KPAMSubset); // add subset to the final condensed set to be passed into network
                 System.out.println();
             }
-
-            System.out.println("Calculating regression loss functions");
-            System.out.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-            printer.println("Mean Absolute error is : " + df.format(absError / numTrainingSets) + "\nRoot Mean Squared Error : " + df.format(RMSE / numTrainingSets));
-
         }
 
-        // calculates and returns loss functions for classification data sets
         else {
 
-            System.out.println("\nCalculating classification loss functions");
-
-            double precisionAvg = 0;
-            double recallAvg = 0;
-            double accuracyAvg = 0;
-
             for (int i = 0; i < numTrainingSets; i++) {
-                int numClusters = editedSets.get(i).size();
+                int numClusters = condensedSet.get(i).size();
 
-                // actually runs the algorithms
+                // actually runs the KNNAlgorithms
                 System.out.println("Running PAM on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KPAMSet = Algorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters);
-                System.out.println("Passing the condensed data set " + (i + 1) + " into KNN");
-                ArrayList<String> result = Algorithms.KNN(KPAMSet,dataSets.testSets.get(i), 1, regression, euclidean);
-
-                result = MathFunction.processConfusionMatrix(result, dataSets.testSets.get(i));
-                precisionAvg += Double.parseDouble(result.get(0));
-                recallAvg += Double.parseDouble(result.get(1));
-                accuracyAvg += Double.parseDouble(result.get(2));
-
+                ArrayList<ArrayList<String>> KPAMSubset = KNNAlgorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters);
+                kPAMSet.add(KPAMSubset); // add subset to the final condensed set to be passed into network
                 System.out.println();
             }
-
-            System.out.println("Calculating classification loss functions");
-            System.out.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
-            printer.println("Precision is: " + df.format(precisionAvg / numTrainingSets) + "\nRecall is: " + df.format(recallAvg / numTrainingSets) + "\nAccuracy is: " + df.format(accuracyAvg / numTrainingSets));
         }
     }
 }

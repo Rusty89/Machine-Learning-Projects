@@ -23,4 +23,9 @@ public class ImageData extends Data {
             fullSet.get(i).set(indexOfLast, temp);
         }
     }
+
+    @Override
+    public String toString() {
+        return "image";
+    }
 }
