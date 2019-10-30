@@ -3,6 +3,8 @@
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Driver {
 
@@ -19,33 +21,44 @@ public class Driver {
         Data redWine = new WineData(new File("./DataSets/winequality-red.csv"));
         Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
 
-        // set euclidean parameter to false so that hamming distance is used for the Car dataset
-        System.out.println("\nBegin Car tests:");
-        System.out.println("--------------------\n");
-        car.runTests(false,false, "Car");
+        // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
+        System.out.println("\nCondense all of our data: ");
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedDatasets = condenseData(car, false, false);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedDatasets = condenseData(abalone, false, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedDatasets = condenseData(segmentation, false, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedDatasets = condenseData(forestFire, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedDatasets = condenseData(machine, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedDatasets = condenseData(redWine, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedDatasets = condenseData(whiteWine, true, true);
 
-        System.out.println("\nBegin Abalone tests:");
-        System.out.println("--------------------\n");
-        abalone.runTests(false,true,"Abalone");
+    }
 
-        System.out.println("\nBegin Segmentation tests:");
-        System.out.println("--------------------\n");
-        segmentation.runTests(false,true,"Segmentation");
+    // method to condense to get the 3 condensed datasets for a given full dataset
+    public static ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condenseData(Data dataset, boolean regression, boolean euclidean) throws IOException {
 
-        System.out.println("\nBegin Forest Fire tests:");
+        System.out.println("\nBegin "+ dataset.toString() + " tests:");
         System.out.println("--------------------\n");
-        forestFire.runTests(true,true, "ForestFire");
+        dataset.condenseSets(regression, euclidean, dataset.toString());
 
-        System.out.println("\nBegin Machine HW tests:");
-        System.out.println("--------------------\n");
-        machine.runTests(true,true,"MachineData");
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets = new ArrayList<ArrayList<ArrayList<ArrayList<String>>>>();
 
-        System.out.println("\nBegin Red Wine tests:");
-        System.out.println("--------------------\n");
-        redWine.runTests(true,true,"RedWine");
+        // run the condensing algorithms
+        ArrayList<ArrayList<ArrayList<String>>> condensedSet = dataset.getCondensedSet();
+        ArrayList<ArrayList<ArrayList<String>>> kMeansSet = dataset.getKMeansSet();
+        ArrayList<ArrayList<ArrayList<String>>> kPamSet = dataset.getKPAMSet();
 
-        System.out.println("\nBegin White Wine tests:");
-        System.out.println("--------------------\n");
-        whiteWine.runTests(true,true, "WhiteWine");
+        condensedSets.add(condensedSet);
+        condensedSets.add(kMeansSet);
+        condensedSets.add(kPamSet);
+
+        return condensedSets;
+    }
+
+    public static void printDataset(ArrayList<ArrayList<ArrayList<ArrayList<String>>>> dataset) {
+        for(int i = 0; i < dataset.size(); i++) {
+            System.out.println("\nCondensed set: " + i);
+            System.out.println(dataset.get(i));
+        }
+        System.out.println();
     }
 }
