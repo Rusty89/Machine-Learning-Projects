@@ -31,4 +31,9 @@ public class Layer
         previousLayer = layer;
         layer.nextLayer = this;
     }
+    public void calculateOutput()
+    {
+        for (Node node: nodes)
+            node.calculateOutput();
+    }
 }

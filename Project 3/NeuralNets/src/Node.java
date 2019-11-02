@@ -5,7 +5,7 @@ import java.util.List;
 public class Node
 {
     private Layer layer;
-    private double weight;
+    private double weight, value;
     public List<String> center;
     //private ArrayList<Double> vector;
     private HashMap<Node, Double> connectionValues;
@@ -39,5 +39,16 @@ public class Node
         }
     }
 
-
+    public void initializeWeights (double minWeight, double weightRange)
+    {
+        for (Node node: nextNodes())
+            connectionValues.put(node, Math.random()*weightRange + minWeight);
+    }
+    public void calculateOutput()
+    {
+        double sum = 0;
+        for (Node previousNode: previousNodes())
+            sum += previousNode.value * previousNode.connectionValues.get(this);
+        value = MathFunction.logisiticActivationFunction(sum);
+    }
 }
