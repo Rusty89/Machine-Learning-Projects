@@ -10,7 +10,7 @@ public class Network
         //each layer will be the size of the corresponding int in layerSizes.
         layers = new ArrayList<>();
         for (int size: layerSizes)
-            layers.add(new Layer(size));
+            layers.add(new Layer(size, 0.05, .095));
 
         //inform each layer of its neighbors. setPreviousLayer() also updates the previous layer's nextLayer.
         Layer previousLayer = null;
@@ -20,7 +20,5 @@ public class Network
                 layer.setPreviousLayer(previousLayer);
             previousLayer = layer;
         }
-
-
     }
 }
