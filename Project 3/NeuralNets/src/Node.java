@@ -5,7 +5,7 @@ import java.util.List;
 public class Node
 {
     private Layer layer;
-    private double weight, value;
+    public double weight, value;
     public List<String> center;
     //private ArrayList<Double> vector;
     private HashMap<Node, Double> connectionValues;
@@ -14,9 +14,8 @@ public class Node
     {
         this.layer = layer;
         this.weight = weight;
+        connectionValues = new HashMap<>();
     }
-
-
 
     //returns an ArrayList of the nodes in the next layer, which should be connected to this one.
     private ArrayList<Node> nextNodes()

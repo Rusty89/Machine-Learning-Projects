@@ -20,5 +20,30 @@ public class Network
                 layer.setPreviousLayer(previousLayer);
             previousLayer = layer;
         }
+
+        for (int a = 0; a < layers.size() - 1; a++)
+            layers.get(a).initializeWeights(.005, .095);
+    }
+
+    public void initializeInputLayer (double[] values)
+    {
+        Layer inputLayer = layers.get(0);
+        if (values.length == inputLayer.getNodes().size())
+        {
+            for (int a = 0; a < values.length; a++)
+                inputLayer.getNode(a).value = values[a];
+        }
+        else System.out.println("Size mismatch - input layer not initialized!");
+    }
+
+    public void run()
+    {
+        for (int a = 1; a < layers.size(); a++)
+            layers.get(a).calculateOutput();
+    }
+
+    public int getClassNumber()
+    {
+        return layers.get(layers.size()-1).getHighestValueNodeIndex();
     }
 }

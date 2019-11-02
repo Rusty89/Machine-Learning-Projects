@@ -10,6 +10,7 @@ public class Driver {
 
     public static void main(String args[])throws Exception {
 
+        /*
         // read in our categorical sets
         Data car = new CarData(new File("./DataSets/car.data"));
         Data abalone = new AbaloneData(new File("./DataSets/abalone.data"));
@@ -30,6 +31,12 @@ public class Driver {
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedDatasets = condenseData(machine, true, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedDatasets = condenseData(redWine, true, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedDatasets = condenseData(whiteWine, true, true);
+        */
+
+        Network testNet = new Network(new int[] {2, 3, 3, 2});
+        testNet.initializeInputLayer(new double[] {4, 17});
+        testNet.run();
+        System.out.println(testNet.getClassNumber());
 
     }
 

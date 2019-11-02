@@ -8,7 +8,6 @@ public class Layer
     public Layer (int layerSize, double minWeight, double weightRange)
     {
         nodes = new ArrayList<>();
-        //TODO instead of each node having a random weight, should each connection between nodes have a random weight instead?
         for (int a = 0; a < layerSize; a++)
             nodes.add(new Node(this, Math.random()*weightRange + minWeight));
     }
@@ -16,6 +15,10 @@ public class Layer
     public ArrayList<Node> getNodes()
     {
         return nodes;
+    }
+    public Node getNode (int index)
+    {
+        return nodes.get(index);
     }
     public Layer getNextLayer()
     {
@@ -35,5 +38,24 @@ public class Layer
     {
         for (Node node: nodes)
             node.calculateOutput();
+    }
+    public void initializeWeights (double minWeight, double weightRange)
+    {
+        for (Node node: nodes)
+            node.initializeWeights(minWeight, weightRange);
+    }
+    public int getHighestValueNodeIndex()
+    {
+        double greatest = 0;
+        int greatestIndex = -1;
+        for (int a = 0; a < nodes.size(); a++)
+        {
+            if (nodes.get(a).value > greatest)
+            {
+                greatest = nodes.get(a).value;
+                greatestIndex = a;
+            }
+        }
+        return greatestIndex;
     }
 }

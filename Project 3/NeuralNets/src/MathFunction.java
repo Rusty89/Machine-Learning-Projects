@@ -7,8 +7,7 @@ import java.util.*;
 public class MathFunction {
 
     public static double logisiticActivationFunction(double input){
-        double output= 1/(1-Math.exp(input));
-        return output;
+        return 1/(1-Math.exp(input*(-1)));
     }
 
     public static double gaussianKernelActivation(List<String> inputVector, List<String> center, double sigma){
