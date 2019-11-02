@@ -20,5 +20,7 @@ public class Network
                 layer.setPreviousLayer(previousLayer);
             previousLayer = layer;
         }
+
+
     }
 }
