@@ -6,6 +6,18 @@ import java.util.*;
 
 public class MathFunction {
 
+    public static double logisiticActivationFunction(double input){
+        double output= 1/(1-Math.exp(input));
+        return output;
+    }
+
+    public static double gaussianKernelActivation(List<String> inputVector, List<String> center, double sigma){
+        double output = 0;
+        output = Math.exp(-Math.pow(euclideanDistance(inputVector,center),2)/(2*Math.pow(sigma,2)));
+        return output;
+    }
+
+
     // calculates euclidean distance defined by (x1 - x2)^2
     public static double euclideanDistance(List<String> X1Vector, List<String> X2Vector){
         double result = 0;

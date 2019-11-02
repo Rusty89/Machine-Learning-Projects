@@ -33,6 +33,7 @@ public class Driver {
 
     }
 
+
     // method to condense to get the 3 condensed datasets for a given full dataset
     public static ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condenseData(Data dataset, boolean regression, boolean euclidean) throws IOException {
 

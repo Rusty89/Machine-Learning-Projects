@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Node
 {
     private Layer layer;
     private double weight;
+    public List<String> center;
     //private ArrayList<Double> vector;
     private HashMap<Node, Double> connectionValues;
 
@@ -14,14 +16,7 @@ public class Node
         this.weight = weight;
     }
 
-    //ensures this node's weight will not be above 1 or below 0.
-    public void normalize()
-    {
-        if (weight > 1)
-            weight = 1;
-        else if (weight < 0)
-            weight = 0;
-    }
+
 
     //returns an ArrayList of the nodes in the next layer, which should be connected to this one.
     private ArrayList<Node> nextNodes()
@@ -43,4 +38,6 @@ public class Node
             return null;
         }
     }
+
+
 }
