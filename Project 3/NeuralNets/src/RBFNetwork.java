@@ -159,6 +159,7 @@ public class RBFNetwork
         int maxIterations = 1000;
         while(maxIterations>0){
             maxIterations--;
+
             RBFLayer outputLayer = layers.get(2);
             RBFLayer hiddenLayer = layers.get(1);
             Collections.shuffle(trainingData);
@@ -170,29 +171,26 @@ public class RBFNetwork
                 double actualClassification = Double.parseDouble(trainingData.get(i).get(indexOfClass));
                 for (int j = 0; j < outputLayer.getNodes().size(); j++) {
                     double activationAtOutput = outputLayer.getNodes().get(j).getActivationValue();
-                    // add to weights that pushed towards correct class
+
                     if(j == actualClassification){
-                        double error = MathFunction.squaredError(activationAtOutput, 1);
                         for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
-                            RBFNode currentNode = hiddenLayer.getNodes().get(k);
-                            double activationOfNode = currentNode.getActivationValue();
-                            double backPropChange = Double.parseDouble(currentNode.getBackPropChanges().get(j));
-                            double weightChange = (error*activationOfNode)*learningRate + backPropChange;
-
-                            currentNode.setBackPropChanges(j,weightChange+"");
-
+                            RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
+                            RBFNode outputNode = outputLayer.getNodes().get(j);
+                            double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
+                            double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
+                            double weightChange = backPropChange + ((activationAtOutput*(1-activationAtOutput)) *(1-activationAtOutput)*learningRate*activationFromNodeHiddenNodeK);
+                            hiddenNode.setBackPropChanges(j,weightChange+"");
                         }
 
                     }
-                    // subtract from weights that did not help
                     else{
-                        double error = MathFunction.squaredError(activationAtOutput, 0);
                         for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
-                            RBFNode currentNode = hiddenLayer.getNodes().get(k);
-                            double activationOfNode = currentNode.getActivationValue();
-                            double backPropChange = Double.parseDouble(currentNode.getBackPropChanges().get(j));
-                            double weightChange = (-error*activationOfNode)*learningRate + backPropChange;
-                            currentNode.setBackPropChanges(j,weightChange+"");
+                            RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
+                            RBFNode outputNode = outputLayer.getNodes().get(j);
+                            double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
+                            double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
+                            double weightChange = backPropChange + ((activationAtOutput*(1-activationAtOutput))*(0-activationAtOutput)*learningRate*activationFromNodeHiddenNodeK);
+                            hiddenNode.setBackPropChanges(j,weightChange+"");
                         }
                     }
                 }
@@ -204,6 +202,7 @@ public class RBFNetwork
             }
             ArrayList<String> result = new ArrayList<>();
             result = MathFunction.processConfusionMatrix(classifications,trainingData);
+            System.out.println(result.get(2));
         }
     }
 }

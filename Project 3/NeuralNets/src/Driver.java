@@ -31,12 +31,12 @@ public class Driver {
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
-        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets);
-        trainRBFNetworks(abalone, RBFAbalone, .1, true);
-        ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets);
-        trainRBFNetworks(car, RBFcar, .1, true);
+        //ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets);
+        //trainRBFNetworks(abalone, RBFAbalone, .5, true);
+        //ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets);
+        //trainRBFNetworks(car, RBFcar, .5, true);
         ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets);
-        trainRBFNetworks(segmentation, RBFsegmetation, .1, true);
+        trainRBFNetworks(segmentation, RBFsegmetation, .5, true);
 
     }
 
@@ -47,7 +47,7 @@ public class Driver {
         for (int i = 0; i < dataset.dataSets.testSets.get(0).size() ; i++) {
             double predicted = networks.get(0).classifyRBF(dataset.dataSets.testSets.get(0).get(i));
             predictions.add((int)predicted+"");
-            System.out.println(predicted+ ": "+ dataset.dataSets.trainingSets.get(0).get(i));
+            System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(0).get(i));
         }
         ArrayList<String> results = new ArrayList<>();
         results = MathFunction.processConfusionMatrix(predictions, dataset.dataSets.testSets.get(0));
