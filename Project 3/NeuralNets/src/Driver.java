@@ -52,9 +52,9 @@ public class Driver {
             for (int j = 0; j < condensedSets.get(i).size(); j++) {
                 int condensedSetSize = condensedSets.get(i).get(j).size(); // get size of this particular condensed set
                 int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
-                Network n = new Network(true, layerSizes, trainingSets.get(j), condensedSets.get(i).get(j)); // build a network
+                Network n = new Network(true, layerSizes, condensedSets.get(i).get(j)); // build a network
                 RBNetworks.add(n); // add to Radial Basis networks array for later use
-                n.classifyRBF(trainingSets.get(0).get(0));
+                n.classifyRBF(trainingSets.get(0).get(4));
             }
         }
     }

@@ -4,11 +4,8 @@ public class Network
 {
     private ArrayList<Layer> layers = new ArrayList<>();
 
-    public Network (boolean isRBF, int[] layerSizes, ArrayList<ArrayList<String>> trainingSet,
-                    ArrayList<ArrayList<String>> condensedSet)
+    public Network (boolean isRBF, int[] layerSizes, ArrayList<ArrayList<String>> condensedSet)
     {
-
-
         // if the network is Radial Basis
         if (isRBF) {
             // create exactly 1 hidden layer for RBF network
@@ -28,7 +25,8 @@ public class Network
             layers.add(inputLayer);
             layers.add(hiddenLayer);
             layers.add(outputLayer);
-            initializeWeightsRBF(layerSizes);
+            // initialize weights as appropriate for RBF
+            initializeWeightsRBF();
 
         } else {
 
@@ -39,9 +37,6 @@ public class Network
                 layers.add(new Layer(size));
 
         }
-
-
-
         // inform each layer of its neighbors. setPreviousLayer() also updates the previous layer's nextLayer.
         Layer previousLayer = null;
         for (Layer layer: layers)
@@ -52,41 +47,35 @@ public class Network
         }
     }
 
-    public void initializeWeightsRBF(int [] layerSizes){
+    public void initializeWeightsRBF(){
 
         final double minWeight = 0.05;
         final double minRange = 0.095;
         Layer currentLayer = layers.get(0);
         while (currentLayer.getNextLayer()!=null){
-            //initialize input layer output weights
+            // initialize input layer output weights
             if(currentLayer.getPreviousLayer()==null){
                 for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
                     for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
                         currentLayer.getNodes().get(i).addOutputWeight();
                         currentLayer.getNodes().get(i).setOutputWeights(j, "1");
                     }
-
-
                 }
             }
-            //initialize hidden layer output weights
+            // initialize hidden layer output weights
             else{
                 for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
                     for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
-                        double randWeight = Math.random()*.095+0.5;
+                        double randWeight = Math.random()*minRange + minWeight;
                         String valOfRandWeight = randWeight+"";
                         currentLayer.getNodes().get(i).addOutputWeight();
                         currentLayer.getNodes().get(i).setOutputWeights(j, valOfRandWeight);
                     }
-
                     for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
                         currentLayer.getNodes().get(i).addInputWeight();
                     }
-
                 }
-
             }
-
             currentLayer = currentLayer.getNextLayer();
         }
         for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
@@ -100,7 +89,7 @@ public class Network
     }
 
     // classifies a training point using the RBF network
-    public void classifyRBF(ArrayList<String> point) {
+    public int classifyRBF(ArrayList<String> point) {
 
         Layer currentLayer = layers.get(0);
         while(currentLayer.getNextLayer() != null){
@@ -168,6 +157,20 @@ public class Network
 
         System.out.println("Activation value is " + maxActivationValue + " at index " + indexOfMaxValue);
         System.out.println("Actual class was "+ point.get(point.size()-1));
+        return indexOfMaxValue;
+    }
 
+
+    // very much in progress, do not use
+    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData){
+        int maxIterations = 10000;
+        while(maxIterations>0){
+            maxIterations--;
+            for (int i = 0; i < trainingData.size() ; i++) {
+                double classification = classifyRBF(trainingData.get(i));
+
+
+            }
+        }
     }
 }
