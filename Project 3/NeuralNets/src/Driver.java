@@ -25,13 +25,13 @@ public class Driver {
         System.out.println("\nCondense all of our data: ");
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
-        makeNetworks(car, car.dataSets.trainingSets, carCondensedTrainingSets);
+        makeNetworks(segmentation, segmentation.dataSets.trainingSets, segmentationCondensedTrainingSets);
     }
 
     public static void makeNetworks(Data dataset, ArrayList<ArrayList<ArrayList<String>>> trainingSets, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets) {

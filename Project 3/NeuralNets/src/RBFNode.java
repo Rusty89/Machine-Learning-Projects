@@ -9,12 +9,10 @@ public class RBFNode
     private List<String> inputWeights = new ArrayList<>();
     private List<String> outputWeights = new ArrayList<>();
     private double activationValue;
-    private HashMap<Node, Double> connectionValues;
 
     public RBFNode (RBFLayer layer)
     {
         this.layer = layer;
-
     }
 
     public List<String> getCenter() {
