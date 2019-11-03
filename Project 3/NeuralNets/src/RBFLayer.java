@@ -69,6 +69,7 @@ public class RBFLayer
             for (int j = 0; j < currentNode.getInputWeights().size() ; j++) {
                 value += Double.parseDouble(currentNode.getInputWeights().get(j));
             }
+            value = value/currentNode.getInputWeights().size();
             // put output through logistic function
             value = MathFunction.logisiticActivationFunction(value);
             // set the activation value on the node

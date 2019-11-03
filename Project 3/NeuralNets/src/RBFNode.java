@@ -8,6 +8,7 @@ public class RBFNode
     private List<String> center = new ArrayList<>();
     private List<String> inputWeights = new ArrayList<>();
     private List<String> outputWeights = new ArrayList<>();
+    private List<String> backPropChanges = new ArrayList<>();
     private double activationValue;
 
     public RBFNode (RBFLayer layer)
@@ -52,10 +53,26 @@ public class RBFNode
     }
 
     public void addOutputWeight() {
-        outputWeights.add("");
+        outputWeights.add("0");
     }
 
+    public List<String> getBackPropChanges() {
+        return backPropChanges;
+    }
 
+    public void setBackPropChanges(int index, String weightVal) { backPropChanges.set(index, weightVal); }
+
+    public void addBackPropChanges() {
+        backPropChanges.add("0");
+    }
+
+    public void updateBackPropChanges(){
+        for (int i = 0; i <backPropChanges.size() ; i++) {
+            outputWeights.set(i, backPropChanges.get(i));
+            backPropChanges.set(i,"0");
+        }
+
+    }
 
     //returns an ArrayList of the nodes in the next layer, which should be connected to this one.
     private ArrayList<RBFNode> nextNodes()

@@ -24,26 +24,43 @@ public class Driver {
         // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
         System.out.println("\nCondense all of our data: ");
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
-        makeNetworks(segmentation, segmentation.dataSets.trainingSets, segmentationCondensedTrainingSets);
+        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets);
+        trainRBFNetworks(abalone, RBFAbalone, .1, true);
+        ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets);
+        trainRBFNetworks(car, RBFcar, .1, true);
+        ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets);
+        trainRBFNetworks(segmentation, RBFsegmetation, .1, true);
+
     }
 
-    public static void makeNetworks(Data dataset, ArrayList<ArrayList<ArrayList<String>>> trainingSets, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets) {
+    public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
 
-        // making a Feed Forward Network
+        networks.get(0).trainRBFNetwork(dataset.dataSets.trainingSets.get(0), learningRate, categorical);
+        ArrayList<String> predictions = new ArrayList<>();
+        for (int i = 0; i < dataset.dataSets.testSets.get(0).size() ; i++) {
+            double predicted = networks.get(0).classifyRBF(dataset.dataSets.testSets.get(0).get(i));
+            predictions.add((int)predicted+"");
+            System.out.println(predicted+ ": "+ dataset.dataSets.trainingSets.get(0).get(i));
+        }
+        ArrayList<String> results = new ArrayList<>();
+        results = MathFunction.processConfusionMatrix(predictions, dataset.dataSets.testSets.get(0));
+        System.out.println(results.get(2));
 
+    }
 
+    public static ArrayList<RBFNetwork> makeRBFNetworks(Data dataset, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets) {
 
         // making the Radial Basis Networks
 
         ArrayList<RBFNetwork> RBNetworks = new ArrayList<>();
-        final int numFeatures = trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
+        final int numFeatures = dataset.dataSets.trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
         final int possibleOutcomes = dataset.numClassifications; // number of possible classifications in a data set
 
         // iterate over the three condensed sets: C-KNN, Kmeans, Kpam
@@ -54,9 +71,11 @@ public class Driver {
                 int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
                 RBFNetwork n = new RBFNetwork(layerSizes, condensedSets.get(i).get(j)); // build a network
                 RBNetworks.add(n); // add to Radial Basis networks array for later use
-                n.classifyRBF(trainingSets.get(0).get(4));
+
             }
         }
+
+        return RBNetworks;
     }
 
     // method to condense to get the 3 condensed datasets for a given full dataset

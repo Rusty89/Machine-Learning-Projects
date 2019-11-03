@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class RBFNetwork
 {
@@ -39,8 +41,8 @@ public class RBFNetwork
 
     public void initializeWeightsRBF(){
 
-        final double minWeight = 0.05;
-        final double minRange = 0.095;
+        final double minWeight = 0.01;
+        final double minRange = 0.05;
         RBFLayer currentLayer = layers.get(0);
         while (currentLayer.getNextLayer()!=null){
             // initialize input layer output weights
@@ -59,7 +61,10 @@ public class RBFNetwork
                         double randWeight = Math.random()*minRange + minWeight;
                         String valOfRandWeight = randWeight+"";
                         currentLayer.getNodes().get(i).addOutputWeight();
+
                         currentLayer.getNodes().get(i).setOutputWeights(j, valOfRandWeight);
+
+                        currentLayer.getNodes().get(i).addBackPropChanges();
                     }
                     for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
                         currentLayer.getNodes().get(i).addInputWeight();
@@ -145,22 +150,60 @@ public class RBFNetwork
             }
         }
 
-        System.out.println("Activation value is " + maxActivationValue + " at index " + indexOfMaxValue);
-        System.out.println("Actual class was "+ point.get(point.size()-1));
         return indexOfMaxValue;
     }
 
 
     // very much in progress, do not use
-    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData){
-        int maxIterations = 10000;
+    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, double learningRate, boolean categorical){
+        int maxIterations = 1000;
         while(maxIterations>0){
             maxIterations--;
-            for (int i = 0; i < trainingData.size() ; i++) {
-                double classification = classifyRBF(trainingData.get(i));
+            RBFLayer outputLayer = layers.get(2);
+            RBFLayer hiddenLayer = layers.get(1);
+            Collections.shuffle(trainingData);
+            ArrayList<String> classifications = new ArrayList<>();
+            // for categorical data
+            for (int i = 0; i < trainingData.size()/4 ; i++) {
+                int indexOfClass = trainingData.get(0).size()-1;
+                classifications.add((int)classifyRBF(trainingData.get(i))+"");
+                double actualClassification = Double.parseDouble(trainingData.get(i).get(indexOfClass));
+                for (int j = 0; j < outputLayer.getNodes().size(); j++) {
+                    double activationAtOutput = outputLayer.getNodes().get(j).getActivationValue();
+                    // add to weights that pushed towards correct class
+                    if(j == actualClassification){
+                        double error = MathFunction.squaredError(activationAtOutput, 1);
+                        for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                            RBFNode currentNode = hiddenLayer.getNodes().get(k);
+                            double activationOfNode = currentNode.getActivationValue();
+                            double backPropChange = Double.parseDouble(currentNode.getBackPropChanges().get(j));
+                            double weightChange = (error*activationOfNode)*learningRate + backPropChange;
 
+                            currentNode.setBackPropChanges(j,weightChange+"");
 
+                        }
+
+                    }
+                    // subtract from weights that did not help
+                    else{
+                        double error = MathFunction.squaredError(activationAtOutput, 0);
+                        for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                            RBFNode currentNode = hiddenLayer.getNodes().get(k);
+                            double activationOfNode = currentNode.getActivationValue();
+                            double backPropChange = Double.parseDouble(currentNode.getBackPropChanges().get(j));
+                            double weightChange = (-error*activationOfNode)*learningRate + backPropChange;
+                            currentNode.setBackPropChanges(j,weightChange+"");
+                        }
+                    }
+                }
             }
+
+
+            for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
+                hiddenLayer.getNodes().get(i).updateBackPropChanges();
+            }
+            ArrayList<String> result = new ArrayList<>();
+            result = MathFunction.processConfusionMatrix(classifications,trainingData);
         }
     }
 }

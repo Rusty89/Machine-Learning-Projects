@@ -5,11 +5,13 @@
 import java.util.*;
 
 public class MathFunction {
+    public static double squaredError(double predicted, double target){
+        return Math.pow((predicted-target),2);
+    }
+
 
     public static double logisiticActivationFunction(double input){
-
         double output= 1/(1 + Math.exp(-input));
-
         return output;
     }
 
