@@ -53,7 +53,7 @@ public class RBFLayer
         for (int i = 0; i < getNodes().size(); i++) {
             RBFNode currentNode = getNodes().get(i);
             // run gaussian kernel activation function to calculate activation value
-            double value = MathFunction.gaussianKernelActivation(currentNode.getInputWeights(), currentNode.getCenter(), 1);
+            double value = MathFunction.gaussianKernelActivation(currentNode.getInputWeights(), currentNode.getCenter(), .1);
             // set the activation value on the node
             getNodes().get(i).setActivationValue(value);
         }

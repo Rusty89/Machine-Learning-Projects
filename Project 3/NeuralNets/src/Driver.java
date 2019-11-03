@@ -31,12 +31,12 @@ public class Driver {
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
-        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets);
-        trainRBFNetworks(abalone, RBFAbalone, .5, true);
+        //ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets);
+        //trainRBFNetworks(abalone, RBFAbalone, .5, true);
         //ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets);
         //trainRBFNetworks(car, RBFcar, .5, true);
-        //ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets);
-        //trainRBFNetworks(segmentation, RBFsegmetation, .5, true);
+        ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets);
+        trainRBFNetworks(segmentation, RBFsegmetation, .5, true);
 
     }
 
