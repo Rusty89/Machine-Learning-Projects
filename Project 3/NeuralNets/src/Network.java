@@ -89,7 +89,7 @@ public class Network
     }
 
     // classifies a training point using the RBF network
-    public int classifyRBF(ArrayList<String> point) {
+    public double classifyRBF(ArrayList<String> point) {
 
         Layer currentLayer = layers.get(0);
         while(currentLayer.getNextLayer() != null){
