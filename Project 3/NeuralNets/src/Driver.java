@@ -11,15 +11,15 @@ public class Driver {
     public static void main(String args[])throws Exception {
 
         // read in our categorical sets
-        Data car = new CarData(new File("./DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("./DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("./DataSets/segmentation.data"));
+        Data car = new CarData(new File("../../DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("../../DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("../../DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("./DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("./DataSets/machine.data"));
-        Data redWine = new WineData(new File("./DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("../../DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("../../DataSets/machine.data"));
+        Data redWine = new WineData(new File("../../DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("../../DataSets/winequality-white.csv"));
 
         // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
         System.out.println("\nCondense all of our data: ");

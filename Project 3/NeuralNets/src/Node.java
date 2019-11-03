@@ -5,16 +5,16 @@ import java.util.List;
 public class Node
 {
     private Layer layer;
-    private double weight;
     private List<String> center = new ArrayList<>();
     private List<String> inputWeights = new ArrayList<>();
+    private List<String> outputWeights = new ArrayList<>();
     private double activationValue;
     private HashMap<Node, Double> connectionValues;
 
-    public Node (Layer layer, double weight)
+    public Node (Layer layer)
     {
         this.layer = layer;
-        this.weight = weight;
+
     }
 
     public List<String> getCenter() {
@@ -33,14 +33,6 @@ public class Node
         activationValue = value;
     }
 
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weightVal) {
-        weight = weightVal;
-    }
-
     public List<String> getInputWeights() {
         return inputWeights;
     }
@@ -51,6 +43,18 @@ public class Node
 
     public void addInputWeight() {
         inputWeights.add("");
+    }
+
+    public List<String> getOutputWeights() {
+        return outputWeights;
+    }
+
+    public void setOutputWeights(int index, String weightVal) {
+        outputWeights.set(index, weightVal);
+    }
+
+    public void addOutputWeight() {
+        outputWeights.add("");
     }
 
 

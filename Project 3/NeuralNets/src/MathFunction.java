@@ -7,7 +7,7 @@ import java.util.*;
 public class MathFunction {
 
     public static double logisiticActivationFunction(double input){
-        double output= 1/(1-Math.exp(input));
+        double output= 1/(1-Math.exp(-input));
         return output;
     }
 

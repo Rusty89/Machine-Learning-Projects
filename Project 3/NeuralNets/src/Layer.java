@@ -7,16 +7,11 @@ public class Layer
     private Layer previousLayer;
     private ArrayList<Node> nodes;
 
-    public Layer (int layerSize,int sizeOfInputs, double minWeight, double weightRange)
+    public Layer (int layerSize)
     {
         nodes = new ArrayList<>();
-        //TODO instead of each node having a random weight, should each connection between nodes have a random weight instead?
-        for (int a = 0; a < layerSize; a++) {
-            Node newNode = new Node(this, Math.random() * weightRange + minWeight);
-
-            for (int i = 0; i < sizeOfInputs; i++) {
-                newNode.addInputWeight();
-            }
+        for (int i = 0; i < layerSize; i++) {
+            Node newNode = new Node(this);
             nodes.add(newNode);
         }
     }
@@ -45,7 +40,7 @@ public class Layer
     }
 
     public void setCenters(ArrayList<ArrayList<String>> condensedSet) {
-        for (int i = 0; i < nodes.size() - 1; i++) {
+        for (int i = 0; i < nodes.size() ; i++) {
             int classificationIndexCutoff = condensedSet.get(0).size() - 1;
             List<String> centerValue = condensedSet.get(i).subList(0, classificationIndexCutoff);
             nodes.get(i).setCenter(centerValue);
@@ -57,13 +52,29 @@ public class Layer
         // iterate over nodes in current layer
         for (int i = 0; i < getNodes().size(); i++) {
             Node currentNode = getNodes().get(i);
-
             // run gaussian kernel activation function to calculate activation value
             double value = MathFunction.gaussianKernelActivation(currentNode.getInputWeights(), currentNode.getCenter(), 1);
 
             // set the activation value on the node
             getNodes().get(i).setActivationValue(value);
         }
+    }
+
+    public void calculateOutputActivation(){
+        // iterate over nodes in current layer
+        for (int i = 0; i < getNodes().size(); i++) {
+            Node currentNode = getNodes().get(i);
+            // run sum the input weights
+            double value = 0;
+            for (int j = 0; j < currentNode.getInputWeights().size() ; j++) {
+                value += Double.parseDouble(currentNode.getInputWeights().get(j));
+            }
+            // put output through logistic function
+            value = MathFunction.logisiticActivationFunction(value);
+            // set the activation value on the node
+            getNodes().get(i).setActivationValue(value);
+        }
+
     }
 
 

@@ -11,15 +11,10 @@ public class Network
 
         // if the network is Radial Basis
         if (isRBF) {
-            final int defaultLayerWeights = 1;
-            final int defaultLayerRange = 0;
-            final double minWeight = 0.05;
-            final double minRange = 0.095;
-
             // create exactly 1 hidden layer for RBF network
-            Layer inputLayer = new Layer(layerSizes[0], layerSizes[0], defaultLayerWeights, defaultLayerRange);
-            Layer hiddenLayer = new Layer(layerSizes[1], layerSizes[0], minWeight, minRange);
-            Layer outputLayer = new Layer(layerSizes[2], layerSizes[1], defaultLayerWeights, defaultLayerRange);
+            Layer inputLayer = new Layer(layerSizes[0]);
+            Layer hiddenLayer = new Layer(layerSizes[1]);
+            Layer outputLayer = new Layer(layerSizes[2]);
 
             hiddenLayer.setCenters(condensedSet); // set center values of our hidden layers
 
@@ -33,6 +28,7 @@ public class Network
             layers.add(inputLayer);
             layers.add(hiddenLayer);
             layers.add(outputLayer);
+            initializeWeightsRBF(layerSizes);
 
         } else {
 
@@ -40,7 +36,7 @@ public class Network
             // each layer will be the size of the corresponding int in layerSizes.
             layers = new ArrayList<>();
             for (int size: layerSizes)
-                layers.add(new Layer(size, size, 0.05, .095));
+                layers.add(new Layer(size));
 
         }
 
@@ -56,28 +52,78 @@ public class Network
         }
     }
 
+    public void initializeWeightsRBF(int [] layerSizes){
+
+        final double minWeight = 0.05;
+        final double minRange = 0.095;
+        Layer currentLayer = layers.get(0);
+        while (currentLayer.getNextLayer()!=null){
+            //initialize input layer output weights
+            if(currentLayer.getPreviousLayer()==null){
+                for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
+                    for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
+                        currentLayer.getNodes().get(i).addOutputWeight();
+                        currentLayer.getNodes().get(i).setOutputWeights(j, "1");
+                    }
+
+
+                }
+            }
+            //initialize hidden layer output weights
+            else{
+                for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
+                    for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
+                        double randWeight = Math.random()*.095+0.5;
+                        String valOfRandWeight = randWeight+"";
+                        currentLayer.getNodes().get(i).addOutputWeight();
+                        currentLayer.getNodes().get(i).setOutputWeights(j, valOfRandWeight);
+                    }
+
+                    for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
+                        currentLayer.getNodes().get(i).addInputWeight();
+                    }
+
+                }
+
+            }
+
+            currentLayer = currentLayer.getNextLayer();
+        }
+        for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
+
+            for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
+                currentLayer.getNodes().get(i).addInputWeight();
+            }
+
+        }
+
+    }
+
     // classifies a training point using the RBF network
     public void classifyRBF(ArrayList<String> point) {
 
         Layer currentLayer = layers.get(0);
+        while(currentLayer.getNextLayer() != null){
 
-        // set the activation values for the input layer
-        if (currentLayer.getPreviousLayer() == null) {
+            // set the activation values for the input layer
+            if (currentLayer.getPreviousLayer() == null) {
 
-            // iterates over all nodes in the input layer
-            for (int i = 0; i < currentLayer.getNodes().size(); i++) {
+                // iterates over all nodes in the input layer
+                for (int i = 0; i < currentLayer.getNodes().size(); i++) {
 
-                // assigning an activation value to each node in the input layer
-                currentLayer.getNodes().get(i).setActivationValue(Double.parseDouble(point.get(i)));
+                    // assigning an activation value to each node in the input layer
+                    currentLayer.getNodes().get(i).setActivationValue(Double.parseDouble(point.get(i)));
+                }
             }
-        }
 
-        // for each layer except the final output layer
-        while (currentLayer.getNextLayer() != null) {
+            // for each layer except the final output layer
+            if (currentLayer.getNextLayer() != null && currentLayer.getPreviousLayer() != null) {
 
-            // only for the hidden layer
-            if (currentLayer.getPreviousLayer() != null && currentLayer.getNextLayer() != null) {
-                currentLayer.calculateRBFActivation(); // calculate the activation values for all nodes in the hidden layer
+                // only for the hidden layer
+                if (currentLayer.getPreviousLayer() != null && currentLayer.getNextLayer() != null) {
+                    currentLayer.calculateRBFActivation(); // calculate the activation values for all nodes in the hidden layer
+                }
+
             }
 
             // set variables for cleaner code below
@@ -94,34 +140,34 @@ public class Network
                     // calculate activation values
 
                     // gets input weight for next layer by multiplying current nodes activation value and weight
-                    double inputWeight = currentLayerNodes.get(j).getActivationValue() * currentLayerNodes.get(j).getWeight();
+                    double weightToNextLayer = Double.parseDouble(currentLayerNodes.get(j).getOutputWeights().get(i));
+                    double inputWeight = currentLayerNodes.get(j).getActivationValue() * weightToNextLayer;
                     String stringifyWeight = Double.toString(inputWeight);
-
-
-
 
                     nextLayerNodes.get(i).setInputWeight(j, stringifyWeight); // set the input weight for each node
                 }
 
             }
-
             currentLayer = currentLayer.getNextLayer(); // move onto the next layer
+
         }
 
         // only for the output layer
-        if (currentLayer.getNextLayer() == null) {
+        currentLayer.calculateOutputActivation();
 
-            double maxActivationValue = 0;
-            double indexOfMaxValue = 0;
+        double maxActivationValue = 0;
+        double indexOfMaxValue = 0;
 
-            for (int i = 0; i < currentLayer.getNodes().size(); i++) {
-                if (currentLayer.getNodes().get(i).getActivationValue() > maxActivationValue) {
-                    maxActivationValue = currentLayer.getNodes().get(i).getActivationValue();
-                    indexOfMaxValue = i;
-                }
+        for (int i = 0; i < currentLayer.getNodes().size(); i++) {
+
+            if (currentLayer.getNodes().get(i).getActivationValue() > maxActivationValue) {
+                maxActivationValue = currentLayer.getNodes().get(i).getActivationValue();
+                indexOfMaxValue = i;
             }
-
-            System.out.println("Activation value is " + maxActivationValue + " at index " + indexOfMaxValue);
         }
+
+        System.out.println("Activation value is " + maxActivationValue + " at index " + indexOfMaxValue);
+        System.out.println("Actual class was "+ point.get(point.size()-1));
+
     }
 }
