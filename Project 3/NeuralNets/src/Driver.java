@@ -42,7 +42,7 @@ public class Driver {
 
         // making the Radial Basis Networks
 
-        ArrayList<Network> RBNetworks = new ArrayList<>();
+        ArrayList<RBFNetwork> RBNetworks = new ArrayList<>();
         final int numFeatures = trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
         final int possibleOutcomes = dataset.numClassifications; // number of possible classifications in a data set
 
@@ -52,7 +52,7 @@ public class Driver {
             for (int j = 0; j < condensedSets.get(i).size(); j++) {
                 int condensedSetSize = condensedSets.get(i).get(j).size(); // get size of this particular condensed set
                 int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
-                Network n = new Network(true, layerSizes, condensedSets.get(i).get(j)); // build a network
+                RBFNetwork n = new RBFNetwork(layerSizes, condensedSets.get(i).get(j)); // build a network
                 RBNetworks.add(n); // add to Radial Basis networks array for later use
                 n.classifyRBF(trainingSets.get(0).get(4));
             }
