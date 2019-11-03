@@ -17,7 +17,7 @@ public class MathFunction {
 
     public static double gaussianKernelActivation(List<String> inputVector, List<String> center, double sigma) {
         double output = 0;
-        output = Math.exp(-Math.pow(euclideanDistance(inputVector, center), 2) / (2 * Math.pow(sigma, 2)));
+        output = Math.exp((-Math.pow(euclideanDistance(inputVector, center), 2) / (2 * Math.pow(sigma, 2))));
         return output;
     }
 

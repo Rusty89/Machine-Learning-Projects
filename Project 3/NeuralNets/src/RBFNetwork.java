@@ -42,7 +42,7 @@ public class RBFNetwork
     public void initializeWeightsRBF(){
 
         final double minWeight = 0.01;
-        final double minRange = 0.05;
+        final double minRange = .95;
         RBFLayer currentLayer = layers.get(0);
         while (currentLayer.getNextLayer()!=null){
             // initialize input layer output weights
@@ -159,7 +159,6 @@ public class RBFNetwork
         int maxIterations = 1000;
         while(maxIterations>0){
             maxIterations--;
-
             RBFLayer outputLayer = layers.get(2);
             RBFLayer hiddenLayer = layers.get(1);
             Collections.shuffle(trainingData);
@@ -176,9 +175,10 @@ public class RBFNetwork
                         for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
                             RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
                             RBFNode outputNode = outputLayer.getNodes().get(j);
+                            double dk = -(1 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
                             double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                             double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
-                            double weightChange = backPropChange + ((activationAtOutput*(1-activationAtOutput)) *(1-activationAtOutput)*learningRate*activationFromNodeHiddenNodeK);
+                            double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
                             hiddenNode.setBackPropChanges(j,weightChange+"");
                         }
 
@@ -187,16 +187,15 @@ public class RBFNetwork
                         for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
                             RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
                             RBFNode outputNode = outputLayer.getNodes().get(j);
+                            double dk = -(0 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
                             double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                             double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
-                            double weightChange = backPropChange + ((activationAtOutput*(1-activationAtOutput))*(0-activationAtOutput)*learningRate*activationFromNodeHiddenNodeK);
+                            double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
                             hiddenNode.setBackPropChanges(j,weightChange+"");
                         }
                     }
                 }
             }
-
-
             for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
                 hiddenLayer.getNodes().get(i).updateBackPropChanges();
             }

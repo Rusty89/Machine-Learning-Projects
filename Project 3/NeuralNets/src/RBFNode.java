@@ -68,7 +68,10 @@ public class RBFNode
 
     public void updateBackPropChanges(){
         for (int i = 0; i <backPropChanges.size() ; i++) {
-            outputWeights.set(i, backPropChanges.get(i));
+            double weight = Double.parseDouble(outputWeights.get(i));
+            weight += Double.parseDouble(backPropChanges.get(i));
+            String updatedWeight = weight +"";
+            outputWeights.set(i, updatedWeight);
             backPropChanges.set(i,"0");
         }
 
