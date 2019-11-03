@@ -6,17 +6,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 public class Data {
     private static PrintWriter printer;
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();
     private final int numTrainingSets = 10; // defines training sets for 10-fold cross validation
+    public int numClassifications = 0;
     private ArrayList<ArrayList<ArrayList<String>>> condensedSet = new ArrayList<>(); // full condensed set from after cross-validation
     private ArrayList<ArrayList<ArrayList<String>>> kMeansSet = new ArrayList<>(); // full condensed set from after cross-validation
     private ArrayList<ArrayList<ArrayList<String>>> kPAMSet = new ArrayList<>(); // full condensed set from after cross-validation
@@ -73,7 +70,7 @@ public class Data {
     // method to read in our data sets and convert them to an Java ArrayList for parsing
     public void fileTo2dStringArrayList(File inputFile) throws Exception {
 
-        final int maxExamplesToRun = 100000; // max number of lines of data, to keep test manageable
+        final int maxExamplesToRun = 200; // max number of lines of data, to keep test manageable
 
         Scanner sc = new Scanner(inputFile); // read in our input file as an array list
 
@@ -204,6 +201,17 @@ public class Data {
                 }
             }
         }
+    }
+
+    public void findNumClassifications() {
+        ArrayList<String>possibleOutcomes= new ArrayList<>();
+        for (int i = 0; i < fullSet.size(); i++) {
+            possibleOutcomes.add(fullSet.get(i).get(fullSet.get(0).size() - 1));
+        }
+
+        Set<String> set = new HashSet<String>(possibleOutcomes);
+        this.numClassifications = set.size();
+
     }
 
     // drives the running of the Condensed K-Nearest Neighbor Algorithm

@@ -10,6 +10,7 @@ public class WineData extends Data {
         fileTo2dStringArrayList(inputFileName);
         normalizeData();
         bucketize();
+        findNumClassifications();
     }
 
     @Override

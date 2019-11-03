@@ -23,16 +23,41 @@ public class Driver {
 
         // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
         System.out.println("\nCondense all of our data: ");
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedDatasets = condenseData(car, false, false);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedDatasets = condenseData(abalone, false, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedDatasets = condenseData(segmentation, false, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedDatasets = condenseData(forestFire, true, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedDatasets = condenseData(machine, true, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedDatasets = condenseData(redWine, true, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedDatasets = condenseData(whiteWine, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
+        makeNetworks(car, car.dataSets.trainingSets, carCondensedTrainingSets);
     }
 
+    public static void makeNetworks(Data dataset, ArrayList<ArrayList<ArrayList<String>>> trainingSets, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets) {
+
+        // making a Feed Forward Network
+
+
+
+        // making the Radial Basis Networks
+
+        ArrayList<Network> RBNetworks = new ArrayList<>();
+        final int numFeatures = trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
+        final int possibleOutcomes = dataset.numClassifications; // number of possible classifications in a data set
+
+        // iterate over the three condensed sets: C-KNN, Kmeans, Kpam
+        for (int i = 0; i < condensedSets.size(); i++) {
+            // iterate over the ten training sets for each dataset
+            for (int j = 0; j < condensedSets.get(i).size(); j++) {
+                int condensedSetSize = condensedSets.get(i).get(j).size(); // get size of this particular condensed set
+                int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
+                Network n = new Network(true, layerSizes, trainingSets.get(j), condensedSets.get(i).get(j)); // build a network
+                RBNetworks.add(n); // add to Radial Basis networks array for later use
+                n.classifyRBF(trainingSets.get(0).get(0));
+            }
+        }
+    }
 
     // method to condense to get the 3 condensed datasets for a given full dataset
     public static ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condenseData(Data dataset, boolean regression, boolean euclidean) throws IOException {

@@ -6,14 +6,51 @@ public class Node
 {
     private Layer layer;
     private double weight;
-    public List<String> center;
-    //private ArrayList<Double> vector;
+    private List<String> center = new ArrayList<>();
+    private List<String> inputWeights = new ArrayList<>();
+    private double activationValue;
     private HashMap<Node, Double> connectionValues;
 
     public Node (Layer layer, double weight)
     {
         this.layer = layer;
         this.weight = weight;
+    }
+
+    public List<String> getCenter() {
+        return center;
+    }
+
+    public void setCenter(List<String> centerValue) {
+        center = centerValue;
+    }
+
+    public double getActivationValue() {
+        return activationValue;
+    }
+
+    public void setActivationValue(double value) {
+        activationValue = value;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weightVal) {
+        weight = weightVal;
+    }
+
+    public List<String> getInputWeights() {
+        return inputWeights;
+    }
+
+    public void setInputWeight(int index, String weightVal) {
+        inputWeights.set(index, weightVal);
+    }
+
+    public void addInputWeight() {
+        inputWeights.add("");
     }
 
 

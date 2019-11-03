@@ -13,6 +13,7 @@ public class CarData extends Data {
         preProcess();
         normalizeData();
         bucketize();
+        findNumClassifications();
     }
 
     // removes noisy/irrelevant features
