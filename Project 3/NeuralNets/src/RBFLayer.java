@@ -7,6 +7,7 @@ public class RBFLayer
     private RBFLayer previousLayer;
     private ArrayList<RBFNode> nodes;
 
+    public double bias = .05;
 
     public RBFLayer (int layerSize)
     {
@@ -48,13 +49,15 @@ public class RBFLayer
         }
     }
 
+
     // use input weights and center values to calculate activation values for nodes in RBF network
     public void calculateRBFActivation() {
         // iterate over nodes in current layer
         for (int i = 0; i < getNodes().size(); i++) {
             RBFNode currentNode = getNodes().get(i);
+
             // run gaussian kernel activation function to calculate activation value
-            double value = MathFunction.gaussianKernelActivation(currentNode.getInputWeights(), currentNode.getCenter(), .1);
+            double value = MathFunction.gaussianKernelActivation(currentNode.getInputWeights(), currentNode.getCenter(), currentNode.sigma, bias);
             // set the activation value on the node
             getNodes().get(i).setActivationValue(value);
         }
@@ -78,5 +81,39 @@ public class RBFLayer
 
     }
 
+    // reference for why and how i'm doing this
+    // https://perso.uclouvain.be/michel.verleysen/papers/nepl03nb.pdf
+    public void findSigmaForAllNodes(){
+        for (int i = 0; i < nodes.size(); i++) {
+            List<String> center = nodes.get(i).getCenter();
+            double minDistance1 = Double.MAX_VALUE;
+            double minDistance2 = Double.MAX_VALUE;
+            int firstNeighbor = 0;
+            for (int j = 0; j < nodes.size(); j++) {
+                if(i != j){
+                    double distanceBetweenPoints = MathFunction.euclideanDistance(center, nodes.get(j).getCenter());
+                    if(distanceBetweenPoints<minDistance1){
+                        minDistance1=distanceBetweenPoints;
+                        firstNeighbor = j;
+                    }
+                }
+            }
+
+            for (int j = 0; j < nodes.size(); j++) {
+                if(i != j){
+                    double distanceBetweenPoints = MathFunction.euclideanDistance(center, nodes.get(j).getCenter());
+                    if(distanceBetweenPoints<minDistance2 && firstNeighbor!=j){
+                        minDistance2 = distanceBetweenPoints;
+                    }
+                }
+            }
+
+            double sigmaValue = (minDistance1+minDistance2);
+            if(sigmaValue == 0){
+                sigmaValue = 0.1;
+            }
+            nodes.get(i).sigma = sigmaValue;
+        }
+    }
 
 }

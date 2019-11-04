@@ -71,6 +71,7 @@ public class RBFNetwork
                     }
                 }
             }
+            currentLayer.findSigmaForAllNodes();
             currentLayer = currentLayer.getNextLayer();
         }
         for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
@@ -220,7 +221,7 @@ public class RBFNetwork
     public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> orignalFullSet, double learningRate, boolean categorical){
         if(categorical){
 
-            int maxIterations = 100;
+            int maxIterations = 300;
             while(maxIterations>0){
                 maxIterations--;
                 RBFLayer outputLayer = layers.get(2);
@@ -265,12 +266,12 @@ public class RBFNetwork
                     hiddenLayer.getNodes().get(i).updateBackPropChanges();
                 }
                 ArrayList<String> result = new ArrayList<>();
-                result = MathFunction.processConfusionMatrix(classifications,trainingData);
-                //System.out.println(result.get(2));
+                //result = MathFunction.processConfusionMatrix(classifications,trainingData);
+                //System.out.println(result);
             }
 
         }else{
-            int maxIterations = 1000;
+            int maxIterations = 100;
             while(maxIterations>0){
                 maxIterations--;
                 RBFLayer outputLayer = layers.get(2);

@@ -15,9 +15,9 @@ public class MathFunction {
         return output;
     }
 
-    public static double gaussianKernelActivation(List<String> inputVector, List<String> center, double sigma) {
+    public static double gaussianKernelActivation(List<String> inputVector, List<String> center, double sigma, double bias) {
         double output = 0;
-        output = Math.exp((-Math.pow(euclideanDistance(inputVector, center), 2) / (2 * Math.pow(sigma, 2))));
+        output = Math.exp((-Math.pow(euclideanDistance(inputVector, center), 2) / (bias * Math.pow(sigma, 2))));
         return output;
     }
 
@@ -37,7 +37,6 @@ public class MathFunction {
             // summation of (x1i-x2i)^2, euclidean distance
             result += Math.pow((x - y), 2);
         }
-
         // prevent returning bad values
         if(Double.isInfinite(result)){
             result = Double.MAX_VALUE;

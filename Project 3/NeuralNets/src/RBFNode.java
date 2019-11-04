@@ -10,6 +10,7 @@ public class RBFNode
     private List<String> outputWeights = new ArrayList<>();
     private List<String> backPropChanges = new ArrayList<>();
     private double activationValue;
+    public double sigma = 1;
 
     public RBFNode (RBFLayer layer)
     {

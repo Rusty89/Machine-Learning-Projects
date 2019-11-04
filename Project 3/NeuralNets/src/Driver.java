@@ -46,12 +46,16 @@ public class Driver {
         // regression rbf tests
         ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
         trainRBFNetworks(forestFire, RBFforestFire, .5, false);
+        runRBFTests(forestFire, RBFforestFire, false);
         ArrayList <RBFNetwork> RBFmachine = makeRBFNetworks(machine, machineCondensedTrainingSets, false);
         trainRBFNetworks(machine, RBFmachine, .5, false);
+        runRBFTests(machine, RBFmachine, false);
         ArrayList <RBFNetwork> RBFredWine = makeRBFNetworks(redWine, redWineCondensedTrainingSets, false);
         trainRBFNetworks(redWine, RBFredWine, .5, false);
+        runRBFTests(redWine, RBFredWine, false);
         ArrayList <RBFNetwork> RBFwhiteWine = makeRBFNetworks(whiteWine, whiteWineCondensedTrainingSets, false);
         trainRBFNetworks(whiteWine, RBFwhiteWine, .5, false);
+        runRBFTests(whiteWine,RBFwhiteWine, false);
 
     }
 
@@ -67,7 +71,7 @@ public class Driver {
                         System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(j).get(k));
                     }
                     ArrayList<String> results = MathFunction.processConfusionMatrix(predictions,dataset.dataSets.testSets.get(j));
-                    System.out.println(results.get(2));
+                    System.out.println(results);
                 }
             }
 
@@ -76,7 +80,7 @@ public class Driver {
 
         else{
             for (int i = 0; i < 2 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
+                for (int j = 0; j < 1 ; j++) {
                     int indexOfNetwork = i*10+j;
                     ArrayList<String> predictions = new ArrayList<>();
                     for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
@@ -87,16 +91,10 @@ public class Driver {
                     ArrayList<String> results = new ArrayList<>();
                     results.add(MathFunction.rootMeanSquaredError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
                     results.add(MathFunction.meanAbsoluteError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
-                    System.out.println(results.get(0));
-                    System.out.println(results.get(1));
+                    System.out.println(results);
                 }
             }
-
-
         }
-
-
-
     }
 
 
@@ -110,7 +108,7 @@ public class Driver {
             }
         }else{
             for (int i = 0; i < 2 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
+                for (int j = 0; j < 1 ; j++) {
                     int indexOfNetwork = i*10+j;
                     networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
 
