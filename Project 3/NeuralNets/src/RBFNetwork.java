@@ -271,7 +271,7 @@ public class RBFNetwork
             }
 
         }else{
-            int maxIterations = 100;
+            int maxIterations = 1000;
             while(maxIterations>0){
                 maxIterations--;
                 RBFLayer outputLayer = layers.get(2);

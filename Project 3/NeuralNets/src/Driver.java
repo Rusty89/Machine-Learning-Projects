@@ -31,30 +31,31 @@ public class Driver {
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
-        // categorical rbf tests
+        double learningRate = .5;
+     /*   // categorical rbf tests
         ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
-        trainRBFNetworks(abalone, RBFAbalone, .5, true);
+        trainRBFNetworks(abalone, RBFAbalone, learningRate, true);
         runRBFTests(abalone, RBFAbalone, true);
         ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets, true);
-        trainRBFNetworks(car, RBFcar, .5, true);
+        trainRBFNetworks(car, RBFcar, learningRate, true);
         runRBFTests(car, RBFcar, true);
         ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets, true);
-        trainRBFNetworks(segmentation, RBFsegmetation, .5, true);
+        trainRBFNetworks(segmentation, RBFsegmetation, learningRate, true);
         runRBFTests(segmentation, RBFsegmetation, true);
-
+    */
 
         // regression rbf tests
         ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
-        trainRBFNetworks(forestFire, RBFforestFire, .5, false);
+        trainRBFNetworks(forestFire, RBFforestFire, learningRate, false);
         runRBFTests(forestFire, RBFforestFire, false);
         ArrayList <RBFNetwork> RBFmachine = makeRBFNetworks(machine, machineCondensedTrainingSets, false);
-        trainRBFNetworks(machine, RBFmachine, .5, false);
+        trainRBFNetworks(machine, RBFmachine, learningRate, false);
         runRBFTests(machine, RBFmachine, false);
         ArrayList <RBFNetwork> RBFredWine = makeRBFNetworks(redWine, redWineCondensedTrainingSets, false);
-        trainRBFNetworks(redWine, RBFredWine, .5, false);
+        trainRBFNetworks(redWine, RBFredWine, learningRate, false);
         runRBFTests(redWine, RBFredWine, false);
         ArrayList <RBFNetwork> RBFwhiteWine = makeRBFNetworks(whiteWine, whiteWineCondensedTrainingSets, false);
-        trainRBFNetworks(whiteWine, RBFwhiteWine, .5, false);
+        trainRBFNetworks(whiteWine, RBFwhiteWine, learningRate, false);
         runRBFTests(whiteWine,RBFwhiteWine, false);
 
     }
@@ -62,7 +63,7 @@ public class Driver {
     public static void runRBFTests(Data dataset,ArrayList<RBFNetwork> networks, boolean categorical){
         if(categorical){
             for (int i = 0; i < 3 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
+                for (int j = 0; j < 1 ; j++) {
                     int indexOfNetwork = i*10+j;
                     ArrayList<String> predictions = new ArrayList<>();
                     for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
@@ -101,7 +102,7 @@ public class Driver {
     public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
         if(categorical){
             for (int i = 0; i < 3 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
+                for (int j = 0; j < 1 ; j++) {
                     int indexOfNetwork = i*10+j;
                     networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
                 }
