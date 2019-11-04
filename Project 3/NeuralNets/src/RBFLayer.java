@@ -7,6 +7,7 @@ public class RBFLayer
     private RBFLayer previousLayer;
     private ArrayList<RBFNode> nodes;
 
+
     public RBFLayer (int layerSize)
     {
         nodes = new ArrayList<>();

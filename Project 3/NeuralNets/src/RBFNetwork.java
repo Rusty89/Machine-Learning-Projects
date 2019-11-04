@@ -84,124 +84,228 @@ public class RBFNetwork
     }
 
     // classifies a training point using the RBF network
-    public double classifyRBF(ArrayList<String> point) {
+    public double classifyRBF(ArrayList<String> point, boolean categorical) {
+        if(categorical){
+            RBFLayer currentLayer = layers.get(0);
+            while(currentLayer.getNextLayer() != null){
 
-        RBFLayer currentLayer = layers.get(0);
-        while(currentLayer.getNextLayer() != null){
+                // set the activation values for the input layer
+                if (currentLayer.getPreviousLayer() == null) {
 
-            // set the activation values for the input layer
-            if (currentLayer.getPreviousLayer() == null) {
+                    // iterates over all nodes in the input layer
+                    for (int i = 0; i < currentLayer.getNodes().size(); i++) {
 
-                // iterates over all nodes in the input layer
-                for (int i = 0; i < currentLayer.getNodes().size(); i++) {
+                        // assigning an activation value to each node in the input layer
+                        currentLayer.getNodes().get(i).setActivationValue(Double.parseDouble(point.get(i)));
+                    }
+                }
 
-                    // assigning an activation value to each node in the input layer
-                    currentLayer.getNodes().get(i).setActivationValue(Double.parseDouble(point.get(i)));
+                // for each layer except the final output layer
+                if (currentLayer.getNextLayer() != null && currentLayer.getPreviousLayer() != null) {
+
+                    // only for the hidden layer
+                    if (currentLayer.getPreviousLayer() != null && currentLayer.getNextLayer() != null) {
+                        currentLayer.calculateRBFActivation(); // calculate the activation values for all nodes in the hidden layer
+                    }
+
+                }
+
+                // set variables for cleaner code below
+                ArrayList<RBFNode> nextLayerNodes = currentLayer.getNextLayer().getNodes();
+                ArrayList<RBFNode> currentLayerNodes = currentLayer.getNodes();
+                int numNodesInNextLayer = nextLayerNodes.size();
+                int numNodesInCurrentLayer = currentLayerNodes.size();
+
+                // iterate over nodes in next layer to set activation values and input weights for next layer
+                for (int i = 0; i < numNodesInNextLayer; i++) {
+                    // iterate over nodes in current layer
+                    for (int j = 0; j < numNodesInCurrentLayer; j++) {
+
+                        // calculate activation values
+
+                        // gets input weight for next layer by multiplying current nodes activation value and weight
+                        double weightToNextLayer = Double.parseDouble(currentLayerNodes.get(j).getOutputWeights().get(i));
+                        double inputWeight = currentLayerNodes.get(j).getActivationValue() * weightToNextLayer;
+                        String stringifyWeight = Double.toString(inputWeight);
+
+                        nextLayerNodes.get(i).setInputWeight(j, stringifyWeight); // set the input weight for each node
+                    }
+
+                }
+                currentLayer = currentLayer.getNextLayer(); // move onto the next layer
+
+            }
+
+            // only for the output layer
+            currentLayer.calculateOutputActivation();
+
+            double maxActivationValue = 0;
+            double indexOfMaxValue = 0;
+
+            for (int i = 0; i < currentLayer.getNodes().size(); i++) {
+
+                if (currentLayer.getNodes().get(i).getActivationValue() > maxActivationValue) {
+                    maxActivationValue = currentLayer.getNodes().get(i).getActivationValue();
+                    indexOfMaxValue = i;
                 }
             }
 
-            // for each layer except the final output layer
-            if (currentLayer.getNextLayer() != null && currentLayer.getPreviousLayer() != null) {
+            return indexOfMaxValue;
 
-                // only for the hidden layer
-                if (currentLayer.getPreviousLayer() != null && currentLayer.getNextLayer() != null) {
-                    currentLayer.calculateRBFActivation(); // calculate the activation values for all nodes in the hidden layer
+
+        }else{
+            RBFLayer currentLayer = layers.get(0);
+            while(currentLayer.getNextLayer() != null){
+
+                // set the activation values for the input layer
+                if (currentLayer.getPreviousLayer() == null) {
+
+                    // iterates over all nodes in the input layer
+                    for (int i = 0; i < currentLayer.getNodes().size(); i++) {
+
+                        // assigning an activation value to each node in the input layer
+                        currentLayer.getNodes().get(i).setActivationValue(Double.parseDouble(point.get(i)));
+                    }
                 }
+
+                // for each layer except the final output layer
+                if (currentLayer.getNextLayer() != null && currentLayer.getPreviousLayer() != null) {
+
+                    // only for the hidden layer
+                    if (currentLayer.getPreviousLayer() != null && currentLayer.getNextLayer() != null) {
+                        currentLayer.calculateRBFActivation(); // calculate the activation values for all nodes in the hidden layer
+                    }
+
+                }
+
+                // set variables for cleaner code below
+                ArrayList<RBFNode> nextLayerNodes = currentLayer.getNextLayer().getNodes();
+                ArrayList<RBFNode> currentLayerNodes = currentLayer.getNodes();
+                int numNodesInNextLayer = nextLayerNodes.size();
+                int numNodesInCurrentLayer = currentLayerNodes.size();
+
+                // iterate over nodes in next layer to set activation values and input weights for next layer
+                for (int i = 0; i < numNodesInNextLayer; i++) {
+                    // iterate over nodes in current layer
+                    for (int j = 0; j < numNodesInCurrentLayer; j++) {
+
+                        // calculate activation values
+
+                        // gets input weight for next layer by multiplying current nodes activation value and weight
+                        double weightToNextLayer = Double.parseDouble(currentLayerNodes.get(j).getOutputWeights().get(i));
+                        double inputWeight = currentLayerNodes.get(j).getActivationValue() * weightToNextLayer;
+                        String stringifyWeight = Double.toString(inputWeight);
+
+                        nextLayerNodes.get(i).setInputWeight(j, stringifyWeight); // set the input weight for each node
+                    }
+
+                }
+                currentLayer = currentLayer.getNextLayer(); // move onto the next layer
 
             }
 
-            // set variables for cleaner code below
-            ArrayList<RBFNode> nextLayerNodes = currentLayer.getNextLayer().getNodes();
-            ArrayList<RBFNode> currentLayerNodes = currentLayer.getNodes();
-            int numNodesInNextLayer = nextLayerNodes.size();
-            int numNodesInCurrentLayer = currentLayerNodes.size();
+            // only for the output layer
+            currentLayer.calculateOutputActivation();
 
-            // iterate over nodes in next layer to set activation values and input weights for next layer
-            for (int i = 0; i < numNodesInNextLayer; i++) {
-                // iterate over nodes in current layer
-                for (int j = 0; j < numNodesInCurrentLayer; j++) {
+            double output = currentLayer.getNodes().get(0).getActivationValue();
 
-                    // calculate activation values
-
-                    // gets input weight for next layer by multiplying current nodes activation value and weight
-                    double weightToNextLayer = Double.parseDouble(currentLayerNodes.get(j).getOutputWeights().get(i));
-                    double inputWeight = currentLayerNodes.get(j).getActivationValue() * weightToNextLayer;
-                    String stringifyWeight = Double.toString(inputWeight);
-
-                    nextLayerNodes.get(i).setInputWeight(j, stringifyWeight); // set the input weight for each node
-                }
-
-            }
-            currentLayer = currentLayer.getNextLayer(); // move onto the next layer
+            return output;
 
         }
 
-        // only for the output layer
-        currentLayer.calculateOutputActivation();
-
-        double maxActivationValue = 0;
-        double indexOfMaxValue = 0;
-
-        for (int i = 0; i < currentLayer.getNodes().size(); i++) {
-
-            if (currentLayer.getNodes().get(i).getActivationValue() > maxActivationValue) {
-                maxActivationValue = currentLayer.getNodes().get(i).getActivationValue();
-                indexOfMaxValue = i;
-            }
-        }
-
-        return indexOfMaxValue;
     }
 
 
     // very much in progress, do not use
-    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, double learningRate, boolean categorical){
-        int maxIterations = 1000;
-        while(maxIterations>0){
-            maxIterations--;
-            RBFLayer outputLayer = layers.get(2);
-            RBFLayer hiddenLayer = layers.get(1);
-            Collections.shuffle(trainingData);
-            ArrayList<String> classifications = new ArrayList<>();
-            // for categorical data
-            for (int i = 0; i < trainingData.size()/4 ; i++) {
-                int indexOfClass = trainingData.get(0).size()-1;
-                classifications.add((int)classifyRBF(trainingData.get(i))+"");
-                double actualClassification = Double.parseDouble(trainingData.get(i).get(indexOfClass));
-                for (int j = 0; j < outputLayer.getNodes().size(); j++) {
-                    double activationAtOutput = outputLayer.getNodes().get(j).getActivationValue();
+    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> orignalFullSet, double learningRate, boolean categorical){
+        if(categorical){
 
-                    if(j == actualClassification){
-                        for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
-                            RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
-                            RBFNode outputNode = outputLayer.getNodes().get(j);
-                            double dk = -(1 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
-                            double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
-                            double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
-                            double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
-                            hiddenNode.setBackPropChanges(j,weightChange+"");
+            int maxIterations = 100;
+            while(maxIterations>0){
+                maxIterations--;
+                RBFLayer outputLayer = layers.get(2);
+                RBFLayer hiddenLayer = layers.get(1);
+                Collections.shuffle(trainingData);
+                ArrayList<String> classifications = new ArrayList<>();
+                // for categorical data
+
+                for (int i = 0; i < trainingData.size()/4 ; i++) {
+                    int indexOfClass = trainingData.get(0).size()-1;
+                    classifications.add(((int)classifyRBF(trainingData.get(i), true)+""));
+                    double actualClassification = Double.parseDouble(trainingData.get(i).get(indexOfClass));
+                    for (int j = 0; j < outputLayer.getNodes().size(); j++) {
+                        double activationAtOutput = outputLayer.getNodes().get(j).getActivationValue();
+
+                        if(j == actualClassification){
+                            for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                                RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
+                                RBFNode outputNode = outputLayer.getNodes().get(j);
+                                double dk = -(1 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
+                                double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
+                                double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
+                                double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
+                                hiddenNode.setBackPropChanges(j,weightChange+"");
+                            }
+
                         }
-
-                    }
-                    else{
-                        for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
-                            RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
-                            RBFNode outputNode = outputLayer.getNodes().get(j);
-                            double dk = -(0 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
-                            double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
-                            double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
-                            double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
-                            hiddenNode.setBackPropChanges(j,weightChange+"");
+                        else{
+                            for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                                RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
+                                RBFNode outputNode = outputLayer.getNodes().get(j);
+                                double dk = -(0 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
+                                double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
+                                double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
+                                double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
+                                hiddenNode.setBackPropChanges(j,weightChange+"");
+                            }
                         }
                     }
                 }
+                for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
+                    hiddenLayer.getNodes().get(i).updateBackPropChanges();
+                }
+                ArrayList<String> result = new ArrayList<>();
+                result = MathFunction.processConfusionMatrix(classifications,trainingData);
+                //System.out.println(result.get(2));
             }
-            for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
-                hiddenLayer.getNodes().get(i).updateBackPropChanges();
+
+        }else{
+            int maxIterations = 1000;
+            while(maxIterations>0){
+                maxIterations--;
+                RBFLayer outputLayer = layers.get(2);
+                RBFLayer hiddenLayer = layers.get(1);
+                Collections.shuffle(trainingData);
+                ArrayList<String> classifications = new ArrayList<>();
+
+                // for regression data
+
+                for (int i = 0; i < trainingData.size() ; i++) {
+                    int indexOfClass = trainingData.get(0).size()-1;
+
+                    classifications.add((int)classifyRBF(trainingData.get(i), false)+"");
+
+                    double activationAtOutput = outputLayer.getNodes().get(0).getActivationValue();
+                    double target = Double.parseDouble(trainingData.get(i).get(indexOfClass));
+
+                    for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                        RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
+                        RBFNode outputNode = outputLayer.getNodes().get(0);
+                        double dk = -(target - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
+                        double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
+                        double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(0));
+                        double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
+                        hiddenNode.setBackPropChanges(0,weightChange+"");
+                    }
+
+                }
+                for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
+                    hiddenLayer.getNodes().get(i).updateBackPropChanges();
+                }
+
+                String result = MathFunction.rootMeanSquaredError(classifications, trainingData, orignalFullSet);
+                System.out.println(result);
             }
-            ArrayList<String> result = new ArrayList<>();
-            result = MathFunction.processConfusionMatrix(classifications,trainingData);
-            System.out.println(result.get(2));
         }
     }
 }

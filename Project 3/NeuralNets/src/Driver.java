@@ -26,56 +26,90 @@ public class Driver {
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
-
-        //ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets);
-        //trainRBFNetworks(abalone, RBFAbalone, .5, true);
-        //ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets);
-        //trainRBFNetworks(car, RBFcar, .5, true);
-        ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
+        /*
+        // categorical rbf tests
+        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
+        trainRBFNetworks(abalone, RBFAbalone, .5, true);
+        ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets, true);
+        trainRBFNetworks(car, RBFcar, .5, true);
+        ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets, true);
         trainRBFNetworks(segmentation, RBFsegmetation, .5, true);
+        */
+
+        // regression rbf tests
+        ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
+        trainRBFNetworks(forestFire, RBFforestFire, .5, false);
+        ArrayList <RBFNetwork> RBFmachine = makeRBFNetworks(machine, machineCondensedTrainingSets, false);
+        trainRBFNetworks(machine, RBFmachine, .5, false);
+        ArrayList <RBFNetwork> RBFredWine = makeRBFNetworks(redWine, redWineCondensedTrainingSets, false);
+        trainRBFNetworks(redWine, RBFredWine, .5, false);
+        ArrayList <RBFNetwork> RBFwhiteWine = makeRBFNetworks(whiteWine, whiteWineCondensedTrainingSets, false);
+        trainRBFNetworks(whiteWine, RBFwhiteWine, .5, false);
 
     }
 
     public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
 
-        networks.get(0).trainRBFNetwork(dataset.dataSets.trainingSets.get(0), learningRate, categorical);
+        networks.get(10).trainRBFNetwork(dataset.dataSets.trainingSets.get(0), dataset.fullSet, learningRate, categorical);
         ArrayList<String> predictions = new ArrayList<>();
         for (int i = 0; i < dataset.dataSets.testSets.get(0).size() ; i++) {
-            double predicted = networks.get(0).classifyRBF(dataset.dataSets.testSets.get(0).get(i));
+            double predicted = networks.get(10).classifyRBF(dataset.dataSets.testSets.get(0).get(i), categorical);
             predictions.add((int)predicted+"");
             System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(0).get(i));
         }
-        ArrayList<String> results = new ArrayList<>();
-        results = MathFunction.processConfusionMatrix(predictions, dataset.dataSets.testSets.get(0));
-        System.out.println(results.get(2));
+
 
     }
 
-    public static ArrayList<RBFNetwork> makeRBFNetworks(Data dataset, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets) {
+    public static ArrayList<RBFNetwork> makeRBFNetworks(Data dataset, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets, boolean categorical) {
 
-        // making the Radial Basis Networks
+        // making the Radial Basis Networks for categorical outputs
+        if(categorical){
+            ArrayList<RBFNetwork> RBNetworks = new ArrayList<>();
+            final int numFeatures = dataset.dataSets.trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
+            final int possibleOutcomes = dataset.numClassifications; // number of possible classifications in a data set
 
-        ArrayList<RBFNetwork> RBNetworks = new ArrayList<>();
-        final int numFeatures = dataset.dataSets.trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
-        final int possibleOutcomes = dataset.numClassifications; // number of possible classifications in a data set
+            // iterate over the three condensed sets: C-KNN, Kmeans, Kpam
+            for (int i = 0; i < condensedSets.size(); i++) {
+                // iterate over the ten training sets for each dataset
+                for (int j = 0; j < condensedSets.get(i).size(); j++) {
+                    int condensedSetSize = condensedSets.get(i).get(j).size(); // get size of this particular condensed set
+                    int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
+                    RBFNetwork n = new RBFNetwork(layerSizes, condensedSets.get(i).get(j)); // build a network
+                    RBNetworks.add(n); // add to Radial Basis networks array for later use
 
-        // iterate over the three condensed sets: C-KNN, Kmeans, Kpam
-        for (int i = 0; i < condensedSets.size(); i++) {
-            // iterate over the ten training sets for each dataset
-            for (int j = 0; j < condensedSets.get(i).size(); j++) {
-                int condensedSetSize = condensedSets.get(i).get(j).size(); // get size of this particular condensed set
-                int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
-                RBFNetwork n = new RBFNetwork(layerSizes, condensedSets.get(i).get(j)); // build a network
-                RBNetworks.add(n); // add to Radial Basis networks array for later use
-
+                }
             }
+
+            return RBNetworks;
+
+
+        }else{
+            ArrayList<RBFNetwork> RBNetworks = new ArrayList<>();
+            final int numFeatures = dataset.dataSets.trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
+            final int possibleOutcomes = 1; // number of possible classifications in a data set
+
+            // iterate over the two condensed sets:  Kmeans, Kpam
+            for (int i = 1; i < condensedSets.size(); i++) {
+                // iterate over the ten training sets for each dataset
+                for (int j = 0; j < condensedSets.get(i).size(); j++) {
+                    int condensedSetSize = condensedSets.get(i).get(j).size(); // get size of this particular condensed set
+                    int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
+                    RBFNetwork n = new RBFNetwork(layerSizes, condensedSets.get(i).get(j)); // build a network
+                    RBNetworks.add(n); // add to Radial Basis networks array for later use
+
+                }
+            }
+
+            return RBNetworks;
+
         }
 
-        return RBNetworks;
+
     }
 
     // method to condense to get the 3 condensed datasets for a given full dataset

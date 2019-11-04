@@ -1,0 +1,8 @@
+Begin KMeans condensing for fire
+
+End test
+
+Begin K Medoids PAM condensing for fire
+
+End test
+
