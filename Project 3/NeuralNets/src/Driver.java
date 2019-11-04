@@ -30,15 +30,18 @@ public class Driver {
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
-        /*
+
         // categorical rbf tests
         ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
         trainRBFNetworks(abalone, RBFAbalone, .5, true);
+        runRBFTests(abalone, RBFAbalone, true);
         ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets, true);
         trainRBFNetworks(car, RBFcar, .5, true);
+        runRBFTests(car, RBFcar, true);
         ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets, true);
         trainRBFNetworks(segmentation, RBFsegmetation, .5, true);
-        */
+        runRBFTests(segmentation, RBFsegmetation, true);
+
 
         // regression rbf tests
         ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
@@ -52,17 +55,68 @@ public class Driver {
 
     }
 
-    public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
+    public static void runRBFTests(Data dataset,ArrayList<RBFNetwork> networks, boolean categorical){
+        if(categorical){
+            for (int i = 0; i < 3 ; i++) {
+                for (int j = 0; j < 10 ; j++) {
+                    int indexOfNetwork = i*10+j;
+                    ArrayList<String> predictions = new ArrayList<>();
+                    for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
+                        double predicted = networks.get(indexOfNetwork).classifyRBF(dataset.dataSets.testSets.get(j).get(k), categorical);
+                        predictions.add((int)predicted+"");
+                        System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(j).get(k));
+                    }
+                    ArrayList<String> results = MathFunction.processConfusionMatrix(predictions,dataset.dataSets.testSets.get(j));
+                    System.out.println(results.get(2));
+                }
+            }
 
-        networks.get(10).trainRBFNetwork(dataset.dataSets.trainingSets.get(0), dataset.fullSet, learningRate, categorical);
-        ArrayList<String> predictions = new ArrayList<>();
-        for (int i = 0; i < dataset.dataSets.testSets.get(0).size() ; i++) {
-            double predicted = networks.get(10).classifyRBF(dataset.dataSets.testSets.get(0).get(i), categorical);
-            predictions.add((int)predicted+"");
-            System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(0).get(i));
+
+        }
+
+        else{
+            for (int i = 0; i < 2 ; i++) {
+                for (int j = 0; j < 10 ; j++) {
+                    int indexOfNetwork = i*10+j;
+                    ArrayList<String> predictions = new ArrayList<>();
+                    for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
+                        double predicted = networks.get(indexOfNetwork).classifyRBF(dataset.dataSets.testSets.get(j).get(k), categorical);
+                        predictions.add((int)predicted+"");
+                        System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(j).get(k));
+                    }
+                    ArrayList<String> results = new ArrayList<>();
+                    results.add(MathFunction.rootMeanSquaredError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
+                    results.add(MathFunction.meanAbsoluteError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
+                    System.out.println(results.get(0));
+                    System.out.println(results.get(1));
+                }
+            }
+
+
         }
 
 
+
+    }
+
+
+    public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
+        if(categorical){
+            for (int i = 0; i < 3 ; i++) {
+                for (int j = 0; j < 10 ; j++) {
+                    int indexOfNetwork = i*10+j;
+                    networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
+                }
+            }
+        }else{
+            for (int i = 0; i < 2 ; i++) {
+                for (int j = 0; j < 10 ; j++) {
+                    int indexOfNetwork = i*10+j;
+                    networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
+
+                }
+            }
+        }
     }
 
     public static ArrayList<RBFNetwork> makeRBFNetworks(Data dataset, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets, boolean categorical) {

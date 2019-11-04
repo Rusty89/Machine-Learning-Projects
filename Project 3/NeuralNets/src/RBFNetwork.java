@@ -280,7 +280,7 @@ public class RBFNetwork
 
                 // for regression data
 
-                for (int i = 0; i < trainingData.size() ; i++) {
+                for (int i = 0; i < trainingData.size()/4 ; i++) {
                     int indexOfClass = trainingData.get(0).size()-1;
 
                     classifications.add((int)classifyRBF(trainingData.get(i), false)+"");
@@ -303,8 +303,8 @@ public class RBFNetwork
                     hiddenLayer.getNodes().get(i).updateBackPropChanges();
                 }
 
-                String result = MathFunction.rootMeanSquaredError(classifications, trainingData, orignalFullSet);
-                System.out.println(result);
+                //String result = MathFunction.rootMeanSquaredError(classifications, trainingData, orignalFullSet);
+                //System.out.println(result);
             }
         }
     }
