@@ -23,7 +23,7 @@ public class Driver {
 
         // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
         System.out.println("\nCondense all of our data: ");
-  //      ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
     //    ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
       //  ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
@@ -32,13 +32,15 @@ public class Driver {
         //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
         double learningRate = .5;
-/*        // categorical rbf tests
-        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
-        trainRBFNetworks(abalone, RBFAbalone, learningRate, true);
-        runRBFTests(abalone, RBFAbalone, true);
+        // categorical rbf tests
+
+
         ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets, true);
         trainRBFNetworks(car, RBFcar, learningRate, true);
         runRBFTests(car, RBFcar, true);
+/*        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
+        trainRBFNetworks(abalone, RBFAbalone, learningRate, true);
+        runRBFTests(abalone, RBFAbalone, true);
         ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets, true);
         trainRBFNetworks(segmentation, RBFsegmetation, learningRate, true);
         runRBFTests(segmentation, RBFsegmetation, true);

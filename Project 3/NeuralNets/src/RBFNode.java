@@ -12,7 +12,7 @@ public class RBFNode
     private List<String> prevBackPropChanges = new ArrayList<>();
     private double activationValue;
     public double sigma = 1;
-    public double momentumConstant = 0.1;
+    public double momentumConstant = .05;
 
     public RBFNode (RBFLayer layer)
     {

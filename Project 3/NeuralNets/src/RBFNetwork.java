@@ -42,13 +42,14 @@ public class RBFNetwork
     public void initializeWeightsRBF(){
 
         final double minWeight = 0.01;
-        final double minRange = .95;
+        final double minRange = .5;
         RBFLayer currentLayer = layers.get(0);
         while (currentLayer.getNextLayer()!=null){
             // initialize input layer output weights
             if(currentLayer.getPreviousLayer()==null){
                 for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
-                    for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
+                    // +1 is for the bias node to be added in later
+                    for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() + 1; j++) {
                         currentLayer.getNodes().get(i).addOutputWeight();
                         currentLayer.getNodes().get(i).setOutputWeights(j, "1");
                     }
@@ -56,6 +57,8 @@ public class RBFNetwork
             }
             // initialize hidden layer output weights
             else{
+                // adding the bias node
+                currentLayer.getNodes().add(new RBFNode(currentLayer));
                 for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
                     for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
                         double randWeight = Math.random()*minRange + minWeight;
@@ -295,6 +298,7 @@ public class RBFNetwork
                     for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
                         RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
                         RBFNode outputNode = outputLayer.getNodes().get(0);
+
                         double dk = -(target - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
                         double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                         double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(0));
