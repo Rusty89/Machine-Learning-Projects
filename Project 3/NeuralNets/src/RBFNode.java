@@ -9,8 +9,10 @@ public class RBFNode
     private List<String> inputWeights = new ArrayList<>();
     private List<String> outputWeights = new ArrayList<>();
     private List<String> backPropChanges = new ArrayList<>();
+    private List<String> prevBackPropChanges = new ArrayList<>();
     private double activationValue;
     public double sigma = 1;
+    public double momentumConstant = 0.1;
 
     public RBFNode (RBFLayer layer)
     {
@@ -67,11 +69,24 @@ public class RBFNode
         backPropChanges.add("0");
     }
 
+    public List<String> getPreviousPropChanges() {
+        return prevBackPropChanges;
+    }
+
+    public void setPreviousPropChanges(int index, String weightVal) { prevBackPropChanges.set(index, weightVal); }
+
+    public void addPreviousPropChanges() {
+        prevBackPropChanges.add("0");
+    }
+
     public void updateBackPropChanges(){
         for (int i = 0; i <backPropChanges.size() ; i++) {
             double weight = Double.parseDouble(outputWeights.get(i));
-            weight += Double.parseDouble(backPropChanges.get(i));
+            double previousChange = Double.parseDouble(prevBackPropChanges.get(i));
+            prevBackPropChanges.set(i, backPropChanges.get(i));
+            weight += Double.parseDouble(backPropChanges.get(i))+momentumConstant*previousChange;
             String updatedWeight = weight +"";
+
             outputWeights.set(i, updatedWeight);
             backPropChanges.set(i,"0");
         }

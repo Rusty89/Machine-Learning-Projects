@@ -65,6 +65,8 @@ public class RBFNetwork
                         currentLayer.getNodes().get(i).setOutputWeights(j, valOfRandWeight);
 
                         currentLayer.getNodes().get(i).addBackPropChanges();
+
+                        currentLayer.getNodes().get(i).addPreviousPropChanges();
                     }
                     for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
                         currentLayer.getNodes().get(i).addInputWeight();
@@ -217,7 +219,7 @@ public class RBFNetwork
     }
 
 
-    // very much in progress, do not use
+    // training the RBF networks for categorical and regression classifications
     public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> orignalFullSet, double learningRate, boolean categorical){
         if(categorical){
 
@@ -271,7 +273,8 @@ public class RBFNetwork
             }
 
         }else{
-            int maxIterations = 1000;
+
+            int maxIterations = 300;
             while(maxIterations>0){
                 maxIterations--;
                 RBFLayer outputLayer = layers.get(2);
@@ -281,7 +284,7 @@ public class RBFNetwork
 
                 // for regression data
 
-                for (int i = 0; i < trainingData.size()/4 ; i++) {
+                for (int i = 0; i < trainingData.size()/4; i++) {
                     int indexOfClass = trainingData.get(0).size()-1;
 
                     classifications.add((int)classifyRBF(trainingData.get(i), false)+"");
@@ -296,6 +299,7 @@ public class RBFNetwork
                         double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                         double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(0));
                         double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
+
                         hiddenNode.setBackPropChanges(0,weightChange+"");
                     }
 

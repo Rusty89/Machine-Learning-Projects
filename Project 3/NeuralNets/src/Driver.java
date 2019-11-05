@@ -23,16 +23,16 @@ public class Driver {
 
         // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
         System.out.println("\nCondense all of our data: ");
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
+  //      ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
+    //    ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
+      //  ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
+        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
         double learningRate = .5;
-     /*   // categorical rbf tests
+/*        // categorical rbf tests
         ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
         trainRBFNetworks(abalone, RBFAbalone, learningRate, true);
         runRBFTests(abalone, RBFAbalone, true);
@@ -42,22 +42,24 @@ public class Driver {
         ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets, true);
         trainRBFNetworks(segmentation, RBFsegmetation, learningRate, true);
         runRBFTests(segmentation, RBFsegmetation, true);
-    */
+*/
 
         // regression rbf tests
-        ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
-        trainRBFNetworks(forestFire, RBFforestFire, learningRate, false);
-        runRBFTests(forestFire, RBFforestFire, false);
         ArrayList <RBFNetwork> RBFmachine = makeRBFNetworks(machine, machineCondensedTrainingSets, false);
         trainRBFNetworks(machine, RBFmachine, learningRate, false);
         runRBFTests(machine, RBFmachine, false);
+
+        /*ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
+        trainRBFNetworks(forestFire, RBFforestFire, learningRate, false);
+        runRBFTests(forestFire, RBFforestFire, false);
+
         ArrayList <RBFNetwork> RBFredWine = makeRBFNetworks(redWine, redWineCondensedTrainingSets, false);
         trainRBFNetworks(redWine, RBFredWine, learningRate, false);
         runRBFTests(redWine, RBFredWine, false);
         ArrayList <RBFNetwork> RBFwhiteWine = makeRBFNetworks(whiteWine, whiteWineCondensedTrainingSets, false);
         trainRBFNetworks(whiteWine, RBFwhiteWine, learningRate, false);
         runRBFTests(whiteWine,RBFwhiteWine, false);
-
+        */
     }
 
     public static void runRBFTests(Data dataset,ArrayList<RBFNetwork> networks, boolean categorical){

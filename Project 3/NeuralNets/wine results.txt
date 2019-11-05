@@ -1,0 +1,8 @@
+Begin KMeans condensing for wine
+
+End test
+
+Begin K Medoids PAM condensing for wine
+
+End test
+

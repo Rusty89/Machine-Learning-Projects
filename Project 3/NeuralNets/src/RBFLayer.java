@@ -7,7 +7,7 @@ public class RBFLayer
     private RBFLayer previousLayer;
     private ArrayList<RBFNode> nodes;
 
-    public double bias = .05;
+    public double bias = 0.05;
 
     public RBFLayer (int layerSize)
     {
@@ -72,7 +72,7 @@ public class RBFLayer
             for (int j = 0; j < currentNode.getInputWeights().size() ; j++) {
                 value += Double.parseDouble(currentNode.getInputWeights().get(j));
             }
-            value = value/currentNode.getInputWeights().size();
+            //value = value/currentNode.getInputWeights().size();
             // put output through logistic function
             value = MathFunction.logisiticActivationFunction(value);
             // set the activation value on the node

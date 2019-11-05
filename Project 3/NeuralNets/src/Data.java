@@ -241,7 +241,7 @@ public class Data {
         if (regression) {
             for (int i = 0; i < numTrainingSets; i++) {
 
-                int numClusters = dataSets.trainingSets.get(0).size() / 4; // only uses n / 4 as per instruction
+                int numClusters = dataSets.trainingSets.get(i).size() / 4; // only uses n / 4 as per instruction
 
                 // actually runs the KNNAlgorithms
                 System.out.println("Running K-Means on the training set " + (i + 1));
@@ -276,7 +276,7 @@ public class Data {
 
             for (int i = 0; i < numTrainingSets; i++) {
 
-                int numClusters = dataSets.trainingSets.get(0).size() / 4; // only uses n / 4 as per instruction
+                int numClusters = dataSets.trainingSets.get(i).size() / 4; // only uses n / 4 as per instruction
 
                 // actually runs the KNNAlgorithms
                 System.out.println("Running PAM on the training set " + (i + 1));
