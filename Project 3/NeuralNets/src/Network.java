@@ -47,4 +47,13 @@ public class Network
         return layers.get(layers.size()-1).getHighestValueNodeIndex();
     }
 
+    public void backprop(){
+        // Set up values in output/last layer
+        Layer output = layers.get(layers.size()- 1);
+        for (Node n: output.getNodes()
+             ) {
+            n.errDer = output.isHighestValueNode(output.getNodes().indexOf(n)) ? n.value - 1 : n.value;
+            n.outDer = n.value * (1 - n.value);
+        }
+    }
 }
