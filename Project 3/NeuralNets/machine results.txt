@@ -1,8 +1,0 @@
-Begin KMeans condensing for machine
-
-End test
-
-Begin K Medoids PAM condensing for machine
-
-End test
-

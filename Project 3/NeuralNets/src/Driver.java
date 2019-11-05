@@ -3,7 +3,9 @@
  */
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Driver {
@@ -21,53 +23,59 @@ public class Driver {
         Data redWine = new WineData(new File("../../DataSets/winequality-red.csv"));
         Data whiteWine = new WineData(new File("../../DataSets/winequality-white.csv"));
 
-        // condense all data using Condensed KNN, K-Means, and K-PAM before passing to networks
-        System.out.println("\nCondense all of our data: ");
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
-    //    ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
-      //  ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
-        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
-        //ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
 
         double learningRate = .5;
-        // categorical rbf tests
 
 
+
+
+
+        /* Uncomment one to run one set of testing for these
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
         ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets, true);
         trainRBFNetworks(car, RBFcar, learningRate, true);
         runRBFTests(car, RBFcar, true);
-/*        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
+
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> abaloneCondensedTrainingSets = condenseData(abalone, false, true);
+        ArrayList <RBFNetwork> RBFAbalone = makeRBFNetworks(abalone, abaloneCondensedTrainingSets, true);
         trainRBFNetworks(abalone, RBFAbalone, learningRate, true);
         runRBFTests(abalone, RBFAbalone, true);
+
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> segmentationCondensedTrainingSets = condenseData(segmentation, false, true);
         ArrayList <RBFNetwork> RBFsegmetation = makeRBFNetworks(segmentation, segmentationCondensedTrainingSets, true);
         trainRBFNetworks(segmentation, RBFsegmetation, learningRate, true);
         runRBFTests(segmentation, RBFsegmetation, true);
-*/
 
-        // regression rbf tests
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> machineCondensedTrainingSets = condenseData(machine, true, true);
         ArrayList <RBFNetwork> RBFmachine = makeRBFNetworks(machine, machineCondensedTrainingSets, false);
         trainRBFNetworks(machine, RBFmachine, learningRate, false);
         runRBFTests(machine, RBFmachine, false);
 
-        /*ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> forestFireCondensedTrainingSets = condenseData(forestFire, true, true);
+        ArrayList <RBFNetwork> RBFforestFire = makeRBFNetworks(forestFire, forestFireCondensedTrainingSets, false);
         trainRBFNetworks(forestFire, RBFforestFire, learningRate, false);
         runRBFTests(forestFire, RBFforestFire, false);
 
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> redWineCondensedTrainingSets = condenseData(redWine, true, true);
         ArrayList <RBFNetwork> RBFredWine = makeRBFNetworks(redWine, redWineCondensedTrainingSets, false);
         trainRBFNetworks(redWine, RBFredWine, learningRate, false);
         runRBFTests(redWine, RBFredWine, false);
+
+        ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedTrainingSets = condenseData(whiteWine, true, true);
         ArrayList <RBFNetwork> RBFwhiteWine = makeRBFNetworks(whiteWine, whiteWineCondensedTrainingSets, false);
         trainRBFNetworks(whiteWine, RBFwhiteWine, learningRate, false);
         runRBFTests(whiteWine,RBFwhiteWine, false);
         */
     }
 
-    public static void runRBFTests(Data dataset,ArrayList<RBFNetwork> networks, boolean categorical){
+    public static void runRBFTests(Data dataset,ArrayList<RBFNetwork> networks, boolean categorical) throws IOException{
+
+        FileWriter filer = new FileWriter(dataset.toString() + "RBFresults.csv");
+        PrintWriter printer = new PrintWriter(filer);
+
         if(categorical){
             for (int i = 0; i < 3 ; i++) {
-                for (int j = 0; j < 1 ; j++) {
+                for (int j = 0; j < 10 ; j++) {
                     int indexOfNetwork = i*10+j;
                     ArrayList<String> predictions = new ArrayList<>();
                     for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
@@ -77,6 +85,10 @@ public class Driver {
                     }
                     ArrayList<String> results = MathFunction.processConfusionMatrix(predictions,dataset.dataSets.testSets.get(j));
                     System.out.println(results);
+                    printer.print(results.get(0)+",");
+                    printer.print(results.get(1)+",");
+                    printer.print(results.get(2)+",");
+                    printer.println();
                 }
             }
 
@@ -85,7 +97,7 @@ public class Driver {
 
         else{
             for (int i = 0; i < 2 ; i++) {
-                for (int j = 0; j < 1 ; j++) {
+                for (int j = 0; j < 10; j++) {
                     int indexOfNetwork = i*10+j;
                     ArrayList<String> predictions = new ArrayList<>();
                     for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
@@ -97,23 +109,30 @@ public class Driver {
                     results.add(MathFunction.rootMeanSquaredError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
                     results.add(MathFunction.meanAbsoluteError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
                     System.out.println(results);
+                    printer.print(results.get(0)+",");
+                    printer.print(results.get(1)+",");
+                    printer.println();
                 }
             }
         }
+        printer.close();
+        filer.close();
+
     }
 
 
+    // function to tell the networks to train
     public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
         if(categorical){
             for (int i = 0; i < 3 ; i++) {
-                for (int j = 0; j < 1 ; j++) {
+                for (int j = 0; j < 10 ; j++) {
                     int indexOfNetwork = i*10+j;
                     networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
                 }
             }
         }else{
             for (int i = 0; i < 2 ; i++) {
-                for (int j = 0; j < 1 ; j++) {
+                for (int j = 0; j < 10 ; j++) {
                     int indexOfNetwork = i*10+j;
                     networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
 
@@ -122,6 +141,7 @@ public class Driver {
         }
     }
 
+    // constructs the RBF networks
     public static ArrayList<RBFNetwork> makeRBFNetworks(Data dataset, ArrayList<ArrayList<ArrayList<ArrayList<String>>>> condensedSets, boolean categorical) {
 
         // making the Radial Basis Networks for categorical outputs

@@ -7,7 +7,7 @@ public class RBFLayer
     private RBFLayer previousLayer;
     private ArrayList<RBFNode> nodes;
 
-    public double bias = 0.05;
+    public double bias = .1;
 
     public RBFLayer (int layerSize)
     {
@@ -51,6 +51,7 @@ public class RBFLayer
 
 
     // use input weights and center values to calculate activation values for nodes in RBF network
+    // using gaussian kernel activation
     public void calculateRBFActivation() {
         // iterate over nodes in current layer
         for (int i = 0; i < getNodes().size()-1; i++) {
@@ -61,9 +62,12 @@ public class RBFLayer
             // set the activation value on the node
             getNodes().get(i).setActivationValue(value);
         }
-        getNodes().get(getNodes().size()-1).setActivationValue(1);
+        //sets activation of the bias node
+        getNodes().get(getNodes().size()-1).setActivationValue(.5);
     }
 
+    // reads in the input weights to all the output nodes, calculates their activation
+    // by summing the inputs and running then through a sigmoid activation
     public void calculateOutputActivation(){
         // iterate over nodes in current layer
         for (int i = 0; i < getNodes().size(); i++) {
@@ -74,7 +78,7 @@ public class RBFLayer
                 value += Double.parseDouble(currentNode.getInputWeights().get(j));
 
             }
-            //value = value/currentNode.getInputWeights().size();
+
             // put output through logistic function
             value = MathFunction.logisiticActivationFunction(value);
             // set the activation value on the node
@@ -83,7 +87,9 @@ public class RBFLayer
 
     }
 
-    // reference for why and how i'm doing this
+    // Sets the sigma values for all the hidden nodes, finds two nearest neighbors and takes
+    // the average distance between them
+    // We chose t odo this based on the recommendation of this paper
     // https://perso.uclouvain.be/michel.verleysen/papers/nepl03nb.pdf
     public void findSigmaForAllNodes(){
         for (int i = 0; i < nodes.size()-1; i++) {

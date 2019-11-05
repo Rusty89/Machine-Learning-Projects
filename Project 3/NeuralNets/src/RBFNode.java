@@ -12,7 +12,7 @@ public class RBFNode
     private List<String> prevBackPropChanges = new ArrayList<>();
     private double activationValue;
     public double sigma = 1;
-    public double momentumConstant = .05;
+    public double momentumConstant = 0.05;
 
     public RBFNode (RBFLayer layer)
     {
@@ -79,6 +79,8 @@ public class RBFNode
         prevBackPropChanges.add("0");
     }
 
+    // based on the training phase, back propogation changes are calculated and updated
+    // using this function, it also uses the previous change to add momentum to the current change
     public void updateBackPropChanges(){
         for (int i = 0; i <backPropChanges.size() ; i++) {
             double weight = Double.parseDouble(outputWeights.get(i));
