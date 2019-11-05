@@ -5,10 +5,11 @@ import java.util.List;
 public class Node
 {
     private Layer layer;
-    public double weight, value;
+    public double weight, value, errDer, outDer; // errDer = error derivative (1 of 2 needed), outDer = output derivative (2 of 2 needed)
     public List<String> center;
     //private ArrayList<Double> vector;
-    private HashMap<Node, Double> connectionValues;
+    public HashMap<Node, Double> connectionValues;
+
 
     public Node (Layer layer, double weight)
     {

@@ -58,4 +58,11 @@ public class Layer
         }
         return greatestIndex;
     }
+    public boolean isHighestValueNode(int index){
+        int greatestIndex = getHighestValueNodeIndex();
+        if (index == greatestIndex) {
+            return true;
+        }
+        return false;
+    }
 }

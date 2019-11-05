@@ -46,4 +46,5 @@ public class Network
     {
         return layers.get(layers.size()-1).getHighestValueNodeIndex();
     }
+
 }
