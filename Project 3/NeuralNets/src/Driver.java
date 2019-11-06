@@ -38,21 +38,23 @@ public class Driver {
 
         Data maccakek = new CarData(new File("DataSets/car.data"));
         int correctAnswers = 0, totalGuesses = 0;
-        
-        for (ArrayList<ArrayList<String>> nonsensical: maccakek.dataSets.trainingSets)
-        {
-            for (ArrayList<String> entry: nonsensical)
-            {
-                testNet.initializeInputLayer(entry);
-                testNet.feedForward();
-                //System.out.println(testNet.getClassNumber() + " guess  |  actual " + Integer.parseInt(entry.get(entry.size() - 1)));
 
-                if (testNet.getClassNumber() == Integer.parseInt(entry.get(entry.size() - 1)))
-                    correctAnswers++;
-                totalGuesses++;
-                if (totalGuesses % 50 == 0)
-                    System.out.println(((double) correctAnswers / (double) totalGuesses) * 100 + "% correct");
-                testNet.backprop();
+        for (int i = 0; i < 100; i++) {
+            for (ArrayList<ArrayList<String>> nonsensical: maccakek.dataSets.trainingSets)
+            {
+                for (ArrayList<String> entry: nonsensical)
+                {
+                    testNet.initializeInputLayer(entry);
+                    testNet.feedForward();
+                    //System.out.println(testNet.getClassNumber() + " guess  |  actual " + Integer.parseInt(entry.get(entry.size() - 1)));
+
+                    if (testNet.getClassNumber() == Integer.parseInt(entry.get(entry.size() - 1)))
+                        correctAnswers++;
+                    totalGuesses++;
+                    if (totalGuesses % 150 == 0)
+                        System.out.println(((double) correctAnswers / (double) totalGuesses) * 100 + "% correct");
+                    testNet.backprop();
+                }
             }
         }
     }

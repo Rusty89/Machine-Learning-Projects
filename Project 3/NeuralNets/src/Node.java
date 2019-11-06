@@ -46,7 +46,7 @@ public class Node
         double sum = 0;
         for (Node previousNode: previousNodes())
             sum += previousNode.output * previousNode.connectionValues.get(this);
-        output = MathFunction.logisiticActivationFunction(sum);
+        output = MathFunction.logisticActivationFunction(sum);
         input = sum;
     }
 }

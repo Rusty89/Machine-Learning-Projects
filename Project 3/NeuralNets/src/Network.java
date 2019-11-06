@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Network
 {
     private ArrayList<Layer> layers;
-    private double learningRate = .05;
+    private double learningRate = .2;
     private int correctClass;
 
     public Network (int[] layerSizes)
@@ -14,7 +14,7 @@ public class Network
         //each layer will be the size of the corresponding int in layerSizes.
         layers = new ArrayList<>();
         for (int size: layerSizes)
-            layers.add(new Layer(size, 0.05, .095));
+            layers.add(new Layer(size, 0.0001, .1));
 
         //inform each layer of its neighbors. setPreviousLayer() also updates the previous layer's nextLayer.
         Layer previousLayer = null;
@@ -89,12 +89,11 @@ public class Network
         ArrayList<HashMap<Node, Double>> layerWeights = new ArrayList<>();
         newWeights.add(layerWeights);
         for (Node n: layer.getNodes()) {
-            n.dOut = n.output * (1 - n.output);
-            n.dErr = 0;
-
             HashMap<Node, Double> nodeMap = new HashMap<>();
             layerWeights.add(nodeMap);
-            //sum up the derivative of the error
+
+            n.dOut = n.output * (1 - n.output);
+            n.dErr = 0;   //sum up the derivative of the error
             for (Node nextNode: layer.getNextLayer().getNodes())
                 n.dErr += nextNode.dErr * nextNode.dOut * n.connectionValues.get(nextNode);
             //once we have that, we can use it to calculate the new weight for each node!
