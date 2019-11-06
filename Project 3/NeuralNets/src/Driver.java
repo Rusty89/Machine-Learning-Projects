@@ -10,18 +10,21 @@ import java.util.ArrayList;
 
 public class Driver {
 
+    private static final int numCondensedSets = 3;
+    private static final int numCVSSets = 10;
+
     public static void main(String args[])throws Exception {
 
         // read in our categorical sets
-        Data car = new CarData(new File("../../DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("../../DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("../../DataSets/segmentation.data"));
+        Data car = new CarData(new File("DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("../../DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("../../DataSets/machine.data"));
-        Data redWine = new WineData(new File("../../DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("../../DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("DataSets/machine.data"));
+        Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
 
 
         double learningRate = .5;
@@ -68,74 +71,74 @@ public class Driver {
         */
     }
 
-    public static void runRBFTests(Data dataset,ArrayList<RBFNetwork> networks, boolean categorical) throws IOException{
+    // runs tests for our Radial Basis Function Network
+    public static void runRBFTests(Data dataset, ArrayList<RBFNetwork> networks, boolean categorical) throws IOException {
 
         FileWriter filer = new FileWriter(dataset.toString() + "RBFresults.csv");
         PrintWriter printer = new PrintWriter(filer);
 
-        if(categorical){
-            for (int i = 0; i < 3 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
-                    int indexOfNetwork = i*10+j;
+        // if our data is categorical
+        if(categorical) {
+            for (int i = 0; i < numCondensedSets; i++) {
+                for (int j = 0; j < numCVSSets; j++) {
+                    int indexOfNetwork = (i * numCVSSets) + j;
                     ArrayList<String> predictions = new ArrayList<>();
-                    for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
+                    for (int k = 0; k < dataset.dataSets.testSets.get(j).size(); k++) {
                         double predicted = networks.get(indexOfNetwork).classifyRBF(dataset.dataSets.testSets.get(j).get(k), categorical);
-                        predictions.add((int)predicted+"");
-                        System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(j).get(k));
+                        predictions.add((int)predicted + "");
+                        System.out.println(predicted + ": " + dataset.dataSets.testSets.get(j).get(k));
                     }
-                    ArrayList<String> results = MathFunction.processConfusionMatrix(predictions,dataset.dataSets.testSets.get(j));
+                    ArrayList<String> results = MathFunction.processConfusionMatrix(predictions, dataset.dataSets.testSets.get(j));
                     System.out.println(results);
-                    printer.print(results.get(0)+",");
-                    printer.print(results.get(1)+",");
-                    printer.print(results.get(2)+",");
+                    printer.print(results.get(0) + ",");
+                    printer.print(results.get(1) + ",");
+                    printer.print(results.get(2) + ",");
                     printer.println();
                 }
             }
-
-
         }
 
-        else{
-            for (int i = 0; i < 2 ; i++) {
-                for (int j = 0; j < 10; j++) {
-                    int indexOfNetwork = i*10+j;
+        // for our regression sets
+        else {
+            // no condensed on regression
+            for (int i = 0; i < numCondensedSets - 1; i++) {
+                for (int j = 0; j < numCVSSets; j++) {
+                    int indexOfNetwork = (i * numCVSSets) + j;
                     ArrayList<String> predictions = new ArrayList<>();
-                    for (int k = 0; k <dataset.dataSets.testSets.get(j).size() ; k++) {
+                    for (int k = 0; k < dataset.dataSets.testSets.get(j).size(); k++) {
                         double predicted = networks.get(indexOfNetwork).classifyRBF(dataset.dataSets.testSets.get(j).get(k), categorical);
-                        predictions.add((int)predicted+"");
-                        System.out.println(predicted+ ": "+ dataset.dataSets.testSets.get(j).get(k));
+                        predictions.add((int)predicted + "");
+                        System.out.println(predicted + ": " + dataset.dataSets.testSets.get(j).get(k));
                     }
                     ArrayList<String> results = new ArrayList<>();
-                    results.add(MathFunction.rootMeanSquaredError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
-                    results.add(MathFunction.meanAbsoluteError(predictions,dataset.dataSets.testSets.get(j), dataset.fullSet));
+                    results.add(MathFunction.rootMeanSquaredError(predictions, dataset.dataSets.testSets.get(j), dataset.fullSet));
+                    results.add(MathFunction.meanAbsoluteError(predictions, dataset.dataSets.testSets.get(j), dataset.fullSet));
                     System.out.println(results);
-                    printer.print(results.get(0)+",");
-                    printer.print(results.get(1)+",");
+                    printer.print(results.get(0) + ",");
+                    printer.print(results.get(1) + ",");
                     printer.println();
                 }
             }
         }
         printer.close();
         filer.close();
-
     }
 
 
     // function to tell the networks to train
     public static void trainRBFNetworks(Data dataset, ArrayList<RBFNetwork> networks, double learningRate, boolean categorical){
         if(categorical){
-            for (int i = 0; i < 3 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
-                    int indexOfNetwork = i*10+j;
+            for (int i = 0; i < numCondensedSets; i++) {
+                for (int j = 0; j < numCVSSets; j++) {
+                    int indexOfNetwork = (i * numCVSSets) + j;
                     networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
                 }
             }
-        }else{
-            for (int i = 0; i < 2 ; i++) {
-                for (int j = 0; j < 10 ; j++) {
-                    int indexOfNetwork = i*10+j;
+        } else {
+            for (int i = 0; i < numCondensedSets - 1; i++) {
+                for (int j = 0; j < numCVSSets ; j++) {
+                    int indexOfNetwork = (i * numCVSSets) + j;
                     networks.get(indexOfNetwork).trainRBFNetwork(dataset.dataSets.trainingSets.get(j), dataset.fullSet, learningRate, categorical);
-
                 }
             }
         }
@@ -158,14 +161,13 @@ public class Driver {
                     int[] layerSizes = {numFeatures, condensedSetSize, possibleOutcomes}; // so we know how many nodes go in different layers
                     RBFNetwork n = new RBFNetwork(layerSizes, condensedSets.get(i).get(j)); // build a network
                     RBNetworks.add(n); // add to Radial Basis networks array for later use
-
                 }
             }
 
             return RBNetworks;
 
 
-        }else{
+        } else {
             ArrayList<RBFNetwork> RBNetworks = new ArrayList<>();
             final int numFeatures = dataset.dataSets.trainingSets.get(0).get(0).size() - 1; // num features will not change with different training sets
             final int possibleOutcomes = 1; // number of possible classifications in a data set
@@ -181,12 +183,8 @@ public class Driver {
 
                 }
             }
-
             return RBNetworks;
-
         }
-
-
     }
 
     // method to condense to get the 3 condensed datasets for a given full dataset
@@ -210,6 +208,7 @@ public class Driver {
         return condensedSets;
     }
 
+    // method to print a dataset to verify correct pre-processing and compilation
     public static void printDataset(ArrayList<ArrayList<ArrayList<ArrayList<String>>>> dataset) {
         for(int i = 0; i < dataset.size(); i++) {
             System.out.println("\nCondensed set: " + i);

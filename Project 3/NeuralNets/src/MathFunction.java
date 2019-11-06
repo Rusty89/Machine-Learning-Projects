@@ -6,18 +6,17 @@ import java.util.*;
 
 public class MathFunction {
     public static double squaredError(double predicted, double target){
-        return Math.pow((predicted-target),2);
+        return Math.pow((predicted-target), 2);
     }
 
 
     public static double logisiticActivationFunction(double input){
-        double output= 1/(1 + Math.exp(-input));
+        double output = 1 / (1 + Math.exp(-input));
         return output;
     }
 
     public static double gaussianKernelActivation(List<String> inputVector, List<String> center, double sigma, double bias) {
-        double output = 0;
-        output = Math.exp((-Math.pow(euclideanDistance(inputVector, center), 2) / (2 *bias* Math.pow(sigma, 2))));
+        double output = Math.exp((-Math.pow(euclideanDistance(inputVector, center), 2) / (2 * bias * Math.pow(sigma, 2))));
         return output;
     }
 
@@ -58,7 +57,7 @@ public class MathFunction {
             boolean distanceIsZero = point1.get(i).equals(point2.get(i));
 
             // only increments if hamming distance is not 0 between two points
-            if(!distanceIsZero){
+            if(!distanceIsZero) {
                 result++;
             }
         }
@@ -113,11 +112,11 @@ public class MathFunction {
         int classIndex = testData.get(0).size() - 1;
 
         // initialize classifications in the confusion matrix as the first row
-        ArrayList<ArrayList<String>> confusionMatrix= new ArrayList<>();
+        ArrayList<ArrayList<String>> confusionMatrix = new ArrayList<>();
         confusionMatrix.add(new ArrayList<>());
 
         // generating a list of all unique classes in the training and test sets
-        for (int i = 0; i < lengthOfData ; i++) {
+        for (int i = 0; i < lengthOfData; i++) {
             if(!confusionMatrix.get(0).contains(testData.get(i).get(classIndex))) {
                 confusionMatrix.get(0).add(testData.get(i).get(classIndex));
             }
@@ -142,7 +141,7 @@ public class MathFunction {
             int indexOfGuess = confusionMatrix.get(0).indexOf(guess);
             int currentValAtPos = Integer.parseInt(confusionMatrix.get(indexOfActual + 1).get(indexOfGuess));
             currentValAtPos++;
-            confusionMatrix.get(indexOfActual+1).set(indexOfGuess, String.valueOf(currentValAtPos));
+            confusionMatrix.get(indexOfActual + 1).set(indexOfGuess, String.valueOf(currentValAtPos));
         }
 
         // calculate truePos, falsePos, falseNeg, and totalPos by indexing the confusion matrix
@@ -230,7 +229,7 @@ public class MathFunction {
     }
 
     // calculates the regression loss function for mean absolute error
-    public static String meanAbsoluteError(ArrayList<String> results, ArrayList<ArrayList<String>> testData,ArrayList<ArrayList<String>> fullSet){
+    public static String meanAbsoluteError(ArrayList<String> results, ArrayList<ArrayList<String>> testData, ArrayList<ArrayList<String>> fullSet) {
         double sum = 0;
         double max = Double.MIN_VALUE;
         double min = Double.MAX_VALUE;
@@ -272,7 +271,7 @@ public class MathFunction {
     }
 
     // distortion calculation used in the traditional PAM algorithm for determining distances from the medoid
-    public static double distortion(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> clusterMedoids, boolean euclidean){
+    public static double distortion(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> clusterMedoids, boolean euclidean) {
         int numMedoids = clusterMedoids.size();
         int lengthOfFeatures = trainingData.get(0).size() - 2;
         double distortion = 0;
@@ -285,9 +284,9 @@ public class MathFunction {
                 List<String> medoidFeatures = clusterMedoids.get(j).subList(0, lengthOfFeatures);
 
                 // uses euclidean or hamming distance as appropriate for  the data
-                if(euclidean){
+                if(euclidean) {
                     distanceToAllPoints.add(MathFunction.euclideanDistance(trainingFeatures, medoidFeatures));
-                }else{
+                } else {
                     distanceToAllPoints.add(MathFunction.hammingDistance(trainingFeatures, medoidFeatures));
                 }
             }

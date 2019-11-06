@@ -15,11 +15,11 @@ import java.util.Map.Entry;
 public class KNNAlgorithms {
 
     // implementation of Condensed KNN algorithm
-    public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>>trainingData, boolean euclidean) {
+    public static ArrayList<ArrayList<String>> CondensedKNN(ArrayList<ArrayList<String>> trainingData, boolean euclidean) {
 
         // initialize empty set
         ArrayList<ArrayList<String>> condensedTrainingData=new ArrayList<>();
-        int currSizeOfCondensed = - 1;
+        int currSizeOfCondensed = -1;
         int indexOfClassification = trainingData.get(0).size() - 1;
         int lengthOfFeatures = trainingData.get(0).size() - 2;
 
@@ -27,7 +27,7 @@ public class KNNAlgorithms {
         while(condensedTrainingData.size() > currSizeOfCondensed) {
 
             // randomize order of the dataset
-            currSizeOfCondensed=condensedTrainingData.size();
+            currSizeOfCondensed = condensedTrainingData.size();
             Collections.shuffle(trainingData);
 
             // iterate through each point in the training dataset
@@ -76,7 +76,7 @@ public class KNNAlgorithms {
     }
 
     // implementation of the K-Means algorithm
-    public static ArrayList<ArrayList<String>> Kmeans(ArrayList<ArrayList<String>>trainingData, int numClasses){
+    public static ArrayList<ArrayList<String>> Kmeans(ArrayList<ArrayList<String>>  trainingData, int numClasses){
 
         // local variables
         ArrayList<ArrayList<String>> clusterCentroids = new ArrayList<>(); // Holds the found cluster centroids

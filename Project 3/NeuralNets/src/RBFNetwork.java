@@ -26,6 +26,7 @@ public class RBFNetwork
         layers.add(inputLayer);
         layers.add(hiddenLayer);
         layers.add(outputLayer);
+
         // initialize weights as appropriate for RBF
         initializeWeightsRBF();
 
@@ -45,10 +46,10 @@ public class RBFNetwork
         final double minWeight = 0.05;
         final double minRange = 1;
         RBFLayer currentLayer = layers.get(0);
-        while (currentLayer.getNextLayer()!=null){
+        while (currentLayer.getNextLayer() != null){
             // initialize input layer output weights
-            if(currentLayer.getPreviousLayer()==null){
-                for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
+            if(currentLayer.getPreviousLayer() == null){
+                for (int i = 0; i < currentLayer.getNodes().size(); i++) {
                     // +1 is for the bias node to be added in later
                     for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() + 1; j++) {
                         currentLayer.getNodes().get(i).addOutputWeight();
@@ -61,9 +62,9 @@ public class RBFNetwork
                 // adding the bias node
                 currentLayer.getNodes().add(new RBFNode(currentLayer));
                 for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
-                    for (int j = 0; j < currentLayer.getNextLayer().getNodes().size() ; j++) {
-                        double randWeight = Math.random()*minRange + minWeight;
-                        String valOfRandWeight = randWeight+"";
+                    for (int j = 0; j < currentLayer.getNextLayer().getNodes().size(); j++) {
+                        double randWeight = Math.random() * minRange + minWeight;
+                        String valOfRandWeight = randWeight + "";
                         currentLayer.getNodes().get(i).addOutputWeight();
 
                         currentLayer.getNodes().get(i).setOutputWeights(j, valOfRandWeight);
@@ -72,7 +73,7 @@ public class RBFNetwork
 
                         currentLayer.getNodes().get(i).addPreviousPropChanges();
                     }
-                    for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
+                    for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size(); j++) {
                         currentLayer.getNodes().get(i).addInputWeight();
                     }
                 }
@@ -81,21 +82,19 @@ public class RBFNetwork
             currentLayer.findSigmaForAllNodes();
             currentLayer = currentLayer.getNextLayer();
         }
-        for (int i = 0; i < currentLayer.getNodes().size() ; i++) {
+        for (int i = 0; i < currentLayer.getNodes().size(); i++) {
 
-            for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size() ; j++) {
+            for (int j = 0; j < currentLayer.getPreviousLayer().getNodes().size(); j++) {
                 currentLayer.getNodes().get(i).addInputWeight();
             }
-
         }
-
     }
 
     // classifies a training point using the RBF network
     public double classifyRBF(ArrayList<String> point, boolean categorical) {
-        if(categorical){
+        if(categorical) {
             RBFLayer currentLayer = layers.get(0);
-            while(currentLayer.getNextLayer() != null){
+            while(currentLayer.getNextLayer() != null) {
 
                 // set the activation values for the input layer
                 if (currentLayer.getPreviousLayer() == null) {
@@ -138,10 +137,8 @@ public class RBFNetwork
 
                         nextLayerNodes.get(i).setInputWeight(j, stringifyWeight); // set the input weight for each node
                     }
-
                 }
                 currentLayer = currentLayer.getNextLayer(); // move onto the next layer
-
             }
 
             // only for the output layer
@@ -160,9 +157,10 @@ public class RBFNetwork
 
             return indexOfMaxValue;
 
+        } else {
 
-        }else{
             RBFLayer currentLayer = layers.get(0);
+
             while(currentLayer.getNextLayer() != null){
 
                 // set the activation values for the input layer
@@ -218,29 +216,30 @@ public class RBFNetwork
             double output = currentLayer.getNodes().get(0).getActivationValue();
 
             return output;
-
         }
-
     }
 
 
     // training the RBF networks for categorical and regression classifications
-    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> orignalFullSet, double learningRate, boolean categorical){
+    public void trainRBFNetwork(ArrayList<ArrayList<String>> trainingData, ArrayList<ArrayList<String>> orignalFullSet, double learningRate, boolean categorical) {
         int batchSize = 20;
+
         // for categorical data
-        if(categorical){
+        if(categorical) {
+
             // runs 200 batches of 20 randomly drawn from the training set for training
             int maxIterations = 200;
-            while(maxIterations>0){
+            while(maxIterations > 0){
                 maxIterations--;
                 RBFLayer outputLayer = layers.get(2);
                 RBFLayer hiddenLayer = layers.get(1);
                 Collections.shuffle(trainingData);
                 ArrayList<String> classifications = new ArrayList<>();
-                for (int i = 0; i<batchSize ; i++) {
-                    int indexOfClass = trainingData.get(0).size()-1;
+                for (int i = 0; i < batchSize; i++) {
+                    int indexOfClass = trainingData.get(0).size() - 1;
+
                     // sends a point through the network
-                    classifications.add(((int)classifyRBF(trainingData.get(i), true)+""));
+                    classifications.add(((int)classifyRBF(trainingData.get(i), true) + ""));
                     double actualClassification = Double.parseDouble(trainingData.get(i).get(indexOfClass));
 
                     // determines what changes need to be made based on the outputs
@@ -248,45 +247,45 @@ public class RBFNetwork
                         double activationAtOutput = outputLayer.getNodes().get(j).getActivationValue();
 
                         if(j == actualClassification){
-                            for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                            for (int k = 0; k < hiddenLayer.getNodes().size(); k++) {
                                 RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
                                 RBFNode outputNode = outputLayer.getNodes().get(j);
+
                                 // dk is the change in weight required based on target of 1 for the actual classification
-                                double dk = -(1 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
+                                double dk = -(1 - activationAtOutput) * activationAtOutput * (1 - activationAtOutput);
                                 double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                                 double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
-                                double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
-                                hiddenNode.setBackPropChanges(j,weightChange+"");
+                                double weightChange = backPropChange - (dk * learningRate * activationFromNodeHiddenNodeK);
+                                hiddenNode.setBackPropChanges(j, weightChange + "");
                             }
 
                         }
                         else{
-                            for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                            for (int k = 0; k < hiddenLayer.getNodes().size(); k++) {
                                 RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
                                 RBFNode outputNode = outputLayer.getNodes().get(j);
                                 // dk is the change in weight required based on target of 0 for any wrong classification
-                                double dk = -(0 - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
+                                double dk = -(0 - activationAtOutput)*activationAtOutput * (1 - activationAtOutput);
                                 double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                                 double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(j));
-                                double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
+                                double weightChange = backPropChange - (dk * learningRate * activationFromNodeHiddenNodeK);
                                 // tells the previous layer nodes how to change, summed over the batch
-                                hiddenNode.setBackPropChanges(j,weightChange+"");
+                                hiddenNode.setBackPropChanges(j,weightChange + "");
                             }
                         }
                     }
                 }
                 // once the batch is run, updates the previous layer nodes with their changes
-                for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
+                for (int i = 0; i < hiddenLayer.getNodes().size(); i++) {
                     hiddenLayer.getNodes().get(i).updateBackPropChanges();
                 }
-
             }
 
-        }else{
+        } else {
             // for regression data
             // runs 200 batches of 20 randomly drawn from the training set for training
             int maxIterations = 200;
-            while(maxIterations>0){
+            while(maxIterations > 0){
                 maxIterations--;
                 RBFLayer outputLayer = layers.get(2);
                 RBFLayer hiddenLayer = layers.get(1);
@@ -295,32 +294,31 @@ public class RBFNetwork
 
 
                 for (int i = 0; i < batchSize; i++) {
-                    int indexOfClass = trainingData.get(0).size()-1;
+                    int indexOfClass = trainingData.get(0).size() - 1;
                     // classifies a point
-                    classifications.add((int)classifyRBF(trainingData.get(i), false)+"");
+                    classifications.add((int) classifyRBF(trainingData.get(i), false) + "");
                     // determines the activation at the output (only one output for regression data)
                     double activationAtOutput = outputLayer.getNodes().get(0).getActivationValue();
                     double target = Double.parseDouble(trainingData.get(i).get(indexOfClass));
 
                     // determines what changes need to be made based on that output
-                    for (int k = 0; k < hiddenLayer.getNodes().size() ; k++) {
+                    for (int k = 0; k < hiddenLayer.getNodes().size(); k++) {
                         RBFNode hiddenNode = hiddenLayer.getNodes().get(k);
                         RBFNode outputNode = outputLayer.getNodes().get(0);
 
-                        double dk = -(target - activationAtOutput)*activationAtOutput*(1-activationAtOutput);
+                        double dk = -(target - activationAtOutput) * activationAtOutput * (1 - activationAtOutput);
                         double activationFromNodeHiddenNodeK = Double.parseDouble(outputNode.getInputWeights().get(k));
                         double backPropChange = Double.parseDouble(hiddenNode.getBackPropChanges().get(0));
                         double weightChange = backPropChange - (dk*learningRate*activationFromNodeHiddenNodeK);
                         // tells the previous layer nodes how to change, summed over the batch
-                        hiddenNode.setBackPropChanges(0,weightChange+"");
+                        hiddenNode.setBackPropChanges(0,weightChange + "");
                     }
-
                 }
+
                 // once the batch is run, updates the previous layer nodes with their changes
-                for (int i = 0; i < hiddenLayer.getNodes().size() ; i++) {
+                for (int i = 0; i < hiddenLayer.getNodes().size(); i++) {
                     hiddenLayer.getNodes().get(i).updateBackPropChanges();
                 }
-
             }
         }
     }

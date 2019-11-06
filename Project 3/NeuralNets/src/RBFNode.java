@@ -82,17 +82,16 @@ public class RBFNode
     // based on the training phase, back propogation changes are calculated and updated
     // using this function, it also uses the previous change to add momentum to the current change
     public void updateBackPropChanges(){
-        for (int i = 0; i <backPropChanges.size() ; i++) {
+        for (int i = 0; i < backPropChanges.size(); i++) {
             double weight = Double.parseDouble(outputWeights.get(i));
             double previousChange = Double.parseDouble(prevBackPropChanges.get(i));
             prevBackPropChanges.set(i, backPropChanges.get(i));
-            weight += Double.parseDouble(backPropChanges.get(i))+momentumConstant*previousChange;
-            String updatedWeight = weight +"";
+            weight += Double.parseDouble(backPropChanges.get(i)) + momentumConstant * previousChange;
+            String updatedWeight = weight + "";
 
             outputWeights.set(i, updatedWeight);
-            backPropChanges.set(i,"0");
+            backPropChanges.set(i, "0");
         }
-
     }
 
     //returns an ArrayList of the nodes in the next layer, which should be connected to this one.
@@ -105,6 +104,7 @@ public class RBFNode
             return null;
         }
     }
+
     //returns an ArrayList of the nodes in the previous layer (for back propagation)
     private ArrayList<RBFNode> previousNodes()
     {
@@ -115,6 +115,4 @@ public class RBFNode
             return null;
         }
     }
-
-
 }

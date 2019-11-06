@@ -27,7 +27,7 @@ public class FireData extends Data {
         double max = Double.MIN_VALUE;
         double min = Double.MAX_VALUE;
         int indexOfClass = fullSet.get(0).size()-1;
-        for (int i = 0; i < fullSet.size() ; i++) {
+        for (int i = 0; i < fullSet.size(); i++) {
             double classValue = Double.parseDouble(fullSet.get(i).get(indexOfClass));
             if( classValue >= max){
                 max = classValue;
