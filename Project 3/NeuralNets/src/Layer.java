@@ -50,19 +50,12 @@ public class Layer
         int greatestIndex = -1;
         for (int a = 0; a < nodes.size(); a++)
         {
-            if (nodes.get(a).value > greatest)
+            if (nodes.get(a).output > greatest)
             {
-                greatest = nodes.get(a).value;
+                greatest = nodes.get(a).output;
                 greatestIndex = a;
             }
         }
         return greatestIndex;
-    }
-    public boolean isHighestValueNode(int index){
-        int greatestIndex = getHighestValueNodeIndex();
-        if (index == greatestIndex) {
-            return true;
-        }
-        return false;
     }
 }

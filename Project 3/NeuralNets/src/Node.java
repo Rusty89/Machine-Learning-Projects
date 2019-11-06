@@ -1,13 +1,10 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Node
 {
     private Layer layer;
-    public double weight, value, errDer, outDer; // errDer = error derivative (1 of 2 needed), outDer = output derivative (2 of 2 needed)
-    public List<String> center;
-    //private ArrayList<Double> vector;
+    public double weight, input, output, dErr, dOut; // errDer = error derivative (1 of 2 needed), outDer = output derivative (2 of 2 needed)
     public HashMap<Node, Double> connectionValues;
 
 
@@ -48,7 +45,8 @@ public class Node
     {
         double sum = 0;
         for (Node previousNode: previousNodes())
-            sum += previousNode.value * previousNode.connectionValues.get(this);
-        value = MathFunction.logisiticActivationFunction(sum);
+            sum += previousNode.output * previousNode.connectionValues.get(this);
+        output = MathFunction.logisiticActivationFunction(sum);
+        input = sum;
     }
 }
