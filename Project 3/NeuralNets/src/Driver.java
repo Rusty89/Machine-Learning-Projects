@@ -33,13 +33,13 @@ public class Driver {
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedDatasets = condenseData(whiteWine, true, true);
         */
 
-        Network testNet = new Network(new int[] {6, 5, 4});
+        Network testNet = new Network(new int[] {6, 6, 4});
         System.out.println(testNet.getClassNumber());
 
         Data maccakek = new CarData(new File("DataSets/car.data"));
         int correctAnswers = 0, totalGuesses = 0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 250; i++) {
             for (ArrayList<ArrayList<String>> nonsensical: maccakek.dataSets.trainingSets)
             {
                 for (ArrayList<String> entry: nonsensical)
@@ -48,10 +48,10 @@ public class Driver {
                     testNet.feedForward();
                     //System.out.println(testNet.getClassNumber() + " guess  |  actual " + Integer.parseInt(entry.get(entry.size() - 1)));
 
-                    if (testNet.getClassNumber() == Integer.parseInt(entry.get(entry.size() - 1)))
+                    if (testNet.guessedCorrectly())
                         correctAnswers++;
                     totalGuesses++;
-                    if (totalGuesses % 150 == 0)
+                    if (totalGuesses % 1000 == 0)
                         System.out.println(((double) correctAnswers / (double) totalGuesses) * 100 + "% correct");
                     testNet.backprop();
                 }
