@@ -4,7 +4,9 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Driver {
 
@@ -33,10 +35,83 @@ public class Driver {
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> whiteWineCondensedDatasets = condenseData(whiteWine, true, true);
         */
 
+        // read in our categorical sets
+        Data car = new CarData(new File("DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
+
+        // read in our regression sets, use regression and euclidean parameters for all these sets
+        Data forestFire = new FireData(new File("DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("DataSets/machine.data"));
+        Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
+
+        ArrayList<Data> datasets = new ArrayList<>();
+
+        // We can comment out which datasets we want to run here for video
+        datasets.add(car);
+        datasets.add(abalone);
+        datasets.add(segmentation);
+        datasets.add(forestFire);
+        datasets.add(machine);
+        datasets.add(redWine);
+        datasets.add(whiteWine);
+
+        for (Data set: datasets) {
+            // User input for setting up network
+            System.out.print("How many hidden layers? ");
+            Scanner in = new Scanner(System.in);
+            String input = in.nextLine();
+            int hl = Integer.parseInt(input);
+            int[] hlayers = new int[hl + 2];
+            for (int i = 0; i < hl; i++) {
+                System.out.print("How many nodes in hidden layer " + (i + 1) + "? ");
+                input = in.nextLine();
+                hlayers[i + 1] = Integer.parseInt(input);
+            }
+
+            int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
+            int outputSize = set.numClasses;
+            hlayers[0] = inputSize;
+            hlayers[hlayers.length - 1] = outputSize;
+
+            Network nw = new Network(hlayers);
+
+            // Train the network
+            int testSetNum = 0;
+            for (ArrayList<ArrayList<String>> trainSet: set.dataSets.trainingSets
+                 ) {
+                int numExamples = 5000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
+                while (numExamples > 0) {
+                    for (ArrayList<String> example: trainSet
+                         ) {
+                        nw.initializeInputLayer(example);
+                        nw.feedForward();
+                        nw.backprop();
+                        numExamples--;
+                    }
+                }
+                // Test the network
+                ArrayList<ArrayList<String>> testSet = set.dataSets.testSets.get(testSetNum);
+                testSetNum++;
+                // Keep track of results
+                int correct = 0;
+                int total = 0;
+                for (ArrayList<String> test: testSet
+                ) {
+                    nw.initializeInputLayer(test);
+                    nw.feedForward();
+                    if (nw.guessedCorrectly())
+                        correct++;
+                    total++;
+                }
+                System.out.println((double) correct / total * 100);
+            }
+        }
+        /*
         Network testNet = new Network(new int[] {6, 6, 4});
         System.out.println(testNet.getClassNumber());
 
-        Data maccakek = new CarData(new File("DataSets/car.data"));
         int correctAnswers = 0, totalGuesses = 0;
 
         for (int i = 0; i < 250; i++) {
@@ -56,7 +131,7 @@ public class Driver {
                     testNet.backprop();
                 }
             }
-        }
+        }*/
     }
 
 

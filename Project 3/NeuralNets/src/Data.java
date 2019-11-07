@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Scanner;
 
 public class Data {
+    public int numClasses;
     private static PrintWriter printer;
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();

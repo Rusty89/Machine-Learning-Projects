@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CarData extends Data {
+    //public static int numClasses = 4;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     CarData(File inputFileName) throws Exception{
+        numClasses = 4;
         fileTo2dStringArrayList(inputFileName);
         preProcess();
         normalizeData();
