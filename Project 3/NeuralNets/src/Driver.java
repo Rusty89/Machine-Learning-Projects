@@ -4,7 +4,6 @@
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -36,15 +35,15 @@ public class Driver {
         */
 
         // read in our categorical sets
-        Data car = new CarData(new File("DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
+        Data car = new CarData(new File("Project 3/DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("Project 3/DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("Project 3/DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("DataSets/machine.data"));
-        Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("Project 3/DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("Project 3/DataSets/machine.data"));
+        Data redWine = new WineData(new File("Project 3/DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("Project 3/DataSets/winequality-white.csv"));
 
         ArrayList<Data> cData = new ArrayList<>();
         ArrayList<Data> rData = new ArrayList<>();
@@ -62,6 +61,7 @@ public class Driver {
 
         for (Data set: cData) {
             // User input for setting up network
+            System.out.println("Running on data set " + set);
             System.out.print("How many hidden layers? ");
             Scanner in = new Scanner(System.in);
             String input = in.nextLine();
@@ -80,6 +80,7 @@ public class Driver {
 
             Network nw = new Network(hlayers);
 
+            System.out.println("Training...");
             // Train the network
             int testSetNum = 0;
             for (ArrayList<ArrayList<String>> trainSet: set.dataSets.trainingSets
@@ -90,7 +91,7 @@ public class Driver {
                          ) {
                         nw.initializeInputLayer(example);
                         nw.feedForward();
-                        nw.backprop();
+                        nw.cBackprop();
                         numExamples--;
                     }
                 }
@@ -109,6 +110,60 @@ public class Driver {
                     total++;
                 }
                 System.out.println((double) correct / total * 100);
+            }
+        }
+
+        for (Data set: rData) {
+            // User input for setting up network
+            System.out.println("Running on data set " + set);
+            System.out.print("How many hidden layers? ");
+            Scanner in = new Scanner(System.in);
+            String input = in.nextLine();
+            int hl = Integer.parseInt(input);
+            int[] hlayers = new int[hl + 2];
+            for (int i = 0; i < hl; i++) {
+                System.out.print("How many nodes in hidden layer " + (i + 1) + "? ");
+                input = in.nextLine();
+                hlayers[i + 1] = Integer.parseInt(input);
+            }
+
+            int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
+            int outputSize = 1;
+            hlayers[0] = inputSize;
+            hlayers[hlayers.length - 1] = outputSize;
+
+            Network nw = new Network(hlayers);
+
+            // Train the network
+            System.out.println("Training...");
+            int testSetNum = 0;
+            for (ArrayList<ArrayList<String>> trainSet: set.dataSets.trainingSets)
+            {
+                int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
+                while (numExamples > 0) {
+                    for (ArrayList<String> example: trainSet
+                    ) {
+                        nw.initializeInputLayer(example);
+                        nw.feedForward();
+                        nw.rBackprop();
+                        numExamples--;
+                    }
+                }
+                // Test the network
+                ArrayList<ArrayList<String>> testSet = set.dataSets.testSets.get(testSetNum);
+                testSetNum++;
+                double absErr = 0;
+                double meanErr = 0;
+                for (ArrayList<String> test: testSet
+                ) {
+                    nw.initializeInputLayer(test);
+                    nw.feedForward();
+                    absErr += Math.abs(nw.error);
+                    meanErr += Math.pow(nw.error, 2);
+                }
+                absErr /= testSet.size();
+                meanErr /= testSet.size();
+                System.out.println("Absolute Error: " + absErr*100 + "%, Mean Squared Error: " + meanErr*100 + "%");
             }
         }
         /*

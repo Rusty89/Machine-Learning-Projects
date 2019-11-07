@@ -7,7 +7,7 @@ public class Network
     private ArrayList<Layer> layers;
     private double learningRate = .4;
     private int correctClass;
-    public double rOutput;
+    public double regressionTarget, error;
 
     public Network (int[] layerSizes)
     {
@@ -48,7 +48,10 @@ public class Network
         {
             for (int a = 0; a < values.size() - 1; a++)
                 inputLayer.getNode(a).output = Double.parseDouble(values.get(a));
-            correctClass = Integer.parseInt(values.get(values.size() - 1));
+
+            regressionTarget = Double.parseDouble(values.get(values.size() - 1));
+            try { correctClass = Integer.parseInt(values.get(values.size() - 1)); }
+            catch (NumberFormatException notAnInt) {/*ignored*/}
         }
         else System.out.println("Size mismatch - input layer not initialized!");
     }
@@ -68,16 +71,7 @@ public class Network
         return getClassNumber() == correctClass;
     }
 
-    public double calcOutput(){
-        double sum = 0;
-        for (Node node: layers.get(layers.size()-1).getNodes()
-             ) {
-            sum += node.input;
-        }
-        return sum;
-    }
-
-    public void backprop(){
+    public void cBackprop(){
         // Set up values in output/last layer
         Layer output = layers.get(layers.size()- 1);
         ArrayList<ArrayList<HashMap<Node, Double>>> newWeights = new ArrayList<>();
@@ -85,6 +79,22 @@ public class Network
             n.dErr =  output.getNodes().indexOf(n) == correctClass? n.output - 1: n.output;
             n.dOut = n.output * (1 - n.output);
         }
+        backprop(output.getPreviousLayer(), newWeights);
+
+        //replace every connection value with the newly calculated ones!
+        Collections.reverse(newWeights);
+        for (int a = 0; a < layers.size() - 1; a++)
+            for (int b = 0; b < layers.get(a).getNodes().size(); b++)
+                layers.get(a).getNode(b).connectionValues = newWeights.get(a).get(b);
+    }
+    public void rBackprop()
+    {
+        Layer output = layers.get(layers.size()- 1);
+        ArrayList<ArrayList<HashMap<Node, Double>>> newWeights = new ArrayList<>();
+        Node n = output.getNode(0);
+        n.dErr = error =  n.output - regressionTarget;
+        n.dOut = n.output * (1 - n.output);
+
         backprop(output.getPreviousLayer(), newWeights);
 
         //replace every connection value with the newly calculated ones!

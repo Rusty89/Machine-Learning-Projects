@@ -10,8 +10,31 @@ public class WineData extends Data {
     WineData(File inputFileName) throws Exception {
         numClasses = 10;
         fileTo2dStringArrayList(inputFileName);
+        preProcess();
         normalizeData();
         bucketize();
+    }
+
+    public void preProcess() {
+        // normalize the classification
+        double max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
+        int indexOfClass = fullSet.get(0).size() - 1;
+        for (int i = 0; i < fullSet.size(); i++) {
+            double classValue = Double.parseDouble(fullSet.get(i).get(indexOfClass));
+            if (classValue >= max) {
+                max = classValue;
+            }
+            if(classValue <= min){
+                min = classValue;
+            }
+        }
+
+        for (int i = 0; i < fullSet.size(); i++) {
+            double classValue = Double.parseDouble(fullSet.get(i).get(indexOfClass));
+            classValue = (classValue - min) / (max - min);
+            fullSet.get(i).set(indexOfClass, classValue + "");
+        }
     }
 
     @Override
