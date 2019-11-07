@@ -7,7 +7,6 @@ public class Node
     private Layer layer;
     private double weight;
     public List<String> center;
-    //private ArrayList<Double> vector;
     private HashMap<Node, Double> connectionValues;
 
     public Node (Layer layer, double weight)
@@ -38,6 +37,4 @@ public class Node
             return null;
         }
     }
-
-
 }

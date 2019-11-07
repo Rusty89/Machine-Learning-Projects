@@ -11,6 +11,7 @@ public class AbaloneData extends Data {
         preProcess();
         normalizeData();
         bucketize();
+        findNumClassifications();
     }
 
     private void preProcess(){
