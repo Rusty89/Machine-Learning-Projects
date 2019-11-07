@@ -23,26 +23,6 @@ public class MachineData extends Data{
             fullSet.get(i).remove(0);
             fullSet.get(i).remove(0);
         }
-        for (int i = 0; i < fullSet.size(); i++) {
-            double classification = Double.parseDouble(fullSet.get(i).get(fullSet.get(0).size() - 1));
-            int classIndex = fullSet.get(0).size() - 1;
-            // classification suggested by data
-            if(classification <= 20){
-                fullSet.get(i).set(classIndex, "0");
-            }
-            else if(classification <= 100){
-                fullSet.get(i).set(classIndex, "1");
-            }
-            else if(classification <= 200){
-                fullSet.get(i).set(classIndex, "2");
-            }
-            else if(classification <= 300){
-                fullSet.get(i).set(classIndex, "3");
-            }
-            else{
-                fullSet.get(i).set(classIndex, "4");
-            }
-        }
     }
 
     @Override

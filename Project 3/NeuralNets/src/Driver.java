@@ -46,18 +46,21 @@ public class Driver {
         Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
         Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
 
-        ArrayList<Data> datasets = new ArrayList<>();
+        ArrayList<Data> cData = new ArrayList<>();
+        ArrayList<Data> rData = new ArrayList<>();
 
         // We can comment out which datasets we want to run here for video
-        datasets.add(car);
-        datasets.add(abalone);
-        datasets.add(segmentation);
-        datasets.add(forestFire);
-        datasets.add(machine);
-        datasets.add(redWine);
-        datasets.add(whiteWine);
+        // Categorical
+        cData.add(car);
+        cData.add(abalone);
+        cData.add(segmentation);
+        // Regression
+        rData.add(forestFire);
+        rData.add(machine);
+        rData.add(redWine);
+        rData.add(whiteWine);
 
-        for (Data set: datasets) {
+        for (Data set: cData) {
             // User input for setting up network
             System.out.print("How many hidden layers? ");
             Scanner in = new Scanner(System.in);
@@ -81,7 +84,7 @@ public class Driver {
             int testSetNum = 0;
             for (ArrayList<ArrayList<String>> trainSet: set.dataSets.trainingSets
                  ) {
-                int numExamples = 5000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
+                int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
                 while (numExamples > 0) {
                     for (ArrayList<String> example: trainSet
                          ) {

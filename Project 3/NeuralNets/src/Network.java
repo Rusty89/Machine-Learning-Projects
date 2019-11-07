@@ -7,6 +7,7 @@ public class Network
     private ArrayList<Layer> layers;
     private double learningRate = .4;
     private int correctClass;
+    public double rOutput;
 
     public Network (int[] layerSizes)
     {
@@ -65,6 +66,15 @@ public class Network
     public boolean guessedCorrectly()
     {
         return getClassNumber() == correctClass;
+    }
+
+    public double calcOutput(){
+        double sum = 0;
+        for (Node node: layers.get(layers.size()-1).getNodes()
+             ) {
+            sum += node.input;
+        }
+        return sum;
     }
 
     public void backprop(){
