@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class Data {
+    public int numClasses;
     private static PrintWriter printer;
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();

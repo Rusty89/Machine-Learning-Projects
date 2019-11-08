@@ -4,9 +4,11 @@
 import java.io.File;
 
 public class MachineData extends Data{
+    //public static int numClasses = 5;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     MachineData(File inputFileName) throws Exception {
+        numClasses = 5;
         fileTo2dStringArrayList(inputFileName);
         preProcess();
         normalizeData();
@@ -29,10 +31,12 @@ public class MachineData extends Data{
         int indexOfClass = fullSet.get(0).size() - 1;
         for (int i = 0; i < fullSet.size(); i++) {
             double classValue = Double.parseDouble(fullSet.get(i).get(indexOfClass));
-            if( classValue >= max){
+
+            if (classValue >= max) {
                 max = classValue;
             }
-            if(classValue <= min){
+            if (classValue <= min) {
+
                 min = classValue;
             }
         }

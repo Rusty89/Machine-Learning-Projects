@@ -4,9 +4,11 @@
 import java.io.File;
 
 public class AbaloneData extends Data {
+    //public static int numClasses = 3;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     AbaloneData(File inputFileName) throws Exception{
+        numClasses = 3;
         fileTo2dStringArrayList(inputFileName);
         preProcess();
         normalizeData();

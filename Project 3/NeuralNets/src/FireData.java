@@ -4,9 +4,11 @@
 import java.io.File;
 
 public class FireData extends Data {
+    //public static int numClasses = 5;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     FireData(File inputFileName) throws Exception {
+        numClasses = 5;
         fileTo2dStringArrayList(inputFileName);
         preProcess();
         normalizeData();
