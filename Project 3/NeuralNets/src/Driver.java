@@ -44,7 +44,7 @@ public class Driver {
         rData.add(whiteWine);
 
         double bpLearningRate = 0.3;
-        System.out.println("\n    Starting MPL using a learning rate of " + bpLearningRate);
+        System.out.println("\n    Starting MLP using a learning rate of " + bpLearningRate);
         // start creating the MLP networks
         for (int hl = 0; hl < 3; hl++) {
             System.out.println("\nUsing " + hl + " hidden layers.");
