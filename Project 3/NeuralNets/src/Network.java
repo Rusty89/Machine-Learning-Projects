@@ -10,14 +10,15 @@ import java.util.HashMap;
 public class Network
 {
     private ArrayList<Layer> layers;
-    public double learningRate = 0.3;
+    public double learningRate;
     private int correctClass;
     public double regressionTarget;
     public double error;
     public ArrayList<String> guessHistory;
 
-    public Network (int[] layerSizes)
+    public Network (int[] layerSizes, double learningRate)
     {
+        this.learningRate = learningRate;
         guessHistory = new ArrayList<>();
         // create a layer for each entry in layerSizes.
         // each layer will be the size of the corresponding int in layerSizes.

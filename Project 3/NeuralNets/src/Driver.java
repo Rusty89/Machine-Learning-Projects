@@ -13,41 +13,43 @@ import java.util.Scanner;
 public class Driver {
 
     private static final int numCondensedSets = 3;
-    private static final int numCVSSets = 10;
+    private static final int numCVSSets = 1;
 
     public static void main(String args[])throws Exception {
 
         // read in our categorical sets
-        Data car = new CarData(new File("DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
+        Data car = new CarData(new File("../../../DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("../../../DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("../../../DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("./DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("./DataSets/machine.data"));
-        Data redWine = new WineData(new File("./DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("../../../DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("../../../DataSets/machine.data"));
+        Data redWine = new WineData(new File("../../../DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("../../../DataSets/winequality-white.csv"));
 
         // ------------------------------- begin driver for MLP Network -------------------------------
         ArrayList<Data> cData = new ArrayList<>();
         ArrayList<Data> rData = new ArrayList<>();
 
-        // add categorical sets for our MPL network
+        // add categorical sets for our MLP network
         cData.add(car);
         cData.add(abalone);
         cData.add(segmentation);
 
-        // add regression sets for our MPL network
+        // add regression sets for our MLP network
         rData.add(forestFire);
         rData.add(machine);
         rData.add(redWine);
         rData.add(whiteWine);
 
-        // start creating the MPL networks
+        double bpLearningRate = 0.3;
+        System.out.println("\n    Starting MPL using a learning rate of " + bpLearningRate);
+        // start creating the MLP networks
         for (int hl = 0; hl < 3; hl++) {
             System.out.println("\nUsing " + hl + " hidden layers.");
             for (Data set : cData) {
-                System.out.println("Running on data set " + set);
+                System.out.print("Running on data set " + set + ". Hidden nodes:");
 
                 int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
                 int outputSize = set.numClasses;
@@ -55,8 +57,9 @@ public class Driver {
                 int[] hlayers = new int[hl + 2];
                 for (int i = 0; i < hl; i++) {
                     hlayers[i + 1] = inputSize;
+                    System.out.print(" " + inputSize);
                 }
-
+                System.out.println();
 
                 hlayers[0] = inputSize;
                 hlayers[hlayers.length - 1] = outputSize;
@@ -68,8 +71,8 @@ public class Driver {
                 ArrayList<Double> recall = new ArrayList<>();
                 ArrayList<Double> accuracy = new ArrayList<>();
                 for (ArrayList<ArrayList<String>> trainSet : set.dataSets.trainingSets) {
-                    Network nw = new Network(hlayers);
-                    int numExamples = 100000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
+                    Network nw = new Network(hlayers, bpLearningRate);
+                    int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
                     while (numExamples > 0) {
                         for (ArrayList<String> example : trainSet) {
                             nw.initializeInputLayer(example);
@@ -98,7 +101,7 @@ public class Driver {
             }
 
             for (Data set : rData) {
-                System.out.println("Running on data set " + set);
+                System.out.print("Running on data set " + set + ". Hidden nodes:");
 
                 int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
                 int outputSize = 1;
@@ -106,7 +109,9 @@ public class Driver {
                 int[] hlayers = new int[hl + 2];
                 for (int i = 0; i < hl; i++) {
                     hlayers[i + 1] = inputSize;
+                    System.out.print(" " + inputSize);
                 }
+                System.out.println();
 
                 hlayers[0] = inputSize;
                 hlayers[hlayers.length - 1] = outputSize;
@@ -117,7 +122,7 @@ public class Driver {
                 ArrayList<Double> aeResults = new ArrayList<>();
                 ArrayList<Double> mseResults = new ArrayList<>();
                 for (ArrayList<ArrayList<String>> trainSet : set.dataSets.trainingSets) {
-                    Network nw = new Network(hlayers);
+                    Network nw = new Network(hlayers, bpLearningRate);
                     int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
                     while (numExamples > 0) {
                         for (ArrayList<String> example : trainSet) {
@@ -152,7 +157,7 @@ public class Driver {
 
         // ---------------------------- start driving RBFN algorithm ----------------------------
         double learningRate = .5;
-
+        System.out.println("\n\n    Starting RBF with a learning rate of " + learningRate);
         // run RBF for each data set
         ArrayList<ArrayList<ArrayList<ArrayList<String>>>> carCondensedTrainingSets = condenseData(car, false, false);
         ArrayList <RBFNetwork> RBFcar = makeRBFNetworks(car, carCondensedTrainingSets, true);
