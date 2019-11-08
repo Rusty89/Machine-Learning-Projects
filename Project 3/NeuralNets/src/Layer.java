@@ -1,17 +1,27 @@
+/* Layer class to be used in our MLP neural networks. A Network object is comprised of Layers. A Layer object is comprised
+    of Nodes. Layers are connected via a linked list in a network. This class includes methods for operating
+    on modes and getting/setting relevant values.
+ */
+
 import java.util.ArrayList;
 
 public class Layer
 {
-    private Layer nextLayer, previousLayer;
+    private Layer nextLayer;
+    private Layer previousLayer;
     private ArrayList<Node> nodes;
 
+    // layer constructor that adds nodes with given ranges to the layer
     public Layer (int layerSize, double minWeight, double weightRange)
     {
         nodes = new ArrayList<>();
+
+        // adds nodes to a new layer when created
         for (int a = 0; a < layerSize; a++)
             nodes.add(new Node(this, Math.random()*weightRange + minWeight));
     }
 
+    // getter /setter methods
     public ArrayList<Node> getNodes()
     {
         return nodes;
@@ -28,7 +38,8 @@ public class Layer
     {
         return previousLayer;
     }
-    //also sets the previous layer's nextLayer as this.
+
+
     public void setPreviousLayer (Layer layer)
     {
         previousLayer = layer;
@@ -45,6 +56,8 @@ public class Layer
         for (Node node: nodes)
             node.initializeWeights(minWeight, weightRange);
     }
+
+    // returns index of highest valued node
     public int getHighestValueNodeIndex()
     {
         double greatest = 0;

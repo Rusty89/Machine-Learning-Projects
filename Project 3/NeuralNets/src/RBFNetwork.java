@@ -1,3 +1,8 @@
+/* Network class to be used in our RBF neural networks. A Network object is comprised of Layers which is comprised
+    of Nodes. Networks operate on the layers in them. They can take on any number of hidden layers and have methods
+    that deal with the layers linked with in them.
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +46,7 @@ public class RBFNetwork
     }
 
     // set up initial weights between 0.05 and 1 between the hidden layer and output layer
-    public void initializeWeightsRBF(){
+    public void initializeWeightsRBF() {
 
         final double minWeight = 0.05;
         final double minRange = 1;

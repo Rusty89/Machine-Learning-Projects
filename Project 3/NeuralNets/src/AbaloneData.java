@@ -4,7 +4,6 @@
 import java.io.File;
 
 public class AbaloneData extends Data {
-    //public static int numClasses = 3;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     AbaloneData(File inputFileName) throws Exception{
@@ -45,6 +44,7 @@ public class AbaloneData extends Data {
         }
     }
 
+    // used to get the name of the dataset quickly for printing output
     @Override
     public String toString() {
         return "abalone";

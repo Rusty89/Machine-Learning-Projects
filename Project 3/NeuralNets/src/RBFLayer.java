@@ -1,3 +1,8 @@
+/* Layer class to be used in our RBF neural networks. A Network object is comprised of Layers. A Layer object is comprised
+    of Nodes. Layers are connected via a linked list in a network. This class includes methods for operating
+    on modes and getting/setting relevant values.
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +46,7 @@ public class RBFLayer
         nextLayer = layer;
     }
 
+    // sets the centers of each node, calculated using the clustering algorithms
     public void setCenters(ArrayList<ArrayList<String>> condensedSet) {
         for (int i = 0; i < nodes.size(); i++) {
             int classificationIndexCutoff = condensedSet.get(0).size() - 1;
@@ -62,7 +68,7 @@ public class RBFLayer
             // set the activation value on the node
             getNodes().get(i).setActivationValue(value);
         }
-        //sets activation of the bias node
+        // sets activation of the bias node
         getNodes().get(getNodes().size() - 1).setActivationValue(.5);
     }
 
@@ -80,7 +86,8 @@ public class RBFLayer
             }
 
             // put output through logistic function
-            value = MathFunction.logisiticActivationFunction(value);
+            value = MathFunction.logisticActivationFunction(value);
+
             // set the activation value on the node
             getNodes().get(i).setActivationValue(value);
         }
@@ -88,7 +95,7 @@ public class RBFLayer
 
     // Sets the sigma values for all the hidden nodes, finds two nearest neighbors and takes
     // the average distance between them
-    // We chose t odo this based on the recommendation of this paper
+    // We chose to do this based on the recommendation of this paper
     // https://perso.uclouvain.be/michel.verleysen/papers/nepl03nb.pdf
     public void findSigmaForAllNodes(){
         for (int i = 0; i < nodes.size() - 1; i++) {

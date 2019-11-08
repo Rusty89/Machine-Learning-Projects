@@ -4,7 +4,6 @@
 import java.io.File;
 
 public class FireData extends Data {
-    //public static int numClasses = 5;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     FireData(File inputFileName) throws Exception {
@@ -47,6 +46,7 @@ public class FireData extends Data {
         }
     }
 
+    // used to get the name of the dataset quickly for printing output
     @Override
     public String toString() {
         return "fire";

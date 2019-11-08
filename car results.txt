@@ -1,0 +1,12 @@
+Begin Condensed KNN condensing for car
+
+End test
+
+Begin KMeans condensing for car
+
+End test
+
+Begin K Medoids PAM condensing for car
+
+End test
+
