@@ -10,7 +10,7 @@ public class MathFunction {
     }
 
 
-    public static double logisiticActivationFunction(double input){
+    public static double logisticActivationFunction(double input){
         double output = 1 / (1 + Math.exp(-input));
         return output;
     }

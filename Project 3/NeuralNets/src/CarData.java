@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CarData extends Data {
-    //public static int numClasses = 4;
 
     // constructor that reads in, pre-processes, normalizes, and bucketizes (for cross-validation) a data set
     CarData(File inputFileName) throws Exception{
@@ -46,6 +45,7 @@ public class CarData extends Data {
         }
     }
 
+    // used to get the name of the dataset quickly for printing output
     @Override
     public String toString() {
         return "car";
