@@ -5,12 +5,14 @@ import java.util.HashMap;
 public class Network
 {
     private ArrayList<Layer> layers;
-    private double learningRate = .4;
+    public double learningRate = .3;
     private int correctClass;
     public double regressionTarget, error;
+    public ArrayList<String> guessHistory;
 
     public Network (int[] layerSizes)
     {
+        guessHistory = new ArrayList<>();
         //create a layer for each entry in layerSizes.
         //each layer will be the size of the corresponding int in layerSizes.
         layers = new ArrayList<>();
@@ -30,16 +32,6 @@ public class Network
             layers.get(a).initializeWeights(.005, .095);
     }
 
-    public void initializeInputLayer (double[] values)
-    {
-        Layer inputLayer = layers.get(0);
-        if (values.length == inputLayer.getNodes().size())
-        {
-            for (int a = 0; a < values.length; a++)
-                inputLayer.getNode(a).output = values[a];
-        }
-        else System.out.println("Size mismatch - input layer not initialized!");
-    }
     //assumes the last entry in the ArrayList is the class and sets it as the correct answer!
     public void initializeInputLayer (ArrayList<String> values)
     {
@@ -71,6 +63,7 @@ public class Network
         return getClassNumber() == correctClass;
     }
 
+    //starts backpropagation for classification data sets
     public void cBackprop(){
         // Set up values in output/last layer
         Layer output = layers.get(layers.size()- 1);
@@ -87,6 +80,7 @@ public class Network
             for (int b = 0; b < layers.get(a).getNodes().size(); b++)
                 layers.get(a).getNode(b).connectionValues = newWeights.get(a).get(b);
     }
+    //starts backpropagation for regression data sets
     public void rBackprop()
     {
         Layer output = layers.get(layers.size()- 1);

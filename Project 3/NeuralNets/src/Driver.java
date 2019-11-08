@@ -4,6 +4,7 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -59,111 +60,121 @@ public class Driver {
         rData.add(redWine);
         rData.add(whiteWine);
 
-        for (Data set: cData) {
-            // User input for setting up network
-            System.out.println("Running on data set " + set);
-            System.out.print("How many hidden layers? ");
-            Scanner in = new Scanner(System.in);
-            String input = in.nextLine();
-            int hl = Integer.parseInt(input);
-            int[] hlayers = new int[hl + 2];
-            for (int i = 0; i < hl; i++) {
-                System.out.print("How many nodes in hidden layer " + (i + 1) + "? ");
-                input = in.nextLine();
-                hlayers[i + 1] = Integer.parseInt(input);
-            }
+        for (int hl = 0; hl < 3; hl++) {
+            System.out.println("\nUsing " + hl + " hidden layers.");
+            for (Data set : cData) {
+                // User input for setting up network
+                System.out.println("Running on data set " + set);
+                //System.out.print("How many hidden layers? ");
+                //Scanner in = new Scanner(System.in);
+                //String input = in.nextLine();
+                //int hl = Integer.parseInt(input);
+                int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
+                int outputSize = set.numClasses;
 
-            int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
-            int outputSize = set.numClasses;
-            hlayers[0] = inputSize;
-            hlayers[hlayers.length - 1] = outputSize;
+                int[] hlayers = new int[hl + 2];
+                for (int i = 0; i < hl; i++) {
+                    //System.out.print("How many nodes in hidden layer " + (i + 1) + "? ");
+                    //input = in.nextLine();
+                    //hlayers[i + 1] = Integer.parseInt(input);
+                    hlayers[i + 1] = inputSize;
+                }
 
-            Network nw = new Network(hlayers);
 
-            System.out.println("Training...");
-            // Train the network
-            int testSetNum = 0;
-            for (ArrayList<ArrayList<String>> trainSet: set.dataSets.trainingSets
-                 ) {
-                int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
-                while (numExamples > 0) {
-                    for (ArrayList<String> example: trainSet
-                         ) {
-                        nw.initializeInputLayer(example);
-                        nw.feedForward();
-                        nw.cBackprop();
-                        numExamples--;
+                hlayers[0] = inputSize;
+                hlayers[hlayers.length - 1] = outputSize;
+
+                //System.out.println("Training...");
+                // Train the network
+                int testSetNum = 0;
+                ArrayList<Double> precision = new ArrayList<>();
+                ArrayList<Double> recall = new ArrayList<>();
+                ArrayList<Double> accuracy = new ArrayList<>();
+                for (ArrayList<ArrayList<String>> trainSet : set.dataSets.trainingSets) {
+                    Network nw = new Network(hlayers);
+                    int numExamples = 100000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
+                    while (numExamples > 0) {
+                        for (ArrayList<String> example : trainSet) {
+                            nw.initializeInputLayer(example);
+                            nw.feedForward();
+                            nw.cBackprop();
+                            numExamples--;
+                        }
                     }
-                }
-                // Test the network
-                ArrayList<ArrayList<String>> testSet = set.dataSets.testSets.get(testSetNum);
-                testSetNum++;
-                // Keep track of results
-                int correct = 0;
-                int total = 0;
-                for (ArrayList<String> test: testSet
-                ) {
-                    nw.initializeInputLayer(test);
-                    nw.feedForward();
-                    if (nw.guessedCorrectly())
-                        correct++;
-                    total++;
-                }
-                System.out.println((double) correct / total * 100);
-            }
-        }
-
-        for (Data set: rData) {
-            // User input for setting up network
-            System.out.println("Running on data set " + set);
-            System.out.print("How many hidden layers? ");
-            Scanner in = new Scanner(System.in);
-            String input = in.nextLine();
-            int hl = Integer.parseInt(input);
-            int[] hlayers = new int[hl + 2];
-            for (int i = 0; i < hl; i++) {
-                System.out.print("How many nodes in hidden layer " + (i + 1) + "? ");
-                input = in.nextLine();
-                hlayers[i + 1] = Integer.parseInt(input);
-            }
-
-            int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
-            int outputSize = 1;
-            hlayers[0] = inputSize;
-            hlayers[hlayers.length - 1] = outputSize;
-
-            Network nw = new Network(hlayers);
-
-            // Train the network
-            System.out.println("Training...");
-            int testSetNum = 0;
-            for (ArrayList<ArrayList<String>> trainSet: set.dataSets.trainingSets)
-            {
-                int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
-                while (numExamples > 0) {
-                    for (ArrayList<String> example: trainSet
-                    ) {
-                        nw.initializeInputLayer(example);
+                    // Test the network
+                    ArrayList<ArrayList<String>> testSet = set.dataSets.testSets.get(testSetNum);
+                    testSetNum++;
+                    for (ArrayList<String> test : testSet) {
+                        nw.initializeInputLayer(test);
                         nw.feedForward();
-                        nw.rBackprop();
-                        numExamples--;
+                        nw.guessHistory.add(nw.getClassNumber() + "");
                     }
+
+                    ArrayList<String> loss = MathFunction.processConfusionMatrix(nw.guessHistory, testSet);
+                    precision.add(Double.parseDouble(loss.get(0)));
+                    recall.add(Double.parseDouble(loss.get(1)));
+                    accuracy.add(Double.parseDouble(loss.get(2)));
                 }
-                // Test the network
-                ArrayList<ArrayList<String>> testSet = set.dataSets.testSets.get(testSetNum);
-                testSetNum++;
-                double absErr = 0;
-                double meanErr = 0;
-                for (ArrayList<String> test: testSet
-                ) {
-                    nw.initializeInputLayer(test);
-                    nw.feedForward();
-                    absErr += Math.abs(nw.error);
-                    meanErr += Math.pow(nw.error, 2);
+                printRangeAndMean("Precision", precision);
+                printRangeAndMean("Recall", recall);
+                printRangeAndMean("Accuracy", accuracy);
+            }
+
+            for (Data set : rData) {
+                // User input for setting up network
+                System.out.println("Running on data set " + set);
+                //System.out.print("How many hidden layers? ");
+                //Scanner in = new Scanner(System.in);
+                //String input = in.nextLine();
+                //int hl = Integer.parseInt(input);
+                int inputSize = set.dataSets.trainingSets.get(0).get(0).size() - 1;
+                int outputSize = 1;
+
+                int[] hlayers = new int[hl + 2];
+                for (int i = 0; i < hl; i++) {
+                    //System.out.print("How many nodes in hidden layer " + (i + 1) + "? ");
+                    //input = in.nextLine();
+                    //hlayers[i + 1] = Integer.parseInt(input);
+                    hlayers[i + 1] = inputSize;
                 }
-                absErr /= testSet.size();
-                meanErr /= testSet.size();
-                System.out.println("Absolute Error: " + absErr*100 + "%, Mean Squared Error: " + meanErr*100 + "%");
+
+                hlayers[0] = inputSize;
+                hlayers[hlayers.length - 1] = outputSize;
+
+                // Train the network
+                //System.out.println("Training...");
+                int testSetNum = 0;
+                ArrayList<Double> aeResults = new ArrayList<>();
+                ArrayList<Double> mseResults = new ArrayList<>();
+                for (ArrayList<ArrayList<String>> trainSet : set.dataSets.trainingSets) {
+                    Network nw = new Network(hlayers);
+                    int numExamples = 10000; // Tuning parameter, used to control min total examples to train on (examples can be used more than once)
+                    while (numExamples > 0) {
+                        for (ArrayList<String> example : trainSet) {
+                            nw.initializeInputLayer(example);
+                            nw.feedForward();
+                            nw.rBackprop();
+                            numExamples--;
+                        }
+                    }
+                    // Test the network
+                    ArrayList<ArrayList<String>> testSet = set.dataSets.testSets.get(testSetNum);
+                    testSetNum++;
+                    double absErr = 0;
+                    double meanErr = 0;
+                    for (ArrayList<String> test : testSet) {
+                        nw.initializeInputLayer(test);
+                        nw.feedForward();
+                        absErr += Math.abs(nw.error);
+                        meanErr += Math.pow(nw.error, 2);
+                    }
+                    absErr /= testSet.size();
+                    meanErr /= testSet.size();
+                    aeResults.add(absErr);
+                    mseResults.add(meanErr);
+                }
+                printRangeAndMean("Absolute error", aeResults);
+                printRangeAndMean("Mean squared error", mseResults);
             }
         }
         /*
@@ -220,5 +231,21 @@ public class Driver {
             System.out.println(dataset.get(i));
         }
         System.out.println();
+    }
+
+    private static void printRangeAndMean (String name, ArrayList<Double> results)
+    {
+        DecimalFormat decimalFormat = new DecimalFormat("#.#########");
+        double sum = 0, min = Double.MAX_VALUE, max = Double.MIN_VALUE;
+        for (double result: results)
+        {
+            sum += result;
+            if (result < min)
+                min = result;
+            if (result > max)
+                max = result;
+        }
+        System.out.println(name + " from " + decimalFormat.format(min) + " to " + decimalFormat.format(max) +
+                " with a mean of " + decimalFormat.format(sum/results.size()) + ".");
     }
 }
