@@ -12,13 +12,13 @@ public class Layer
     private ArrayList<Node> nodes;
 
     // layer constructor that adds nodes with given ranges to the layer
-    public Layer (int layerSize, double minWeight, double weightRange)
+    public Layer (int layerSize)
     {
         nodes = new ArrayList<>();
 
         // adds nodes to a new layer when created
         for (int a = 0; a < layerSize; a++)
-            nodes.add(new Node(this, Math.random()*weightRange + minWeight));
+            nodes.add(new Node(this));
     }
 
     // getter /setter methods

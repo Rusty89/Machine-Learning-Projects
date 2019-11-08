@@ -9,17 +9,15 @@ import java.util.HashMap;
 public class Node
 {
     private Layer layer;
-    public double weight;
     public double input;
     public double output;
     public double dErr; // errDer = error derivative (1 of 2 needed), outDer = output derivative (2 of 2 needed)
     public double dOut;
     public HashMap<Node, Double> connectionValues;
 
-    public Node (Layer layer, double weight)
+    public Node (Layer layer)
     {
         this.layer = layer;
-        this.weight = weight;
         connectionValues = new HashMap<>();
     }
 
