@@ -13,6 +13,7 @@ public class MachineData extends Data{
         preProcess();
         normalizeData();
         bucketize();
+        findNumClassifications();
     }
 
     private void preProcess() {
@@ -30,10 +31,12 @@ public class MachineData extends Data{
         int indexOfClass = fullSet.get(0).size() - 1;
         for (int i = 0; i < fullSet.size(); i++) {
             double classValue = Double.parseDouble(fullSet.get(i).get(indexOfClass));
+
             if (classValue >= max) {
                 max = classValue;
             }
             if (classValue <= min) {
+
                 min = classValue;
             }
         }

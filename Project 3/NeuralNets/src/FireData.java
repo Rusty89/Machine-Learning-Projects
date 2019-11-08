@@ -13,6 +13,7 @@ public class FireData extends Data {
         preProcess();
         normalizeData();
         bucketize();
+        findNumClassifications();
     }
 
     private void preProcess() {

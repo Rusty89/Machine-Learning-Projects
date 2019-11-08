@@ -6,7 +6,7 @@ public class Node
     private Layer layer;
     public double weight, input, output, dErr, dOut; // errDer = error derivative (1 of 2 needed), outDer = output derivative (2 of 2 needed)
     public HashMap<Node, Double> connectionValues;
-
+    public List<String> center;
 
     public Node (Layer layer, double weight)
     {

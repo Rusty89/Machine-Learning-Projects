@@ -13,17 +13,47 @@ public class ImageData extends Data {
         preProcess();
         normalizeData();
         bucketize();
+        findNumClassifications();
     }
 
     private void preProcess(){
         for (int i = 0; i < fullSet.size(); i++) {
             int indexOfLast = fullSet.get(i).size() - 1;
 
-            //swap first and last column so that classifications are on the right
+            // change classification to a number
+            switch(fullSet.get(i).get(0)){
+                case "BRICKFACE":
+                    fullSet.get(i).set(0, "0");
+                    break;
+                case "SKY":
+                    fullSet.get(i).set(0, "1");
+                    break;
+                case "FOLIAGE":
+                    fullSet.get(i).set(0, "2");
+                    break;
+                case "CEMENT":
+                    fullSet.get(i).set(0, "3");
+                    break;
+                case "WINDOW":
+                    fullSet.get(i).set(0, "4");
+                    break;
+                case "PATH":
+                    fullSet.get(i).set(0, "5");
+                    break;
+                case "GRASS":
+                    fullSet.get(i).set(0, "6");
+                    break;
+                default:
+                    //do nothing
+            }
+
+
+            // swap first and last column so that classifications are on the right
             String temp=fullSet.get(i).get(0);
             fullSet.get(i).set(0, fullSet.get(i).get(indexOfLast));
             fullSet.get(i).set(indexOfLast, temp);
         }
+
         for (int i = 0; i < fullSet.size(); i++) {
             String classification = fullSet.get(i).get(fullSet.get(0).size() - 1);
             int classIndex = fullSet.get(0).size() - 1;
