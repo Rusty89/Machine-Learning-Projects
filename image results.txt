@@ -1,0 +1,12 @@
+Begin Condensed KNN condensing for image
+
+End test
+
+Begin KMeans condensing for image
+
+End test
+
+Begin K Medoids PAM condensing for image
+
+End test
+
