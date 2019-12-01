@@ -9,7 +9,7 @@ public class DifferentialEvolution {
     int [] sizes;
     Data inputData;
     final int numNetworks;
-    final double crossOverRate = 0.40;
+    final double crossOverRate = 0.50;
     boolean regression;
 
     DifferentialEvolution(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
@@ -20,33 +20,40 @@ public class DifferentialEvolution {
         this.regression = regression;
     }
 
-    public Network evolve(){
+    // function to train the network
+    public Network evolve() throws CloneNotSupportedException {
+        // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
-        int stoppingCriteria = 100;
+        // stops after 1000 iterations of training
+        int stoppingCriteria = 10;
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
                 ArrayList<Double> mutant = createMutant(networks);
-                Network trial = createTrial(mutant);
+                Network trial = createTrial(mutant, networks.get(j));
                 networks.set(j , selection(networks.get(j), trial));
             }
         }
+        // returns the best trained network
         return findBestNetwork(networks);
     }
 
+
+    // iterates over all the networks in the population and
+    // returns the best network
     private Network findBestNetwork(ArrayList<Network> networks){
         Network best = networks.get(0);
         for (int i = 0; i < networks.size() ; i++) {
             if(best != networks.get(i)){
                 best = selection(best, networks.get(i));
             }
-
-    }
+        }
+        // clears bests guess history so it can be used outside of training
         best.guessHistory = new ArrayList<>();
         return best;
     }
 
 
-
+    // creates all the networks for the population
     private ArrayList<Network> createNetworks(int [] sizes){
         ArrayList<Network> networks = new ArrayList<>();
         //create an array of networks with random initializations
@@ -56,6 +63,7 @@ public class DifferentialEvolution {
         return networks;
     }
 
+    // generates a mutant vector to be used to make the trial network
     private ArrayList<Double> createMutant(ArrayList<Network> networks){
         ArrayList<Network> threeRand = drawThree(networks);
         // arraylists to hold the values of the 3 networks
@@ -73,6 +81,7 @@ public class DifferentialEvolution {
             for (int j = 0; j < nodes0.size() ; j++) {
                 for (Double d : nodes0.get(j).connectionValues.values()) {
                     node0Val.add(d);
+
                 }
                 for (Double d : nodes1.get(j).connectionValues.values()) {
                     node1Val.add(d);
@@ -85,7 +94,7 @@ public class DifferentialEvolution {
 
         for (int i = 0; i < node1Val.size() ; i++) {
             // x1 - x2, difference between these two vectors now stored in node1Val
-            double betaConstant = 1;
+            double betaConstant = .5;
             node1Val.set(i, betaConstant*((node1Val.get(i) - node2Val.get(i))));
         }
 
@@ -98,12 +107,16 @@ public class DifferentialEvolution {
         return node0Val;
     }
 
-    private Network createTrial(ArrayList<Double> mutant){
-        Network trial = new Network(sizes, 0);
+
+    // creates a trial network using the mutant vector
+    private Network createTrial(ArrayList<Double> mutant, Network original) throws CloneNotSupportedException {
+        // clones the original network to make initial trial vector
+        Network trial = (Network) original.clone();
         for (int i = 0; i < trial.getLayers().size() ; i++) {
             ArrayList<Node> trialNodes = trial.getLayers().get(i).getNodes();
             for (int j = 0; j < trialNodes.size(); j++) {
                 int finalJ = j;
+                // updates the trial network with the mutant
                 trialNodes.get(j).connectionValues.forEach((key, value) -> {
                     double randVal = Math.random();
                     if(randVal < crossOverRate){
