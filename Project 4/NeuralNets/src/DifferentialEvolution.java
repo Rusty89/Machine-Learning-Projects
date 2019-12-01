@@ -1,3 +1,4 @@
+import java.awt.desktop.SystemEventListener;
 import java.lang.reflect.Array;
 import java.nio.channels.ClosedSelectorException;
 import java.util.*;
@@ -8,7 +9,7 @@ public class DifferentialEvolution {
     int [] sizes;
     Data inputData;
     final int numNetworks;
-    final double crossOverRate = 0.98;
+    final double crossOverRate = 0.50;
     boolean regression;
 
     DifferentialEvolution(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
@@ -24,7 +25,7 @@ public class DifferentialEvolution {
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
         // stops after a certain number of iterations of training
-        int stoppingCriteria = 1000;
+        int stoppingCriteria = 10;
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
                 ArrayList<Double> mutant = createMutant(networks);
@@ -170,10 +171,10 @@ public class DifferentialEvolution {
             for (ArrayList<String> test : trainingSet) {
                 original.initializeInputLayer(test);
                 original.feedForward();
-                original.guessHistory.add(original.getClassNumber() + "");
+                original.guessHistory.add(original.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
                 trial.initializeInputLayer(test);
                 trial.feedForward();
-                trial.guessHistory.add(trial.getClassNumber() + "");
+                trial.guessHistory.add(trial.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
             }
             String lossOriginal = MathFunction.rootMeanSquaredError(original.guessHistory, trainingSet, inputData.fullSet);
             String lossTrial = MathFunction.rootMeanSquaredError(trial.guessHistory, trainingSet, inputData.fullSet);

@@ -154,10 +154,13 @@ public class Driver {
             }
         }
 */
+
+/*
+        // testing on a classification set
         int numFeatures = segmentation.fullSet.get(0).size()-1;
         int [] sizes = {numFeatures,segmentation.numClasses};
-        DifferentialEvolution diffAbalone0 = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 20, false);
-        Network best = diffAbalone0.evolve();
+        DifferentialEvolution diffCar = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 20, false);
+        Network best = diffCar.evolve();
 
         for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
             best.initializeInputLayer(test);
@@ -167,6 +170,23 @@ public class Driver {
         ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
 
         System.out.println(lossDiffEv);
+*/
+
+        // testing on a regression set
+        int numFeatures = forestFire.fullSet.get(0).size()-1;
+        int [] sizes = {numFeatures,1};
+        DifferentialEvolution diffForest = new DifferentialEvolution(forestFire, forestFire.dataSets.trainingSets.get(0), sizes, 20, true);
+        Network best = diffForest.evolve();
+
+        for (ArrayList<String> test : forestFire.dataSets.testSets.get(0)) {
+            best.initializeInputLayer(test);
+            best.feedForward();
+            best.guessHistory.add(best.error + "");
+        }
+        String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, forestFire.dataSets.testSets.get(0), forestFire.fullSet);
+
+        System.out.println(lossDiffEv);
+
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
