@@ -153,11 +153,7 @@ public class Driver {
                 printRangeAndMean("Mean squared error", mseResults);
             }
         }
-
-
     }
-
-
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
     {
