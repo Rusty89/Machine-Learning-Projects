@@ -154,17 +154,17 @@ public class Driver {
             }
         }
 */
-        int numFeatures = car.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures,numFeatures, numFeatures, car.numClasses};
-        DifferentialEvolution diffAbalone0 = new DifferentialEvolution(car, car.dataSets.trainingSets.get(0), sizes, 20, false);
+        int numFeatures = segmentation.fullSet.get(0).size()-1;
+        int [] sizes = {numFeatures,segmentation.numClasses};
+        DifferentialEvolution diffAbalone0 = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 20, false);
         Network best = diffAbalone0.evolve();
 
-        for (ArrayList<String> test : car.dataSets.testSets.get(0)) {
+        for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
             best.initializeInputLayer(test);
             best.feedForward();
             best.guessHistory.add(best.getClassNumber() + "");
         }
-        ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, car.dataSets.testSets.get(0));
+        ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
 
         System.out.println(lossDiffEv);
     }

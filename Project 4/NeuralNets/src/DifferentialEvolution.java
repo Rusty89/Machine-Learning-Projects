@@ -8,7 +8,7 @@ public class DifferentialEvolution {
     int [] sizes;
     Data inputData;
     final int numNetworks;
-    final double crossOverRate = 0.50;
+    final double crossOverRate = 0.98;
     boolean regression;
 
     DifferentialEvolution(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
@@ -23,8 +23,8 @@ public class DifferentialEvolution {
     public Network evolve() throws CloneNotSupportedException {
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
-        // stops after 1000 iterations of training
-        int stoppingCriteria = 100;
+        // stops after a certain number of iterations of training
+        int stoppingCriteria = 1000;
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
                 ArrayList<Double> mutant = createMutant(networks);
@@ -92,7 +92,8 @@ public class DifferentialEvolution {
         }
 
         for (int i = 0; i < node1Val.size() ; i++) {
-            // x1 - x2, difference between these two vectors now stored in node1Val
+            // B(x1 - x2), difference between these two vectors now stored in node1Val
+            // multiplied by a tunable constant
             double betaConstant = 1;
             node1Val.set(i, betaConstant*((node1Val.get(i) - node2Val.get(i))));
         }
@@ -115,7 +116,6 @@ public class DifferentialEvolution {
             ArrayList<Node> trialNodes = trial.getLayers().get(i).getNodes();
             ArrayList<Node> originalNodes = original.getLayers().get(i).getNodes();
             for (int j = 0; j < trialNodes.size(); j++) {
-                int finalJ = j;
                 // updates the trial network with the original network values
                 Collection<Double> originalNodeValues = originalNodes.get(j).connectionValues.values();
                 Collection<Node> trialNodeSet = trialNodes.get(j).connectionValues.keySet();
