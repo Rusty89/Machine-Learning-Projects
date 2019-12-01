@@ -173,17 +173,17 @@ public class Driver {
 */
 
         // testing on a regression set
-        int numFeatures = forestFire.fullSet.get(0).size()-1;
+        int numFeatures = redWine.fullSet.get(0).size()-1;
         int [] sizes = {numFeatures,1};
-        DifferentialEvolution diffForest = new DifferentialEvolution(forestFire, forestFire.dataSets.trainingSets.get(0), sizes, 20, true);
+        DifferentialEvolution diffForest = new DifferentialEvolution(redWine, redWine.dataSets.trainingSets.get(0), sizes, 20, true);
         Network best = diffForest.evolve();
 
-        for (ArrayList<String> test : forestFire.dataSets.testSets.get(0)) {
+        for (ArrayList<String> test : redWine.dataSets.testSets.get(0)) {
             best.initializeInputLayer(test);
             best.feedForward();
-            best.guessHistory.add(best.error + "");
+            best.guessHistory.add(best.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
         }
-        String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, forestFire.dataSets.testSets.get(0), forestFire.fullSet);
+        String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, redWine.dataSets.testSets.get(0), redWine.fullSet);
 
         System.out.println(lossDiffEv);
 

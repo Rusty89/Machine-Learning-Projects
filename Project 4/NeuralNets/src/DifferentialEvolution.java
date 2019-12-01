@@ -9,7 +9,7 @@ public class DifferentialEvolution {
     int [] sizes;
     Data inputData;
     final int numNetworks;
-    final double crossOverRate = 0.50;
+    final double crossOverRate = 0.90;
     final double betaConstant = 0.50;
     boolean regression;
 
@@ -26,10 +26,10 @@ public class DifferentialEvolution {
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
         // stops after a certain number of iterations of training
-        int stoppingCriteria = 10;
+        int stoppingCriteria = 50;
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
-                ArrayList<Double> mutant = createMutant(networks);
+                ArrayList<Double > mutant = createMutant(networks);
                 Network trial = createTrial(mutant, networks.get(j));
                 networks.set(j , selection(networks.get(j), trial));
             }
@@ -96,7 +96,7 @@ public class DifferentialEvolution {
         for (int i = 0; i < node1Val.size() ; i++) {
             // B(x1 - x2), difference between these two vectors now stored in node1Val
             // multiplied by a tunable constant
-            
+
             node1Val.set(i, betaConstant*((node1Val.get(i) - node2Val.get(i))));
         }
 
