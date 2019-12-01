@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class Network implements Cloneable
+public class Network
 {
     private ArrayList<Layer> layers;
     public double learningRate;
@@ -157,8 +157,5 @@ public class Network implements Cloneable
         return layers;
     }
 
-    public Object clone() throws CloneNotSupportedException
-    {
-        return super.clone();
-    }
+
 }

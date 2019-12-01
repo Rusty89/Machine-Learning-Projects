@@ -1,7 +1,6 @@
 import java.lang.reflect.Array;
 import java.nio.channels.ClosedSelectorException;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class DifferentialEvolution {
 
@@ -109,9 +108,25 @@ public class DifferentialEvolution {
 
 
     // creates a trial network using the mutant vector
-    private Network createTrial(ArrayList<Double> mutant, Network original) throws CloneNotSupportedException {
+    private Network createTrial(ArrayList<Double> mutant, Network original) {
         // clones the original network to make initial trial vector
-        Network trial = (Network) original.clone();
+        Network trial = new Network(sizes, 0);
+        for (int i = 0; i < original.getLayers().size() ; i++) {
+            ArrayList<Node> trialNodes = trial.getLayers().get(i).getNodes();
+            ArrayList<Node> originalNodes = original.getLayers().get(i).getNodes();
+            for (int j = 0; j < trialNodes.size(); j++) {
+                int finalJ = j;
+                // updates the trial network with the original network values
+                Collection<Double> originalNodeValues = originalNodes.get(j).connectionValues.values();
+                Collection<Node> trialNodeSet = trialNodes.get(j).connectionValues.keySet();
+                Iterator<Double> it = originalNodeValues.iterator();
+                Iterator<Node> it2 = trialNodeSet.iterator();
+                while(it.hasNext()){
+                    trialNodes.get(j).connectionValues.put(it2.next(), it.next());
+                }
+            }
+        }
+
         for (int i = 0; i < trial.getLayers().size() ; i++) {
             ArrayList<Node> trialNodes = trial.getLayers().get(i).getNodes();
             for (int j = 0; j < trialNodes.size(); j++) {
