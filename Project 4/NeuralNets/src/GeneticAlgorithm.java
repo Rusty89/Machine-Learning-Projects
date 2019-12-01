@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 /*
@@ -40,9 +41,7 @@ public class GeneticAlgorithm {
             // Mutation
             matingPair = mutation(matingPair);
             // Add offspring to next generation
-            for (Network n : matingPair) {
-                nextGen.add(n);
-            }
+            nextGen.addAll(matingPair);
             i++;
         }
         // Update generation
@@ -109,19 +108,18 @@ public class GeneticAlgorithm {
         // For each layer, node in layer, connection (gene) in node...
         for (int i = 0; i < layerSize; i++) {
             for (int j = 0; j < matingPair.get(0).layers.get(i).getNodes().size(); j++) {
-                for (int k = 0; k < matingPair.get(0).layers.get(i).getNode(j).connectionValues.size(); k++) {
+                HashMap<Node, Double> weights0 = matingPair.get(0).layers.get(i).getNode(j).connectionValues;
+                HashMap<Node, Double> weights1 = matingPair.get(1).layers.get(i).getNode(j).connectionValues;
+                for (int k = 0; k < weights0.size(); k++) {
                     // if crossover is triggered...
                     if (rand.nextDouble() < crossoverChance) {
                         Node n1 = matingPair.get(0).layers.get(i + 1).getNode(k);
                         Node n2 = matingPair.get(1).layers.get(i + 1).getNode(k);
                         // Swap values
-                        // Temp
-                        Double temp = matingPair.get(0).layers.get(i).getNode(j).connectionValues.get(n1);
                         // First of pair
-                        matingPair.get(0).layers.get(i).getNode(j).connectionValues.put(n1,
-                                matingPair.get(1).layers.get(i).getNode(j).connectionValues.get(k));
+                        weights0.put(n1, weights1.get(n2));
                         // Second of pair
-                        matingPair.get(1).layers.get(i).getNode(j).connectionValues.put(n2, temp);
+                        weights1.put(n2, weights0.get(n1));
                     }
                 }
             }
@@ -142,19 +140,17 @@ public class GeneticAlgorithm {
         // Each each layer, node in layer, connection (gene) in node...
         for (int i = 0; i < layerSize; i++) {
             for (int j = 0; j < matingPair.get(0).layers.get(i).getNodes().size(); j++) {
-                for (int k = 0; k < matingPair.get(0).layers.get(i).getNode(j).connectionValues.size(); k++) {
+                HashMap<Node, Double> weights = matingPair.get(0).layers.get(i).getNode(j).connectionValues;
+                for (int k = 0; k < weights.size(); k++) {
                     // If mutation is triggered...
                     if (rand.nextDouble() < mutationChance) {
                         Node n1 = matingPair.get(0).layers.get(i + 1).getNode(k);
                         // Coin flip on whether mutation adds or subtracts from amount
                         if (rand.nextDouble() > 0.50){
-                            matingPair.get(0).layers.get(i).getNode(j).connectionValues.put(n1,
-                                    matingPair.get(0).layers.get(i).getNode(j).connectionValues.get(n1) + 0.1);
+                            weights.put(n1, weights.get(n1) + 0.1);
                         }
                         else {
-                            matingPair.get(0).layers.get(i).getNode(j).connectionValues.put(n1,
-                                    matingPair.get(0).layers.get(i).getNode(j).connectionValues.get(n1) - 0.1);
-
+                            weights.put(n1, weights.get(n1) - 0.1);
                         }
                     }
                 }
@@ -164,19 +160,17 @@ public class GeneticAlgorithm {
         // Each each layer, node in layer, connection (gene) in node...
         for (int i = 0; i < layerSize; i++) {
             for (int j = 0; j < matingPair.get(1).layers.get(i).getNodes().size(); j++) {
-                for (int k = 0; k < matingPair.get(1).layers.get(i).getNode(j).connectionValues.size(); k++) {
+                HashMap<Node, Double> weights = matingPair.get(1).layers.get(i).getNode(j).connectionValues;
+                for (int k = 0; k < weights.size(); k++) {
                     // If mutation is triggered...
                     if (rand.nextDouble() < mutationChance) {
                         Node n2 = matingPair.get(1).layers.get(i + 1).getNode(k);
                         // Coin flip on whether mutation adds or subtracts from amount
                         if (rand.nextDouble() > 0.50){
-                            matingPair.get(1).layers.get(i).getNode(j).connectionValues.put(n2,
-                                    matingPair.get(1).layers.get(i).getNode(j).connectionValues.get(n2) + 0.1);
+                            weights.put(n2, weights.get(n2) + 0.1);
                         }
                         else {
-                            matingPair.get(1).layers.get(i).getNode(j).connectionValues.put(n2,
-                                    matingPair.get(1).layers.get(i).getNode(j).connectionValues.get(n2) - 0.1);
-
+                            weights.put(n2, weights.get(n2) - 0.1);
                         }
                     }
                 }
@@ -205,7 +199,7 @@ public class GeneticAlgorithm {
     // Categorical Test
     public double cfitnessTest(Network n){
         // Calculate and return accuracy
-        Double accuracy;
+        double accuracy;
         for (ArrayList<String> example : trainSet
         ) {
             n.initializeInputLayer(example);
