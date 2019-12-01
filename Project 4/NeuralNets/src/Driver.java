@@ -42,7 +42,7 @@ public class Driver {
         rData.add(machine);
         rData.add(redWine);
         rData.add(whiteWine);
-
+/*
         double bpLearningRate = 0.3;
         System.out.println("\n    Starting MLP using a learning rate of " + bpLearningRate);
         // start creating the MLP networks
@@ -153,6 +153,20 @@ public class Driver {
                 printRangeAndMean("Mean squared error", mseResults);
             }
         }
+*/
+        int numFeatures = car.fullSet.get(0).size()-1;
+        int [] sizes = {numFeatures,numFeatures, numFeatures, car.numClasses};
+        DifferentialEvolution diffAbalone0 = new DifferentialEvolution(car, car.dataSets.trainingSets.get(0), sizes, 50, false);
+        Network best = diffAbalone0.evolve();
+
+        for (ArrayList<String> test : car.dataSets.testSets.get(0)) {
+            best.initializeInputLayer(test);
+            best.feedForward();
+            best.guessHistory.add(best.getClassNumber() + "");
+        }
+        ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, car.dataSets.testSets.get(0));
+
+        System.out.println(lossDiffEv);
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)

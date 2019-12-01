@@ -16,6 +16,8 @@ public class Network
     public double error;
     public ArrayList<String> guessHistory;
 
+
+
     public Network (int[] layerSizes, double learningRate)
     {
         this.learningRate = learningRate;
@@ -148,5 +150,10 @@ public class Network
         if (layer.getPreviousLayer() != null) {
             backprop(layer.getPreviousLayer(), newWeights);
         }
+    }
+
+    //getter method for layers
+    public ArrayList<Layer> getLayers() {
+        return layers;
     }
 }
