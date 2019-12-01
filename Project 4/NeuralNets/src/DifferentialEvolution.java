@@ -10,6 +10,7 @@ public class DifferentialEvolution {
     Data inputData;
     final int numNetworks;
     final double crossOverRate = 0.50;
+    final double betaConstant = 0.50;
     boolean regression;
 
     DifferentialEvolution(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
@@ -95,7 +96,7 @@ public class DifferentialEvolution {
         for (int i = 0; i < node1Val.size() ; i++) {
             // B(x1 - x2), difference between these two vectors now stored in node1Val
             // multiplied by a tunable constant
-            double betaConstant = 1;
+            
             node1Val.set(i, betaConstant*((node1Val.get(i) - node2Val.get(i))));
         }
 
