@@ -49,7 +49,7 @@ public class GeneticAlgorithm {
     }
 
     // Initialize the first generation with random weights
-    public ArrayList<Network> originGen(){
+    private ArrayList<Network> originGen(){
         ArrayList<Network> gen = new ArrayList<>(numNetworks);
         for (int i = 0; i < numNetworks; i++){
             Network tempNetwork = new Network(hLayers);
@@ -186,9 +186,8 @@ public class GeneticAlgorithm {
     public double rfitnessTest(Network n){
         // Calculate and return absolute error
         double error = 0;
-        for (ArrayList<String> example : trainSet
-        ) {
-            n.initializeInputLayer(example);
+        for (int i = 0; i < trainSet.size() - 1; i++) {
+            n.initializeInputLayer(trainSet.get(i));
             n.feedForward();
             error += Math.abs(n.error);
         }
@@ -197,16 +196,17 @@ public class GeneticAlgorithm {
     }
 
     // Categorical Test
-    public double cfitnessTest(Network n){
+    public double cfitnessTest(Network n) {
         // Calculate and return accuracy
         double accuracy;
-        for (ArrayList<String> example : trainSet
-        ) {
-            n.initializeInputLayer(example);
+        n.guessHistory.clear();
+        for (int i = 0; i < trainSet.size() - 1; i++) {
+            n.initializeInputLayer(trainSet.get(i));
             n.feedForward();
             n.guessHistory.add(n.getClassNumber() + "");
         }
         ArrayList<String> loss = MathFunction.processConfusionMatrix(n.guessHistory, trainSet);
+        //TODO guessHistory is one smaller than trainSet. They should be the same length.
         accuracy = Double.parseDouble(loss.get(2));
         return accuracy;
     }
