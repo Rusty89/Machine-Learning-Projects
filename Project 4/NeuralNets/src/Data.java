@@ -10,63 +10,12 @@ import java.util.*;
 
 public class Data {
     public int numClasses;
-    private static PrintWriter printer;
     public ArrayList<ArrayList<String>> fullSet = new ArrayList<>();
     public CVS dataSets = new CVS();
     private final int numTrainingSets = 10; // defines training sets for 10-fold cross validation
     public int numClassifications = 0;
-    private ArrayList<ArrayList<ArrayList<String>>> condensedSet = new ArrayList<>(); // full condensed set from after cross-validation
-    private ArrayList<ArrayList<ArrayList<String>>> kMeansSet = new ArrayList<>(); // full condensed set from after cross-validation
-    private ArrayList<ArrayList<ArrayList<String>>> kPAMSet = new ArrayList<>(); // full condensed set from after cross-validation
+
     // private DecimalFormat df = new DecimalFormat("#.###");
-
-    public ArrayList<ArrayList<ArrayList<String>>> getCondensedSet() {
-        return condensedSet;
-    }
-
-    public ArrayList<ArrayList<ArrayList<String>>> getKMeansSet() {
-        return kMeansSet;
-    }
-
-    public ArrayList<ArrayList<ArrayList<String>>> getKPAMSet() {
-        return kPAMSet;
-    }
-
-    // drives the condensing of each data set
-    public void condenseSets(boolean regression, boolean euclidean, String dataName) throws IOException {
-
-        FileWriter filer = new FileWriter(dataName + " results.txt");
-        printer = new PrintWriter(filer);
-
-        // only run Condensed on classification (non-regression) sets
-        if (!regression) {
-
-            // begin our Condensed K-Nearest Neighbor Test, print to output and .txt
-            System.out.println("Begin Condensed KNN condensing for " + dataName);
-            printer.println("Begin Condensed KNN condensing for " + dataName);
-            runCondensedKNN(euclidean);
-            System.out.println("\nEnd test\n");
-            printer.println("\nEnd test\n");
-
-        }
-
-        // begin our K-Means condensing, print to output and .txt
-        System.out.println("Begin KMeans condensing for " + dataName);
-        printer.println("Begin KMeans condensing for " + dataName);
-        runKMeans(regression);
-        System.out.println("\nEnd test\n");
-        printer.println("\nEnd test\n");
-
-        // begin our K Medoids PAM condensing, print to output and .txt
-        System.out.println("Begin K Medoids PAM condensing for " + dataName);
-        printer.println("Begin K Medoids PAM condensing for " + dataName);
-        runKPAM(regression);
-        System.out.println("\nEnd test\n");
-        printer.println("\nEnd test\n");
-
-        printer.close();
-        filer.close();
-    }
 
     // method to read in our data sets and convert them to an Java ArrayList for parsing
     public void fileTo2dStringArrayList(File inputFile) throws Exception {
@@ -215,89 +164,6 @@ public class Data {
 
     }
 
-    // drives the running of the Condensed K-Nearest Neighbor Algorithm
-    public void runCondensedKNN(boolean euclidean) {
 
-        int k = 1; // k with value 1 performed the best on most of our data sets
 
-        System.out.println("\n---");
-        System.out.println("Performing the algorithm with 10-fold cross validation for k = " + k + "\n");
-
-        for (int i = 0; i < numTrainingSets; i++) {
-
-            // actually runs condensed KNN condensing
-            System.out.println("Condensing the training set " + (i + 1));
-            ArrayList<ArrayList<String>> condensedSubset = KNNAlgorithms.CondensedKNN(dataSets.trainingSets.get(i), euclidean);
-            condensedSet.add(condensedSubset); // add subset to the final condensed set to be passed into network
-            System.out.println();
-        }
-    }
-
-    // driver for K-Means algorithm 
-    public void runKMeans(boolean regression) {
-
-        System.out.println("\n---");
-        System.out.println("Performing the algorithm with 10-fold cross validation\n");
-
-        if (regression) {
-            for (int i = 0; i < numTrainingSets; i++) {
-
-                int numClusters = dataSets.trainingSets.get(i).size() / 4; // only uses n / 4 as per instruction
-
-                // actually runs the KNNAlgorithms
-                System.out.println("Running K-Means on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KmeansSubset = KNNAlgorithms.Kmeans(dataSets.trainingSets.get(i), numClusters);
-                kMeansSet.add(KmeansSubset); // add subset to the final condensed set to be passed into network
-                System.out.println();
-            }
-
-        }
-
-        else {
-
-            for (int i = 0; i < numTrainingSets; i++) {
-                int numClusters = condensedSet.get(i).size();
-
-                // actually runs the KNNAlgorithms
-                System.out.println("Running K-Means on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KmeansSubset = KNNAlgorithms.Kmeans(dataSets.trainingSets.get(i), numClusters);
-                kMeansSet.add(KmeansSubset); // add subset to the final condensed set to be passed into network
-                System.out.println();
-            }
-        }
-    }
-
-    // driver for Partioning Around Medoids algorithm
-    public void runKPAM(boolean regression) {
-
-        System.out.println("\n---");
-        System.out.println("Performing the algorithm with 10-fold cross validation\n");
-
-        if (regression) {
-
-            for (int i = 0; i < numTrainingSets; i++) {
-
-                int numClusters = dataSets.trainingSets.get(i).size() / 4; // only uses n / 4 as per instruction
-
-                // actually runs the KNNAlgorithms
-                System.out.println("Running PAM on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KPAMSubset = KNNAlgorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters);
-                kPAMSet.add(KPAMSubset); // add subset to the final condensed set to be passed into network
-                System.out.println();
-            }
-        }
-
-        else {
-
-            for (int i = 0; i < numTrainingSets; i++) {
-                int numClusters = condensedSet.get(i).size();
-
-                // actually runs the KNNAlgorithms
-                System.out.println("Running PAM on the training set " + (i + 1));
-                ArrayList<ArrayList<String>> KPAMSubset = KNNAlgorithms.AlternativePAM(dataSets.trainingSets.get(i), numClusters);
-                kPAMSet.add(KPAMSubset); // add subset to the final condensed set to be passed into network
-                System.out.println();
-            }
-        }
-    }
 }
