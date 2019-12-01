@@ -156,7 +156,7 @@ public class Driver {
 */
         int numFeatures = car.fullSet.get(0).size()-1;
         int [] sizes = {numFeatures,numFeatures, numFeatures, car.numClasses};
-        DifferentialEvolution diffAbalone0 = new DifferentialEvolution(car, car.dataSets.trainingSets.get(0), sizes, 100, false);
+        DifferentialEvolution diffAbalone0 = new DifferentialEvolution(car, car.dataSets.trainingSets.get(0), sizes, 20, false);
         Network best = diffAbalone0.evolve();
 
         for (ArrayList<String> test : car.dataSets.testSets.get(0)) {

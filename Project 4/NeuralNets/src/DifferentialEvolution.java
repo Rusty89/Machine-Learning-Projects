@@ -24,7 +24,7 @@ public class DifferentialEvolution {
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
         // stops after 1000 iterations of training
-        int stoppingCriteria = 10;
+        int stoppingCriteria = 100;
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
                 ArrayList<Double> mutant = createMutant(networks);
@@ -93,7 +93,7 @@ public class DifferentialEvolution {
 
         for (int i = 0; i < node1Val.size() ; i++) {
             // x1 - x2, difference between these two vectors now stored in node1Val
-            double betaConstant = .5;
+            double betaConstant = 1;
             node1Val.set(i, betaConstant*((node1Val.get(i) - node2Val.get(i))));
         }
 
@@ -155,7 +155,7 @@ public class DifferentialEvolution {
                 original.guessHistory.add(original.getClassNumber() + "");
                 trial.initializeInputLayer(test);
                 trial.feedForward();
-                trial.guessHistory.add(original.getClassNumber() + "");
+                trial.guessHistory.add(trial.getClassNumber() + "");
             }
             ArrayList<String> lossOriginal = MathFunction.processConfusionMatrix(original.guessHistory, trainingSet);
             ArrayList<String> lossTrial = MathFunction.processConfusionMatrix(trial.guessHistory, trainingSet);
@@ -173,7 +173,7 @@ public class DifferentialEvolution {
                 original.guessHistory.add(original.getClassNumber() + "");
                 trial.initializeInputLayer(test);
                 trial.feedForward();
-                trial.guessHistory.add(original.getClassNumber() + "");
+                trial.guessHistory.add(trial.getClassNumber() + "");
             }
             String lossOriginal = MathFunction.rootMeanSquaredError(original.guessHistory, trainingSet, inputData.fullSet);
             String lossTrial = MathFunction.rootMeanSquaredError(trial.guessHistory, trainingSet, inputData.fullSet);
