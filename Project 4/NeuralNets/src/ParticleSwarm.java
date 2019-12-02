@@ -3,6 +3,7 @@ import org.w3c.dom.xpath.XPathResult;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 public class ParticleSwarm {
@@ -18,6 +19,7 @@ public class ParticleSwarm {
     boolean regression;
 
     ArrayList<Double> personalBestScores;
+    Double groupBestScore;
     ArrayList<ArrayList<Double>> personalBests;
     ArrayList<ArrayList<Double>> currentState;
     ArrayList<ArrayList<Double>> velocity;
@@ -73,8 +75,10 @@ public class ParticleSwarm {
                         velocity.get(i).add(0.0);
                         if(regression){
                             personalBestScores.add(Double.MAX_VALUE);
+                            groupBestScore = Double.MAX_VALUE;
                         }else{
                             personalBestScores.add(0.0);
+                            groupBestScore = 0.0;
                         }
                     }
                 }
@@ -127,20 +131,74 @@ public class ParticleSwarm {
         // velocities and the current state of the network
         for (int i = 0; i < numNetworks ; i++) {
             int sizeOfChromosome = groupBest.size();
+            Network currNetwork = networks.get(i);
             for (int j = 0; j < sizeOfChromosome; j++) {
                 double currentVal = currentState.get(i).get(j);
                 double velocityVal = velocity.get(i).get(j);
                 double newState = currentVal + velocityVal;
                 currentState.get(i).set(j, newState);
             }
+
+            // puts connection values back into hashmap of network
+            // by iterating over the keys and states in order
+            Iterator<Double> it1 = currentState.get(i).iterator();
+            ArrayList<Node> nodes = currNetwork.getLayers().get(i).getNodes();
+            for (int j = 0; j < nodes.size() ; j++) {
+                // updates the network with the new connection values
+                Collection<Node> nodeSet = nodes.get(j).connectionValues.keySet();
+                Iterator<Node> it2 = nodeSet.iterator();
+                while(it2.hasNext()){
+                    nodes.get(j).connectionValues.put(it2.next(), it1.next());
+                }
+            }
         }
+
     }
 
     private void calculateFitness(){
         for (int i = 0; i < numNetworks ; i++) {
+            Network currNetwork = networks.get(i);
+            currNetwork.guessHistory.clear();
+            if(!regression){
+                for (ArrayList<String> test : trainingSet) {
+                    currNetwork.initializeInputLayer(test);
+                    currNetwork.feedForward();
+                    currNetwork.guessHistory.add(currNetwork.getClassNumber() + "");
 
+                }
+                ArrayList<String> loss = MathFunction.processConfusionMatrix(currNetwork.guessHistory, trainingSet);
+                // check accuracy
+                Double score = Double.parseDouble(loss.get(2));
+                // check error
+                if(score > personalBestScores.get(i)){
+                    // update personal best with new state
+                    personalBests.set(i, currentState.get(i));
+                    if(score > groupBestScore){
+                        groupBest = currentState.get(i);
+                    }
+                }
+                currNetwork.guessHistory.clear();
+            }
+            else{
+                for (ArrayList<String> test : trainingSet) {
+                    currNetwork.initializeInputLayer(test);
+                    currNetwork.feedForward();
+                    currNetwork.guessHistory.add(currNetwork.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
+
+                }
+                String loss = MathFunction.rootMeanSquaredError(currNetwork.guessHistory, trainingSet, inputData.fullSet);
+                Double score = Double.parseDouble(loss);
+                // check error
+                if(score < personalBestScores.get(i)){
+                    // update personal best with new state
+                    personalBests.set(i, currentState.get(i));
+                    if(score < groupBestScore){
+                        groupBest = currentState.get(i);
+                    }
+                }
+                currNetwork.guessHistory.clear();
+            }
         }
-
     }
 
 
