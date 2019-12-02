@@ -149,4 +149,9 @@ public class Network
             backprop(layer.getPreviousLayer(), newWeights);
         }
     }
+
+    //getter method for layers
+    public ArrayList<Layer> getLayers() {
+        return layers;
+    }
 }
