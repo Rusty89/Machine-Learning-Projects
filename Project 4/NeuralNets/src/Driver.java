@@ -43,6 +43,7 @@ public class Driver {
         rData.add(redWine);
         rData.add(whiteWine);
 
+        /*
         double bpLearningRate = 0.3;
         System.out.println("\n    Starting MLP using a learning rate of " + bpLearningRate);
         // start creating the MLP networks
@@ -153,6 +154,25 @@ public class Driver {
                 printRangeAndMean("Mean squared error", mseResults);
             }
         }
+
+         */
+
+        // testing on a regression set
+        int numFeatures = redWine.fullSet.get(0).size()-1;
+        int [] sizes = {numFeatures,1};
+        ParticleSwarm diffForest = new ParticleSwarm(redWine, redWine.dataSets.trainingSets.get(0), sizes, 20, true);
+
+        Network best = diffForest.bestNet;
+
+        for (ArrayList<String> test : redWine.dataSets.testSets.get(0)) {
+            best.initializeInputLayer(test);
+            best.feedForward();
+            best.guessHistory.add(best.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
+        }
+        String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, redWine.dataSets.testSets.get(0), redWine.fullSet);
+
+        System.out.println(lossDiffEv);
+
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)

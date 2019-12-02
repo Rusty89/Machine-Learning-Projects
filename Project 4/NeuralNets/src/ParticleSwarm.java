@@ -11,22 +11,27 @@ public class ParticleSwarm {
     int [] sizes;
     Data inputData;
     final int numNetworks;
-    double c1 = 0.90;
-    double c2 = 0.50;
+    // constant for weight on personal Best
+    double c1 = 0.20;
+    // constant for weight on group best
+    double c2 = 0.90;
+    // velocity limits
     double velocityClampUpper = 1;
     double velocityClampLower = -1;
+    // inertia
     double inertia = 0.50;
     boolean regression;
 
-    ArrayList<Double> personalBestScores;
-    Double groupBestScore;
-    ArrayList<ArrayList<Double>> personalBests;
-    ArrayList<ArrayList<Double>> currentState;
-    ArrayList<ArrayList<Double>> velocity;
-    ArrayList<Double> groupBest;
-    ArrayList<Network> networks;
+    ArrayList<Double> personalBestScores = new ArrayList<>();
+    double groupBestScore;
+    int indexOfBest;
+    ArrayList<ArrayList<Double>> personalBests = new ArrayList<>();
+    ArrayList<ArrayList<Double>> currentState = new ArrayList<>();
+    ArrayList<ArrayList<Double>> velocity = new ArrayList<>();
+    ArrayList<Double> groupBest = new ArrayList<>();
+    ArrayList<Network> networks = new ArrayList<>();
     Network bestNet;
-    double bestFitness;
+
 
 
     ParticleSwarm(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
@@ -35,12 +40,7 @@ public class ParticleSwarm {
         this.inputData = inputData;
         this.numNetworks = numNetworks;
         this.regression = regression;
-        if(regression){
-            bestFitness = Double.MAX_VALUE;
-        }else{
-            bestFitness = 0;
-        }
-
+        swarm();
     }
 
     private void swarm(){
@@ -52,6 +52,8 @@ public class ParticleSwarm {
             updateNetworks();
             calculateFitness();
         }
+        // sets bestNet to the best network
+        bestNet = networks.get(indexOfBest);
     }
 
     // creates all the networks for the population
@@ -59,11 +61,14 @@ public class ParticleSwarm {
         //create an array of networks with random initializations
         for (int i = 0; i < numNetworks ; i++) {
             networks.add(new Network(sizes, 0));
-            for (int j = 0; j < networks.get(i).getLayers().size() ; i++) {
+            personalBests.add(new ArrayList<>());
+            currentState.add(new ArrayList<>());
+            velocity.add(new ArrayList<>());
+            for (int j = 0; j < networks.get(i).getLayers().size() ; j++) {
                 ArrayList<Node> nodes = networks.get(i).getLayers().get(j).getNodes();
                 for (int k = 0; k < nodes.size(); k++) {
                     // updates the trial network with the original network values
-                    Collection<Double> nodeValues = nodes.get(j).connectionValues.values();
+                    Collection<Double> nodeValues = nodes.get(k).connectionValues.values();
                     Iterator<Double> it = nodeValues.iterator();
                     // moves all the personal bests (the initial state in this case)
                     // into an arraylist of doubles for easy use later
@@ -142,15 +147,19 @@ public class ParticleSwarm {
             // puts connection values back into hashmap of network
             // by iterating over the keys and states in order
             Iterator<Double> it1 = currentState.get(i).iterator();
-            ArrayList<Node> nodes = currNetwork.getLayers().get(i).getNodes();
-            for (int j = 0; j < nodes.size() ; j++) {
-                // updates the network with the new connection values
-                Collection<Node> nodeSet = nodes.get(j).connectionValues.keySet();
-                Iterator<Node> it2 = nodeSet.iterator();
-                while(it2.hasNext()){
-                    nodes.get(j).connectionValues.put(it2.next(), it1.next());
+            for (int j = 0; j < networks.get(i).getLayers().size() ; j++){
+                ArrayList<Node> nodes = currNetwork.getLayers().get(j).getNodes();
+                for (int k = 0; k < nodes.size() ; k++) {
+                    // updates the network with the new connection values
+                    Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
+                    Iterator<Node> it2 = nodeSet.iterator();
+                    while(it2.hasNext()){
+                        nodes.get(k).connectionValues.put(it2.next(), it1.next());
+                    }
                 }
             }
+
+
         }
 
     }
@@ -175,6 +184,7 @@ public class ParticleSwarm {
                     personalBests.set(i, currentState.get(i));
                     if(score > groupBestScore){
                         groupBest = currentState.get(i);
+                        indexOfBest = i;
                     }
                 }
                 currNetwork.guessHistory.clear();
@@ -194,6 +204,7 @@ public class ParticleSwarm {
                     personalBests.set(i, currentState.get(i));
                     if(score < groupBestScore){
                         groupBest = currentState.get(i);
+                        indexOfBest = i;
                     }
                 }
                 currNetwork.guessHistory.clear();
