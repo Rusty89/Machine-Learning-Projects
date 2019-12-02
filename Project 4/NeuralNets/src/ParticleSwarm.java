@@ -155,7 +155,9 @@ public class ParticleSwarm {
                     Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
                     Iterator<Node> it2 = nodeSet.iterator();
                     while(it2.hasNext()){
-                        nodes.get(k).connectionValues.put(it2.next(), it1.next());
+                        Node key = it2.next();
+                        Double valToBeStored = it1.next();
+                        nodes.get(k).connectionValues.put(key, valToBeStored);
                     }
                 }
             }
