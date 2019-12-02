@@ -19,7 +19,7 @@ public class ParticleSwarm {
     double velocityClampUpper = 1;
     double velocityClampLower = -1;
     // inertia
-    double inertia = 0.50;
+    double inertia = 0.70;
     boolean regression;
 
     ArrayList<Double> personalBestScores = new ArrayList<>();
@@ -64,6 +64,7 @@ public class ParticleSwarm {
             personalBests.add(new ArrayList<>());
             currentState.add(new ArrayList<>());
             velocity.add(new ArrayList<>());
+            personalBestScores.add(0.0);
             for (int j = 0; j < networks.get(i).getLayers().size() ; j++) {
                 ArrayList<Node> nodes = networks.get(i).getLayers().get(j).getNodes();
                 for (int k = 0; k < nodes.size(); k++) {
@@ -77,12 +78,12 @@ public class ParticleSwarm {
                         personalBests.get(i).add(val);
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
-                        velocity.get(i).add(0.0);
+                        velocity.get(i).add(0.01);
                         if(regression){
-                            personalBestScores.add(Double.MAX_VALUE);
+                            personalBestScores.set(i, Double.MAX_VALUE);
                             groupBestScore = Double.MAX_VALUE;
                         }else{
-                            personalBestScores.add(0.0);
+                            personalBestScores.set(i, 0.0);
                             groupBestScore = 0.0;
                         }
                     }
@@ -182,9 +183,11 @@ public class ParticleSwarm {
                 if(score > personalBestScores.get(i)){
                     // update personal best with new state
                     personalBests.set(i, currentState.get(i));
+                    personalBestScores.set(i, score);
                     if(score > groupBestScore){
                         groupBest = currentState.get(i);
                         indexOfBest = i;
+                        groupBestScore = score;
                     }
                 }
                 currNetwork.guessHistory.clear();
@@ -202,9 +205,11 @@ public class ParticleSwarm {
                 if(score < personalBestScores.get(i)){
                     // update personal best with new state
                     personalBests.set(i, currentState.get(i));
+                    personalBestScores.set(i, score);
                     if(score < groupBestScore){
                         groupBest = currentState.get(i);
                         indexOfBest = i;
+                        groupBestScore = score;
                     }
                 }
                 currNetwork.guessHistory.clear();

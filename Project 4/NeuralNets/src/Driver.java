@@ -158,9 +158,26 @@ public class Driver {
          */
 
         // testing on a regression set
+        int numFeatures = segmentation.fullSet.get(0).size()-1;
+        int [] sizes = {numFeatures,1};
+        ParticleSwarm diffForest = new ParticleSwarm(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 50, false);
+
+        Network best = diffForest.bestNet;
+
+        for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
+            best.initializeInputLayer(test);
+            best.feedForward();
+            best.guessHistory.add(best.getClassNumber() + "");
+        }
+        ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
+
+        System.out.println(lossDiffEv);
+
+        /*
+        // testing on a regression set
         int numFeatures = redWine.fullSet.get(0).size()-1;
         int [] sizes = {numFeatures,1};
-        ParticleSwarm diffForest = new ParticleSwarm(redWine, redWine.dataSets.trainingSets.get(0), sizes, 20, true);
+        ParticleSwarm diffForest = new ParticleSwarm(redWine, redWine.dataSets.trainingSets.get(0), sizes, 50, true);
 
         Network best = diffForest.bestNet;
 
@@ -172,7 +189,7 @@ public class Driver {
         String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, redWine.dataSets.testSets.get(0), redWine.fullSet);
 
         System.out.println(lossDiffEv);
-
+        */
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
