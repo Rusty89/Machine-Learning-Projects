@@ -1,9 +1,6 @@
-import org.w3c.dom.xpath.XPathResult;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 public class ParticleSwarm {
@@ -11,6 +8,7 @@ public class ParticleSwarm {
     int [] sizes;
     Data inputData;
     final int numNetworks;
+    int failureLimit;
     // constant for weight on personal Best
     double c1 = 2;
     // constant for weight on group best
@@ -33,22 +31,25 @@ public class ParticleSwarm {
     ArrayList<Network> networks = new ArrayList<>();
     Network bestNet;
 
+    ArrayList<Double> globalBest = new ArrayList<>();
 
 
-    ParticleSwarm(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
+    ParticleSwarm(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, int failureLimit, boolean regression){
         this.sizes = sizes;
         this.trainingSet = trainingSet;
         this.inputData = inputData;
         this.numNetworks = numNetworks;
         this.regression = regression;
+        this.failureLimit = failureLimit;
         swarm();
     }
 
     private void swarm(){
         //update position of all networks
         createNetworks(sizes);
-        int stoppingPoint = 1000;
+        int stoppingPoint = 10000;
         int noImprovementCounter = 0;
+        calculateFitness();
         for (int i = 0; i < stoppingPoint; i++) {
             prevGroupBestScore = groupBestScore;
             updateVelocities();
@@ -59,12 +60,12 @@ public class ParticleSwarm {
             }else{
                 noImprovementCounter = 0;
             }
-            if(noImprovementCounter > 500){
+            if(noImprovementCounter > failureLimit){
                 i = stoppingPoint;
             }
-            if(inertia>0){
-                inertia -= 0.005;
-
+            inertia -= 0.0005;
+            if(inertia<=0.5){
+                inertia=1;
             }
 
         }
@@ -114,7 +115,7 @@ public class ParticleSwarm {
                     // into an arraylist of doubles for easy use later
                     while(it.hasNext()){
                         double val = it.next();
-                        personalBests.get(i).add(val);
+                        personalBests.get(i).add(Math.random()*1000);
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
                         velocity.get(i).add(0.0);
@@ -144,7 +145,7 @@ public class ParticleSwarm {
             double r2 = Math.random();
             for (int j = 0; j < sizeOfChromosome ; j++) {
                 double pBestVal = personalBests.get(i).get(j);
-                double gBestVal = groupBest.get(j);
+                double gBestVal = globalBest.get(j);
                 double currentVal = currentState.get(i).get(j);
                 // first term in particle swarm equation
                 // for velocity, updating previous velocity times
@@ -174,6 +175,8 @@ public class ParticleSwarm {
     private void updateNetworks(){
         // updates the positions of the networks based on calculated
         // velocities and the current state of the network
+
+
         for (int i = 0; i < numNetworks ; i++) {
             int sizeOfChromosome = groupBest.size();
             Network currNetwork = networks.get(i);
@@ -207,7 +210,15 @@ public class ParticleSwarm {
     }
 
     private void calculateFitness(){
+        double bestAtCurrentState;
+        if(!regression){
+            bestAtCurrentState = 0.0;
+
+        }else{
+            bestAtCurrentState = Double.MAX_VALUE;
+        }
         for (int i = 0; i < numNetworks ; i++) {
+
             Network currNetwork = networks.get(i);
             currNetwork.guessHistory.clear();
 
@@ -239,6 +250,11 @@ public class ParticleSwarm {
 
                     }
                 }
+
+                if(score > bestAtCurrentState){
+                    globalBest = currentState.get(i);
+                    bestAtCurrentState = score;
+                }
                 currNetwork.guessHistory.clear();
             }
             else{
@@ -266,6 +282,11 @@ public class ParticleSwarm {
                         groupBestScore = score;
                     }
                 }
+                if(score < bestAtCurrentState){
+                    globalBest = currentState.get(i);
+                    bestAtCurrentState = score;
+                }
+
                 currNetwork.guessHistory.clear();
             }
         }

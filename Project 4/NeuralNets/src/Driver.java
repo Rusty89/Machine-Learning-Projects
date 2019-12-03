@@ -156,11 +156,11 @@ public class Driver {
         }
 
          */
-
+/*
         // testing on a classification set
         int numFeatures = segmentation.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures,segmentation.numClasses};
-        ParticleSwarm diffForest = new ParticleSwarm(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 60, false);
+        int [] sizes = {numFeatures,numFeatures,numFeatures,segmentation.numClasses};
+        ParticleSwarm diffForest = new ParticleSwarm(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 100, 100,false);
 
         Network best = diffForest.bestNet;
         best.guessHistory.clear();
@@ -172,15 +172,15 @@ public class Driver {
         ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
 
         System.out.println(lossDiffEv);
+*/
 
 
 
-/*
 
         // testing on a regression set
         int numFeatures = redWine.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures,numFeatures, numFeatures,1};
-        ParticleSwarm diffForest = new ParticleSwarm(redWine, redWine.dataSets.trainingSets.get(0), sizes, 30, true);
+        int [] sizes = {numFeatures, numFeatures, numFeatures, numFeatures,1};
+        ParticleSwarm diffForest = new ParticleSwarm(redWine, redWine.dataSets.trainingSets.get(0), sizes, 30, 10,  true);
 
         Network best = diffForest.bestNet;
 
@@ -193,7 +193,7 @@ public class Driver {
 
         System.out.println(lossDiffEv);
 
-*/
+
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
