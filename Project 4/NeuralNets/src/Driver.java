@@ -180,8 +180,12 @@ public class Driver {
     }
 
     // function to run all Particle Swarm tests
-    private static void runParticleSwarmTests(ArrayList<Data> rData, ArrayList<Data> cData, int failureLimit){
+    private static void runParticleSwarmTests(ArrayList<Data> rData, ArrayList<Data> cData, int failureLimit) throws IOException {
         for (Data data : cData) {
+            FileWriter filer = new FileWriter(data.toString() + "PSOresults.csv");
+            PrintWriter printer = new PrintWriter(filer);
+            System.out.println("Running PSO tests for " + data.toString());
+
             // testing on a classification sets
             ArrayList<int []> hiddenLayers = new ArrayList<>();
             int numFeatures = data.fullSet.get(0).size()-1;
@@ -198,11 +202,18 @@ public class Driver {
                     System.out.println(resultsOfTest);
                     totalResults.add(resultsOfTest);
                 }
+                printer.print(totalResults);
             }
+
+            printer.close();
+            filer.close();
         }
 
         for (Data data : rData) {
             // testing on a regression sets
+            FileWriter filer = new FileWriter(data.toString() + "PSOresults.csv");
+            PrintWriter printer = new PrintWriter(filer);
+            System.out.println("Running PSO tests for " + data.toString());
             ArrayList<int []> hiddenLayers = new ArrayList<>();
             int numFeatures = data.fullSet.get(0).size()-1;
             // creates the parameters to make 0, 1 and 2 hidden layrs
@@ -218,8 +229,10 @@ public class Driver {
                     System.out.println(resultsOfTest);
                     totalResults.add(resultsOfTest);
                 }
+                printer.print(totalResults);
             }
-
+            printer.close();
+            filer.close();
         }
     }
 }
