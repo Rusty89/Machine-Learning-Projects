@@ -61,7 +61,7 @@ public class ParticleSwarm {
             // check fitness of new states
             calculateFitness();
             // if progress stagnates end swarming
-            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.00001){
+            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.0001){
                 noImprovementCounter++;
             }else{
                 noImprovementCounter = 0;
