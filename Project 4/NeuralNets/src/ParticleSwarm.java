@@ -19,7 +19,7 @@ public class ParticleSwarm {
     double velocityClampUpper = 100;
     double velocityClampLower = -100;
     // inertia
-    double inertia = .5;
+    double inertia = 2;
     boolean regression;
 
 
