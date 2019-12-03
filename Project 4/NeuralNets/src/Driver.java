@@ -33,8 +33,8 @@ public class Driver {
         ArrayList<Data> rData = new ArrayList<>();
 
         // add categorical sets for our MLP network
-        cData.add(car);
-        cData.add(abalone);
+        //cData.add(car);
+        //cData.add(abalone);
         cData.add(segmentation);
 
         // add regression sets for our MLP network

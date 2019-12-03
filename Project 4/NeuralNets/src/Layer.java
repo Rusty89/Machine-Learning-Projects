@@ -10,15 +10,17 @@ public class Layer
     private Layer nextLayer;
     private Layer previousLayer;
     private ArrayList<Node> nodes;
-
+    public int nodeID = 0;
     // layer constructor that adds nodes with given ranges to the layer
     public Layer (int layerSize)
     {
         nodes = new ArrayList<>();
-
         // adds nodes to a new layer when created
-        for (int a = 0; a < layerSize; a++)
+        for (int i = 0; i < layerSize; i++) {
             nodes.add(new Node(this));
+            nodes.get(i).id = nodeID;
+            nodeID++;
+        }
     }
 
     // getter /setter methods

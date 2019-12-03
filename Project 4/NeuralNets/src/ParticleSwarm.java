@@ -1,10 +1,8 @@
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
-public class ParticleSwarm {
+public class ParticleSwarm implements Comparator<Node> {
     ArrayList<ArrayList<String>> trainingSet;
     int [] sizes;
     Data inputData;
@@ -37,7 +35,7 @@ public class ParticleSwarm {
     ArrayList<Double> globalBest = new ArrayList<>();
 
 
-    ParticleSwarm(Data inputData){
+    ParticleSwarm(Data inputData) {
         this.inputData = inputData;
     }
 
@@ -61,7 +59,7 @@ public class ParticleSwarm {
             // check fitness of new states
             calculateFitness();
             // if progress stagnates end swarming
-            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.0001){
+            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.00001){
                 noImprovementCounter++;
             }else{
                 noImprovementCounter = 0;
@@ -72,9 +70,9 @@ public class ParticleSwarm {
             // lowers inertia over time, allowing
             // swarm to settle, and resets to one for
             // new motion if swarm settles too far
-            inertia -= 0.005;
+            inertia -= 0.0005;
             if(inertia <= 0.5){
-                inertia = 1;
+                inertia = 0.5;
             }
         }
         // sets bestNet to the best network
@@ -82,20 +80,7 @@ public class ParticleSwarm {
         bestNet = networks.get(indexOfBest);
         // puts connection values back into hashmap of network
         // by iterating over the keys and states in order
-        Iterator<Double> it1 = groupBest.iterator();
-        for (int j = 0; j < bestNet.getLayers().size() ; j++){
-            ArrayList<Node> nodes = bestNet.getLayers().get(j).getNodes();
-            for (int k = 0; k < nodes.size() ; k++) {
-                // updates the network with the new connection values
-                Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
-                Iterator<Node> it2 = nodeSet.iterator();
-                while(it2.hasNext()){
-                    Node key = it2.next();
-                    Double valToBeStored = it1.next();
-                    nodes.get(k).connectionValues.put(key, valToBeStored);
-                }
-            }
-        }
+        updateConnections(groupBest, bestNet);
 
     }
 
@@ -205,20 +190,8 @@ public class ParticleSwarm {
 
             // puts connection values back into hashmap of network
             // by iterating over the keys and states in order
-            Iterator<Double> it1 = currentState.get(i).iterator();
-            for (int j = 0; j < networks.get(i).getLayers().size() ; j++){
-                ArrayList<Node> nodes = currNetwork.getLayers().get(j).getNodes();
-                for (int k = 0; k < nodes.size() ; k++) {
-                    // updates the network with the new connection values
-                    Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
-                    Iterator<Node> it2 = nodeSet.iterator();
-                    while(it2.hasNext()){
-                        Node key = it2.next();
-                        double valToBeStored = it1.next();
-                        nodes.get(k).connectionValues.put(key, valToBeStored);
-                    }
-                }
-            }
+            updateConnections(currentState.get(i), currNetwork);
+
 
 
         }
@@ -369,4 +342,35 @@ public class ParticleSwarm {
 
     }
 
+    private void updateConnections(ArrayList<Double> connectionList, Network currentNetwork){
+
+
+
+        Iterator<Double> it1 = connectionList.iterator();
+        for (int j = 0; j < currentNetwork.getLayers().size() ; j++){
+            ArrayList<Node> nodes = currentNetwork.getLayers().get(j).getNodes();
+            for (int k = 0; k < nodes.size() ; k++) {
+                // updates the network with the new connection values
+                Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
+                Iterator<Node> it2 = nodeSet.iterator();
+
+                ArrayList<Node> nodeSet2 = new ArrayList<>();
+                while(it2.hasNext()){
+                    nodeSet2.add(it2.next());
+                }
+                nodeSet2.sort(this::compare);
+                it2 = nodeSet2.iterator();
+                while(it2.hasNext()){
+                    Node key = it2.next();
+                    double valToBeStored = it1.next();
+                    nodes.get(k).connectionValues.put(key, valToBeStored);
+                }
+            }
+        }
+    }
+
+    @Override
+    public int compare(Node a, Node b) {
+        return a.id - b.id;
+    }
 }
