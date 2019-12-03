@@ -159,7 +159,7 @@ public class Driver {
             // testing on a classification set
             int numFeatures = segmentation.fullSet.get(0).size() - 1;
             int[] sizes = {numFeatures, numFeatures, segmentation.numClasses};
-            DifferentialEvolution diffCar = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 50, false);
+            DifferentialEvolution diffCar = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 5 * numFeatures, false);
             Network best = diffCar.evolve();
 
             for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {

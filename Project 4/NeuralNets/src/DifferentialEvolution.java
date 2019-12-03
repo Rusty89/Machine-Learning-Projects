@@ -3,14 +3,14 @@ import java.lang.reflect.Array;
 import java.nio.channels.ClosedSelectorException;
 import java.util.*;
 
-public class DifferentialEvolution {
+public class DifferentialEvolution  implements Comparator<Node>{
 
     ArrayList<ArrayList<String>> trainingSet;
     int [] sizes;
     Data inputData;
     final int numNetworks;
     final double crossOverRate = 0.9;
-    final double betaConstant = 1;
+    final double betaConstant = 0.5;
     final int stoppingCriteria = 1000;
     boolean regression;
 
@@ -23,7 +23,7 @@ public class DifferentialEvolution {
     }
 
     // function to train the network
-    public Network evolve() throws CloneNotSupportedException {
+    public Network evolve() {
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
         // stops after a certain number of iterations of training
@@ -67,36 +67,14 @@ public class DifferentialEvolution {
     // generates a mutant vector to be used to make the trial network
     private ArrayList<Double> createMutant(ArrayList<Network> networks){
         ArrayList<Network> threeRand = drawThree(networks);
-        // arraylists to hold the values of the 3 networks
-        ArrayList<Double> node0Val = new ArrayList<>();
-        ArrayList<Double> node1Val = new ArrayList<>();
-        ArrayList<Double> node2Val = new ArrayList<>();
-
-        // iterating over each layer of the networks
-        for (int i = 0; i < threeRand.get(0).getLayers().size() ; i++) {
-            ArrayList<Node> nodes0 = threeRand.get(0).getLayers().get(i).getNodes();
-            ArrayList<Node> nodes1 = threeRand.get(1).getLayers().get(i).getNodes();
-            ArrayList<Node> nodes2 = threeRand.get(2).getLayers().get(i).getNodes();
-            // adding the weights of each connection at each node in each network
-            // to their respective arraylists
-            for (int j = 0; j < nodes0.size() ; j++) {
-                for (Double d : nodes0.get(j).connectionValues.values()) {
-                    node0Val.add(d);
-
-                }
-                for (Double d : nodes1.get(j).connectionValues.values()) {
-                    node1Val.add(d);
-                }
-                for (Double d : nodes2.get(j).connectionValues.values()) {
-                    node2Val.add(d);
-                }
-            }
-        }
-
+        // arraylists to hold the values of the 3 networks to make a mutant with
+        ArrayList<Double> node0Val = createChromosome(threeRand.get(0));
+        ArrayList<Double> node1Val = createChromosome(threeRand.get(1));;
+        ArrayList<Double> node2Val = createChromosome(threeRand.get(2));;
+        
         for (int i = 0; i < node1Val.size() ; i++) {
             // B(x1 - x2), difference between these two vectors now stored in node1Val
             // multiplied by a tunable constant
-
             node1Val.set(i, betaConstant*((node1Val.get(i) - node2Val.get(i))));
         }
 
@@ -111,38 +89,16 @@ public class DifferentialEvolution {
 
 
     // creates a trial network using the mutant vector
-    private Network createTrial(ArrayList<Double> mutant, Network original) {
-        // clones the original network to make initial trial vector
+    private Network createTrial(ArrayList<Double> mutant, Network currentNetwork) {
+        ArrayList<Double> currNetworkChromosome = createChromosome(currentNetwork);
+        for (int i = 0; i < mutant.size() ; i++) {
+            double crossoverChance = Math.random();
+            if(crossoverChance > crossOverRate){
+                mutant.set(i, currNetworkChromosome.get(i));
+            }
+        }
         Network trial = new Network(sizes, 0);
-        for (int i = 0; i < original.getLayers().size() ; i++) {
-            ArrayList<Node> trialNodes = trial.getLayers().get(i).getNodes();
-            ArrayList<Node> originalNodes = original.getLayers().get(i).getNodes();
-            for (int j = 0; j < trialNodes.size(); j++) {
-                // updates the trial network with the original network values
-                Collection<Double> originalNodeValues = originalNodes.get(j).connectionValues.values();
-                Collection<Node> trialNodeSet = trialNodes.get(j).connectionValues.keySet();
-                Iterator<Double> it = originalNodeValues.iterator();
-                Iterator<Node> it2 = trialNodeSet.iterator();
-                while(it.hasNext()){
-                    trialNodes.get(j).connectionValues.put(it2.next(), it.next());
-                }
-            }
-        }
-
-        for (int i = 0; i < trial.getLayers().size() ; i++) {
-            ArrayList<Node> trialNodes = trial.getLayers().get(i).getNodes();
-            for (int j = 0; j < trialNodes.size(); j++) {
-                int finalJ = j;
-                // updates the trial network with the mutant
-                trialNodes.get(j).connectionValues.forEach((key, value) -> {
-                    double randVal = Math.random();
-                    if(randVal < crossOverRate){
-                        trialNodes.get(finalJ).connectionValues.put(key, mutant.get(0));
-                    }
-                    mutant.remove(0);
-                });
-            }
-        }
+        updateConnections(mutant, trial);
         //return a trial vector
         return trial;
     }
@@ -204,4 +160,62 @@ public class DifferentialEvolution {
         return selectedNetworks;
     }
 
+
+
+    private ArrayList<Double> createChromosome(Network n){
+        ArrayList<Double> result = new ArrayList<>();
+        // iterating over each layer of the networks
+        for (int i = 0; i < n.getLayers().size() ; i++) {
+            ArrayList<Node> nodes0 = n.getLayers().get(i).getNodes();
+            nodes0.sort(this::compare);
+            // adding the weights of each connection at each node in each network
+            // to their respective arraylists
+            for (int j = 0; j < nodes0.size() ; j++) {
+                Collection<Node> node0Collection = nodes0.get(j).connectionValues.keySet();
+                Iterator<Node> node0Iterator = node0Collection.iterator();
+                ArrayList<Node> node0Array = new ArrayList<>();
+                while(node0Iterator.hasNext()){
+                    node0Array.add(node0Iterator.next());
+                }
+
+                node0Array.sort(this::compare);
+                node0Iterator = node0Array.iterator();
+                while(node0Iterator.hasNext()){
+                    result.add(nodes0.get(j).connectionValues.get(node0Iterator.next()));
+                }
+
+            }
+        }
+        return result;
+    }
+
+
+    private void updateConnections(ArrayList<Double> connectionList, Network currentNetwork){
+        Iterator<Double> it1 = connectionList.iterator();
+        for (int j = 0; j < currentNetwork.getLayers().size() ; j++){
+            ArrayList<Node> nodes = currentNetwork.getLayers().get(j).getNodes();
+            for (int k = 0; k < nodes.size() ; k++) {
+                // updates the network with the new connection values
+                Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
+                Iterator<Node> it2 = nodeSet.iterator();
+
+                ArrayList<Node> nodeSet2 = new ArrayList<>();
+                while(it2.hasNext()){
+                    nodeSet2.add(it2.next());
+                }
+                nodeSet2.sort(this::compare);
+                it2 = nodeSet2.iterator();
+                while(it2.hasNext()){
+                    Node key = it2.next();
+                    double valToBeStored = it1.next();
+                    nodes.get(k).connectionValues.put(key, valToBeStored);
+                }
+            }
+        }
+    }
+
+    @Override
+    public int compare(Node a, Node b) {
+        return a.id - b.id;
+    }
 }
