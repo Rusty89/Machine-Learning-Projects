@@ -157,7 +157,7 @@ public class Driver {
 
          */
 
-        runParticleSwarmTests(rData, cData, 100);
+        runParticleSwarmTests(rData, cData, 50);
 
 
 
@@ -189,20 +189,22 @@ public class Driver {
             // testing on a classification sets
             ArrayList<int []> hiddenLayers = new ArrayList<>();
             int numFeatures = data.fullSet.get(0).size()-1;
-            // creates the parameters to make 0, 1 and 2 hidden layrs
+            // creates the parameters to make 0, 1 and 2 hidden layers
             hiddenLayers.add(new int []{numFeatures,  data.numClasses});
             hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
             hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
             // iterates over the 0, 1 and 2 hidden layers tests
             for (int [] sizes : hiddenLayers) {
                 ParticleSwarm pSwarm = new ParticleSwarm(data);
-                ArrayList<ArrayList<Double>> totalResults = new ArrayList<>();
                 for (int i = 0; i < 10; i++) {
-                    ArrayList<Double> resultsOfTest = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  false, i);
-                    System.out.println(resultsOfTest);
-                    totalResults.add(resultsOfTest);
+                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  false, i);
+                    System.out.println(results);
+                    printer.print(results.get(0) + ",");
+                    printer.print(results.get(1) + ",");
+                    printer.print(results.get(2) + ",");
+                    printer.println();
                 }
-                printer.print(totalResults);
+
             }
 
             printer.close();
@@ -223,13 +225,14 @@ public class Driver {
             // iterates over the 0, 1 and 2 hidden layers tests
             for (int [] sizes : hiddenLayers) {
                 ParticleSwarm pSwarm = new ParticleSwarm(data);
-                ArrayList<ArrayList<Double>> totalResults = new ArrayList<>();
                 for (int i = 0; i < 10; i++) {
-                    ArrayList<Double> resultsOfTest = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  true, i);
-                    System.out.println(resultsOfTest);
-                    totalResults.add(resultsOfTest);
+                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  true, i);
+                    System.out.println(results);
+                    printer.print(results.get(0) +",");
+                    printer.print(results.get(1) +",");
+                    printer.println();
                 }
-                printer.print(totalResults);
+
             }
             printer.close();
             filer.close();

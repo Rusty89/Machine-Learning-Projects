@@ -41,17 +41,26 @@ public class ParticleSwarm {
         this.inputData = inputData;
     }
 
+    // training function to run through many
+    // iterations of swarming
     private void swarm(){
         //update position of all networks
         createNetworks(sizes);
+        // hard stopping point to ensure termination
         int stoppingPoint = 10000;
         int noImprovementCounter = 0;
         calculateFitness();
         for (int i = 0; i < stoppingPoint; i++) {
             prevGroupBestScore = groupBestScore;
+            // calculate velocities
             updateVelocities();
+            // update networks with new values
+            // using the equation
+            // currentState = inertia * velocity + (pBest - currentState) + (gBest - currentState)
             updateNetworks();
+            // check fitness of new states
             calculateFitness();
+            // if progress stagnates end swarming
             if(prevGroupBestScore == groupBestScore){
                 noImprovementCounter++;
             }else{
@@ -60,13 +69,15 @@ public class ParticleSwarm {
             if(noImprovementCounter > failureLimit){
                 i = stoppingPoint;
             }
+            // lowers inertia over time, allowing
+            // swarm to settle
             inertia -= 0.0005;
-            if(inertia<=0.5){
-                inertia=1;
+            if(inertia <= 0.5){
+                inertia = 0.5;
             }
-
         }
         // sets bestNet to the best network
+        // from all generations
         bestNet = networks.get(indexOfBest);
         // puts connection values back into hashmap of network
         // by iterating over the keys and states in order
@@ -309,8 +320,9 @@ public class ParticleSwarm {
                 bestNet.guessHistory.add(bestNet.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
             }
             String loss = MathFunction.rootMeanSquaredError(bestNet.guessHistory, inputData.dataSets.testSets.get(setNum), inputData.fullSet);
-
+            String loss2 = MathFunction.meanAbsoluteError(bestNet.guessHistory, inputData.dataSets.testSets.get(setNum), inputData.fullSet);
             results.add(Double.parseDouble(loss));
+            results.add(Double.parseDouble(loss2));
         }else{
             for (ArrayList<String> test : inputData.dataSets.testSets.get(0)) {
                 bestNet.initializeInputLayer(test);
