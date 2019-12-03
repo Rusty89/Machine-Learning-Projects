@@ -16,14 +16,15 @@ public class ParticleSwarm {
     // constant for weight on group best
     double c2 = 2;
     // velocity limits
-    double velocityClampUpper = 100;
-    double velocityClampLower = -100;
+    double velocityClampUpper = 1;
+    double velocityClampLower = -1;
     // inertia
     double inertia = 2;
     boolean regression;
 
 
     double groupBestScore;
+    double prevGroupBestScore = 0;
     ArrayList<Double> personalBestScores = new ArrayList<>();
     ArrayList<ArrayList<Double>> personalBests = new ArrayList<>();
     ArrayList<ArrayList<Double>> currentState = new ArrayList<>();
@@ -47,10 +48,20 @@ public class ParticleSwarm {
         //update position of all networks
         createNetworks(sizes);
         int stoppingPoint = 1000;
+        int noImprovementCounter = 0;
         for (int i = 0; i < stoppingPoint; i++) {
+            prevGroupBestScore = groupBestScore;
             updateVelocities();
             updateNetworks();
             calculateFitness();
+            if(prevGroupBestScore == groupBestScore){
+                noImprovementCounter++;
+            }else{
+                noImprovementCounter = 0;
+            }
+            if(noImprovementCounter > 10){
+                i = stoppingPoint;
+            }
         }
         // sets bestNet to the best network
         bestNet = new Network(sizes, 0);
@@ -100,7 +111,7 @@ public class ParticleSwarm {
                         personalBests.get(i).add(val);
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
-                        velocity.get(i).add(10.0);
+                        velocity.get(i).add(0.0);
                         if(regression){
                             personalBestScores.set(i, Double.MAX_VALUE);
                             groupBestScore = Double.MAX_VALUE;
@@ -193,6 +204,7 @@ public class ParticleSwarm {
         for (int i = 0; i < numNetworks ; i++) {
             Network currNetwork = networks.get(i);
             currNetwork.guessHistory.clear();
+
             if(!regression){
                 for (ArrayList<String> test : trainingSet) {
                     currNetwork.initializeInputLayer(test);
@@ -204,6 +216,7 @@ public class ParticleSwarm {
                 // check accuracy
                 double score = Double.parseDouble(loss.get(2));
                 // check error
+
                 if(score > personalBestScores.get(i)){
                     // update personal best with new state
                     for (int j = 0; j < personalBests.get(i).size(); j++) {
@@ -217,6 +230,7 @@ public class ParticleSwarm {
                         }
 
                         groupBestScore = score;
+
                     }
                 }
                 currNetwork.guessHistory.clear();
@@ -231,6 +245,7 @@ public class ParticleSwarm {
                 String loss = MathFunction.rootMeanSquaredError(currNetwork.guessHistory, trainingSet, inputData.fullSet);
                 double score = Double.parseDouble(loss);
                 // check error
+
                 if(score < personalBestScores.get(i)){
                     // update personal best with new state
                     for (int j = 0; j < personalBests.get(i).size(); j++) {
