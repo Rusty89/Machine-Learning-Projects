@@ -18,15 +18,15 @@ public class Driver {
     public static void main(String args[])throws Exception {
 
         // read in our categorical sets
-        Data car = new CarData(new File("../DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("../DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("../DataSets/segmentation.data"));
+        Data car = new CarData(new File("DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("../DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("../DataSets/machine.data"));
-        Data redWine = new WineData(new File("../DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("DataSets/machine.data"));
+        Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
 
         // ------------------------------- begin driver for MLP Network -------------------------------
         ArrayList<Data> cData = new ArrayList<>();
@@ -155,23 +155,24 @@ public class Driver {
         }
 */
 
-/*
-        // testing on a classification set
-        int numFeatures = segmentation.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures,segmentation.numClasses};
-        DifferentialEvolution diffCar = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 20, false);
-        Network best = diffCar.evolve();
+        for (int i = 0; i < 5; i++) {
+            // testing on a classification set
+            int numFeatures = segmentation.fullSet.get(0).size() - 1;
+            int[] sizes = {numFeatures, numFeatures, segmentation.numClasses};
+            DifferentialEvolution diffCar = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 50, false);
+            Network best = diffCar.evolve();
 
-        for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
-            best.initializeInputLayer(test);
-            best.feedForward();
-            best.guessHistory.add(best.getClassNumber() + "");
+            for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
+                best.initializeInputLayer(test);
+                best.feedForward();
+                best.guessHistory.add(best.getClassNumber() + "");
+            }
+            ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
+
+            System.out.println(lossDiffEv);
         }
-        ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
 
-        System.out.println(lossDiffEv);
-*/
-
+/*
         // testing on a regression set
         int numFeatures = redWine.fullSet.get(0).size()-1;
         int [] sizes = {numFeatures,1};
@@ -186,7 +187,7 @@ public class Driver {
         String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, redWine.dataSets.testSets.get(0), redWine.fullSet);
 
         System.out.println(lossDiffEv);
-
+*/
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)

@@ -9,8 +9,9 @@ public class DifferentialEvolution {
     int [] sizes;
     Data inputData;
     final int numNetworks;
-    final double crossOverRate = 0.90;
-    final double betaConstant = 0.50;
+    final double crossOverRate = 0.9;
+    final double betaConstant = 1;
+    final int stoppingCriteria = 1000;
     boolean regression;
 
     DifferentialEvolution(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
@@ -26,7 +27,6 @@ public class DifferentialEvolution {
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
         // stops after a certain number of iterations of training
-        int stoppingCriteria = 50;
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
                 ArrayList<Double > mutant = createMutant(networks);
