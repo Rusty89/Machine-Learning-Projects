@@ -156,42 +156,9 @@ public class Driver {
         }
 
          */
-/*
-        // testing on a classification set
-        int numFeatures = segmentation.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures,numFeatures,numFeatures,segmentation.numClasses};
-        ParticleSwarm diffForest = new ParticleSwarm(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 100, 100,false);
 
-        Network best = diffForest.bestNet;
-        best.guessHistory.clear();
-        for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
-            best.initializeInputLayer(test);
-            best.feedForward();
-            best.guessHistory.add(best.getClassNumber() + "");
-        }
-        ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
+        runParticleSwarmTests(rData, cData, 100);
 
-        System.out.println(lossDiffEv);
-*/
-
-
-
-
-        // testing on a regression set
-        int numFeatures = redWine.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures, numFeatures, numFeatures, numFeatures,1};
-        ParticleSwarm diffForest = new ParticleSwarm(redWine, redWine.dataSets.trainingSets.get(0), sizes, 30, 10,  true);
-
-        Network best = diffForest.bestNet;
-
-        for (ArrayList<String> test : redWine.dataSets.testSets.get(0)) {
-            best.initializeInputLayer(test);
-            best.feedForward();
-            best.guessHistory.add(best.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
-        }
-        String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, redWine.dataSets.testSets.get(0), redWine.fullSet);
-
-        System.out.println(lossDiffEv);
 
 
     }
@@ -210,5 +177,49 @@ public class Driver {
         }
         System.out.println(name + " from " + decimalFormat.format(min) + " to " + decimalFormat.format(max) +
                 " with a mean of " + decimalFormat.format(sum/results.size()) + ".");
+    }
+
+    // function to run all Particle Swarm tests
+    private static void runParticleSwarmTests(ArrayList<Data> rData, ArrayList<Data> cData, int failureLimit){
+        for (Data data : cData) {
+            // testing on a classification sets
+            ArrayList<int []> hiddenLayers = new ArrayList<>();
+            int numFeatures = data.fullSet.get(0).size()-1;
+            // creates the parameters to make 0, 1 and 2 hidden layrs
+            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
+            // iterates over the 0, 1 and 2 hidden layers tests
+            for (int [] sizes : hiddenLayers) {
+                ParticleSwarm pSwarm = new ParticleSwarm(data);
+                ArrayList<ArrayList<Double>> totalResults = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    ArrayList<Double> resultsOfTest = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  false, i);
+                    System.out.println(resultsOfTest);
+                    totalResults.add(resultsOfTest);
+                }
+            }
+        }
+
+        for (Data data : rData) {
+            // testing on a regression sets
+            ArrayList<int []> hiddenLayers = new ArrayList<>();
+            int numFeatures = data.fullSet.get(0).size()-1;
+            // creates the parameters to make 0, 1 and 2 hidden layrs
+            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
+            // iterates over the 0, 1 and 2 hidden layers tests
+            for (int [] sizes : hiddenLayers) {
+                ParticleSwarm pSwarm = new ParticleSwarm(data);
+                ArrayList<ArrayList<Double>> totalResults = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    ArrayList<Double> resultsOfTest = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  true, i);
+                    System.out.println(resultsOfTest);
+                    totalResults.add(resultsOfTest);
+                }
+            }
+
+        }
     }
 }

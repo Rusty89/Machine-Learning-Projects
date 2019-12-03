@@ -1,4 +1,5 @@
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -7,7 +8,7 @@ public class ParticleSwarm {
     ArrayList<ArrayList<String>> trainingSet;
     int [] sizes;
     Data inputData;
-    final int numNetworks;
+    int numNetworks;
     int failureLimit;
     // constant for weight on personal Best
     double c1 = 2;
@@ -27,21 +28,17 @@ public class ParticleSwarm {
     ArrayList<ArrayList<Double>> personalBests = new ArrayList<>();
     ArrayList<ArrayList<Double>> currentState = new ArrayList<>();
     ArrayList<ArrayList<Double>> velocity = new ArrayList<>();
+    // best chromosome from any generation
     ArrayList<Double> groupBest = new ArrayList<>();
     ArrayList<Network> networks = new ArrayList<>();
     Network bestNet;
 
+    // best chromosome for current generation
     ArrayList<Double> globalBest = new ArrayList<>();
 
 
-    ParticleSwarm(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, int failureLimit, boolean regression){
-        this.sizes = sizes;
-        this.trainingSet = trainingSet;
+    ParticleSwarm(Data inputData){
         this.inputData = inputData;
-        this.numNetworks = numNetworks;
-        this.regression = regression;
-        this.failureLimit = failureLimit;
-        swarm();
     }
 
     private void swarm(){
@@ -141,6 +138,7 @@ public class ParticleSwarm {
     private void updateVelocities(){
         for (int i = 0; i < numNetworks ; i++) {
             int sizeOfChromosome = groupBest.size();
+            // random values parts of terms 2 and 3
             double r1 = Math.random();
             double r2 = Math.random();
             for (int j = 0; j < sizeOfChromosome ; j++) {
@@ -175,8 +173,6 @@ public class ParticleSwarm {
     private void updateNetworks(){
         // updates the positions of the networks based on calculated
         // velocities and the current state of the network
-
-
         for (int i = 0; i < numNetworks ; i++) {
             int sizeOfChromosome = groupBest.size();
             Network currNetwork = networks.get(i);
@@ -209,6 +205,7 @@ public class ParticleSwarm {
 
     }
 
+    // calculates fitness of all networks
     private void calculateFitness(){
         double bestAtCurrentState;
         if(!regression){
@@ -232,15 +229,15 @@ public class ParticleSwarm {
                 ArrayList<String> loss = MathFunction.processConfusionMatrix(currNetwork.guessHistory, trainingSet);
                 // check accuracy
                 double score = Double.parseDouble(loss.get(2));
-                // check error
+
 
                 if(score > personalBestScores.get(i)){
                     // update personal best with new state
                     for (int j = 0; j < personalBests.get(i).size(); j++) {
                         personalBests.get(i).set(j, currentState.get(i).get(j));
                     }
-
                     personalBestScores.set(i, score);
+                    // update if best score of all generations
                     if(score > groupBestScore){
                         for (int j = 0; j < groupBest.size(); j++) {
                             groupBest.set(j, currentState.get(i).get(j));
@@ -251,6 +248,7 @@ public class ParticleSwarm {
                     }
                 }
 
+                // updating best chromosome for current generation
                 if(score > bestAtCurrentState){
                     globalBest = currentState.get(i);
                     bestAtCurrentState = score;
@@ -267,13 +265,13 @@ public class ParticleSwarm {
                 String loss = MathFunction.rootMeanSquaredError(currNetwork.guessHistory, trainingSet, inputData.fullSet);
                 double score = Double.parseDouble(loss);
                 // check error
-
                 if(score < personalBestScores.get(i)){
                     // update personal best with new state
                     for (int j = 0; j < personalBests.get(i).size(); j++) {
                         personalBests.get(i).set(j, currentState.get(i).get(j));
                     }
                     personalBestScores.set(i, score);
+                    // update if best score of all generations
                     if(score < groupBestScore){
                         for (int j = 0; j < groupBest.size(); j++) {
                             groupBest.set(j, currentState.get(i).get(j));
@@ -282,15 +280,72 @@ public class ParticleSwarm {
                         groupBestScore = score;
                     }
                 }
+                // updating best chromosome for generation
                 if(score < bestAtCurrentState){
                     globalBest = currentState.get(i);
                     bestAtCurrentState = score;
                 }
-
                 currNetwork.guessHistory.clear();
             }
         }
     }
 
+    public  ArrayList<Double> runTest(int numNetworks, int [] sizes, int failureLimit, boolean regression, int setNum){
+        // resets values prior to a run, making it ready to start
+        this.sizes = sizes;
+        this.trainingSet = inputData.dataSets.trainingSets.get(setNum);
+        this.numNetworks = numNetworks;
+        this.regression = regression;
+        this.failureLimit = failureLimit;
+        ArrayList<Double> results = new ArrayList<>();
+        swarm();
+
+        // runs the test with the best net
+        bestNet.guessHistory.clear();
+        if(regression){
+            for (ArrayList<String> test : inputData.dataSets.testSets.get(setNum)) {
+                bestNet.initializeInputLayer(test);
+                bestNet.feedForward();
+                bestNet.guessHistory.add(bestNet.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
+            }
+            String loss = MathFunction.rootMeanSquaredError(bestNet.guessHistory, inputData.dataSets.testSets.get(setNum), inputData.fullSet);
+
+            results.add(Double.parseDouble(loss));
+        }else{
+            for (ArrayList<String> test : inputData.dataSets.testSets.get(0)) {
+                bestNet.initializeInputLayer(test);
+                bestNet.feedForward();
+                bestNet.guessHistory.add(bestNet.getClassNumber() + "");
+            }
+            ArrayList<String> loss = MathFunction.processConfusionMatrix(bestNet.guessHistory, inputData.dataSets.testSets.get(0));
+
+            results.add(Double.parseDouble(loss.get(0)));
+            results.add(Double.parseDouble(loss.get(1)));
+            results.add(Double.parseDouble(loss.get(2)));
+        }
+
+        // resets after done
+        reset();
+        return results;
+
+    }
+
+
+
+    // function to clear all values back to constructor state
+    private void reset(){
+        inertia = 1;
+        indexOfBest = 0;
+        prevGroupBestScore = 0;
+        personalBestScores = new ArrayList<>();
+        personalBests = new ArrayList<>();
+        currentState = new ArrayList<>();
+        velocity = new ArrayList<>();
+        // best chromosome from any generation
+        groupBest = new ArrayList<>();
+        networks = new ArrayList<>();
+        bestNet = null;
+
+    }
 
 }
