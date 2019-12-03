@@ -19,10 +19,10 @@ public class ParticleSwarm {
     double velocityClampUpper = 1;
     double velocityClampLower = -1;
     // inertia
-    double inertia = 2;
+    double inertia = 1;
     boolean regression;
 
-
+    int indexOfBest = 0;
     double groupBestScore;
     double prevGroupBestScore = 0;
     ArrayList<Double> personalBestScores = new ArrayList<>();
@@ -59,12 +59,17 @@ public class ParticleSwarm {
             }else{
                 noImprovementCounter = 0;
             }
-            if(noImprovementCounter > 10){
+            if(noImprovementCounter > 500){
                 i = stoppingPoint;
             }
+            if(inertia>0){
+                inertia -= 0.005;
+
+            }
+
         }
         // sets bestNet to the best network
-        bestNet = new Network(sizes, 0);
+        bestNet = networks.get(indexOfBest);
         // puts connection values back into hashmap of network
         // by iterating over the keys and states in order
         Iterator<Double> it1 = groupBest.iterator();
@@ -83,6 +88,7 @@ public class ParticleSwarm {
         }
 
     }
+
 
     // creates all the networks for the population
     private void createNetworks(int [] sizes){
@@ -228,7 +234,7 @@ public class ParticleSwarm {
                         for (int j = 0; j < groupBest.size(); j++) {
                             groupBest.set(j, currentState.get(i).get(j));
                         }
-
+                        indexOfBest = i;
                         groupBestScore = score;
 
                     }
@@ -256,7 +262,7 @@ public class ParticleSwarm {
                         for (int j = 0; j < groupBest.size(); j++) {
                             groupBest.set(j, currentState.get(i).get(j));
                         }
-
+                        indexOfBest = i;
                         groupBestScore = score;
                     }
                 }
