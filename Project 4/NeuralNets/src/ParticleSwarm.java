@@ -56,7 +56,7 @@ public class ParticleSwarm {
             updateVelocities();
             // update networks with new values
             // using the equation
-            // currentState = inertia * velocity + (pBest - currentState) + (gBest - currentState)
+            // currentState = inertia * velocity + c1*r1(pBest - currentState) + c2*r2(gBest - currentState)
             updateNetworks();
             // check fitness of new states
             calculateFitness();
@@ -123,10 +123,12 @@ public class ParticleSwarm {
                     // into an arraylist of doubles for easy use later
                     while(it.hasNext()){
                         double val = it.next();
-                        personalBests.get(i).add(Math.random()*1000);
+                        // initializes positions of personal bests to
+                        // random chromosomes to give a starting direction
+                        personalBests.get(i).add(Math.random());
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
-                        velocity.get(i).add(0.0);
+                        velocity.get(i).add(0.5);
                         if(regression){
                             personalBestScores.set(i, Double.MAX_VALUE);
                             groupBestScore = Double.MAX_VALUE;

@@ -20,7 +20,7 @@ public class Data {
     // method to read in our data sets and convert them to an Java ArrayList for parsing
     public void fileTo2dStringArrayList(File inputFile) throws Exception {
 
-        final int maxExamplesToRun = 3000; // max number of lines of data, to keep test manageable
+        final int maxExamplesToRun = 30000; // max number of lines of data, to keep test manageable
 
         Scanner sc = new Scanner(inputFile); // read in our input file as an array list
 
