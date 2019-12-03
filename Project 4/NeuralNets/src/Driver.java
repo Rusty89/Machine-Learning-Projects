@@ -33,12 +33,12 @@ public class Driver {
         ArrayList<Data> rData = new ArrayList<>();
 
         // add categorical sets for our MLP network
-        cData.add(car);
-        cData.add(abalone);
-        cData.add(segmentation);
+        //cData.add(car);
+        //cData.add(abalone);
+        //cData.add(segmentation);
 
         // add regression sets for our MLP network
-        rData.add(forestFire);
+        //rData.add(forestFire);
         rData.add(machine);
         rData.add(redWine);
         rData.add(whiteWine);
@@ -204,9 +204,7 @@ public class Driver {
                     printer.print(results.get(2) + ",");
                     printer.println();
                 }
-
             }
-
             printer.close();
             filer.close();
         }
@@ -232,7 +230,6 @@ public class Driver {
                     printer.print(results.get(1) +",");
                     printer.println();
                 }
-
             }
             printer.close();
             filer.close();

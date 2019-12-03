@@ -61,7 +61,7 @@ public class ParticleSwarm {
             // check fitness of new states
             calculateFitness();
             // if progress stagnates end swarming
-            if(prevGroupBestScore == groupBestScore){
+            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.00001){
                 noImprovementCounter++;
             }else{
                 noImprovementCounter = 0;
@@ -70,10 +70,11 @@ public class ParticleSwarm {
                 i = stoppingPoint;
             }
             // lowers inertia over time, allowing
-            // swarm to settle
-            inertia -= 0.0005;
+            // swarm to settle, and resets to one for
+            // new motion if swarm settles too far
+            inertia -= 0.005;
             if(inertia <= 0.5){
-                inertia = 0.5;
+                inertia = 1;
             }
         }
         // sets bestNet to the best network
@@ -124,11 +125,17 @@ public class ParticleSwarm {
                     while(it.hasNext()){
                         double val = it.next();
                         // initializes positions of personal bests to
-                        // random chromosomes to give a starting direction
-                        personalBests.get(i).add(Math.random());
+                        // random chromosomes to give a starting directions
+                        double valOfRand = 0;
+                        if(Math.random()>0.5){
+                            valOfRand = -Math.random();
+                        }else{
+                            valOfRand = +Math.random();
+                        }
+                        personalBests.get(i).add(valOfRand);
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
-                        velocity.get(i).add(0.5);
+                        velocity.get(i).add(0.0);
                         if(regression){
                             personalBestScores.set(i, Double.MAX_VALUE);
                             groupBestScore = Double.MAX_VALUE;
