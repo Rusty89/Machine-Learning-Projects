@@ -12,19 +12,19 @@ public class ParticleSwarm {
     Data inputData;
     final int numNetworks;
     // constant for weight on personal Best
-    double c1 = 0.20;
+    double c1 = 2;
     // constant for weight on group best
-    double c2 = 0.90;
+    double c2 = 2;
     // velocity limits
-    double velocityClampUpper = 1;
-    double velocityClampLower = -1;
+    double velocityClampUpper = 100;
+    double velocityClampLower = -100;
     // inertia
-    double inertia = 0.70;
+    double inertia = .5;
     boolean regression;
 
-    ArrayList<Double> personalBestScores = new ArrayList<>();
+
     double groupBestScore;
-    int indexOfBest;
+    ArrayList<Double> personalBestScores = new ArrayList<>();
     ArrayList<ArrayList<Double>> personalBests = new ArrayList<>();
     ArrayList<ArrayList<Double>> currentState = new ArrayList<>();
     ArrayList<ArrayList<Double>> velocity = new ArrayList<>();
@@ -46,14 +46,31 @@ public class ParticleSwarm {
     private void swarm(){
         //update position of all networks
         createNetworks(sizes);
-        int stoppingPoint = 100;
+        int stoppingPoint = 1000;
         for (int i = 0; i < stoppingPoint; i++) {
             updateVelocities();
             updateNetworks();
             calculateFitness();
         }
         // sets bestNet to the best network
-        bestNet = networks.get(indexOfBest);
+        bestNet = new Network(sizes, 0);
+        // puts connection values back into hashmap of network
+        // by iterating over the keys and states in order
+        Iterator<Double> it1 = groupBest.iterator();
+        for (int j = 0; j < bestNet.getLayers().size() ; j++){
+            ArrayList<Node> nodes = bestNet.getLayers().get(j).getNodes();
+            for (int k = 0; k < nodes.size() ; k++) {
+                // updates the network with the new connection values
+                Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
+                Iterator<Node> it2 = nodeSet.iterator();
+                while(it2.hasNext()){
+                    Node key = it2.next();
+                    Double valToBeStored = it1.next();
+                    nodes.get(k).connectionValues.put(key, valToBeStored);
+                }
+            }
+        }
+
     }
 
     // creates all the networks for the population
@@ -64,7 +81,12 @@ public class ParticleSwarm {
             personalBests.add(new ArrayList<>());
             currentState.add(new ArrayList<>());
             velocity.add(new ArrayList<>());
-            personalBestScores.add(0.0);
+            if(!regression){
+                personalBestScores.add(0.0);
+            }else{
+                personalBestScores.add(Double.MAX_VALUE);
+            }
+
             for (int j = 0; j < networks.get(i).getLayers().size() ; j++) {
                 ArrayList<Node> nodes = networks.get(i).getLayers().get(j).getNodes();
                 for (int k = 0; k < nodes.size(); k++) {
@@ -78,7 +100,7 @@ public class ParticleSwarm {
                         personalBests.get(i).add(val);
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
-                        velocity.get(i).add(0.01);
+                        velocity.get(i).add(10.0);
                         if(regression){
                             personalBestScores.set(i, Double.MAX_VALUE);
                             groupBestScore = Double.MAX_VALUE;
@@ -156,7 +178,7 @@ public class ParticleSwarm {
                     Iterator<Node> it2 = nodeSet.iterator();
                     while(it2.hasNext()){
                         Node key = it2.next();
-                        Double valToBeStored = it1.next();
+                        double valToBeStored = it1.next();
                         nodes.get(k).connectionValues.put(key, valToBeStored);
                     }
                 }
@@ -180,15 +202,20 @@ public class ParticleSwarm {
                 }
                 ArrayList<String> loss = MathFunction.processConfusionMatrix(currNetwork.guessHistory, trainingSet);
                 // check accuracy
-                Double score = Double.parseDouble(loss.get(2));
+                double score = Double.parseDouble(loss.get(2));
                 // check error
                 if(score > personalBestScores.get(i)){
                     // update personal best with new state
-                    personalBests.set(i, currentState.get(i));
+                    for (int j = 0; j < personalBests.get(i).size(); j++) {
+                        personalBests.get(i).set(j, currentState.get(i).get(j));
+                    }
+
                     personalBestScores.set(i, score);
                     if(score > groupBestScore){
-                        groupBest = currentState.get(i);
-                        indexOfBest = i;
+                        for (int j = 0; j < groupBest.size(); j++) {
+                            groupBest.set(j, currentState.get(i).get(j));
+                        }
+
                         groupBestScore = score;
                     }
                 }
@@ -202,15 +229,19 @@ public class ParticleSwarm {
 
                 }
                 String loss = MathFunction.rootMeanSquaredError(currNetwork.guessHistory, trainingSet, inputData.fullSet);
-                Double score = Double.parseDouble(loss);
+                double score = Double.parseDouble(loss);
                 // check error
                 if(score < personalBestScores.get(i)){
                     // update personal best with new state
-                    personalBests.set(i, currentState.get(i));
+                    for (int j = 0; j < personalBests.get(i).size(); j++) {
+                        personalBests.get(i).set(j, currentState.get(i).get(j));
+                    }
                     personalBestScores.set(i, score);
                     if(score < groupBestScore){
-                        groupBest = currentState.get(i);
-                        indexOfBest = i;
+                        for (int j = 0; j < groupBest.size(); j++) {
+                            groupBest.set(j, currentState.get(i).get(j));
+                        }
+
                         groupBestScore = score;
                     }
                 }

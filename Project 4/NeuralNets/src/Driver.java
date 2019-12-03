@@ -160,7 +160,7 @@ public class Driver {
         // testing on a classification set
         int numFeatures = segmentation.fullSet.get(0).size()-1;
         int [] sizes = {numFeatures,segmentation.numClasses};
-        ParticleSwarm diffForest = new ParticleSwarm(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 50, false);
+        ParticleSwarm diffForest = new ParticleSwarm(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 10, false);
 
         Network best = diffForest.bestNet;
 
