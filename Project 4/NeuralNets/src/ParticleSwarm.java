@@ -13,8 +13,8 @@ public class ParticleSwarm implements Comparator<Node> {
     // constant for weight on group best
     double c2 = 3.5;
     // velocity limits
-    double velocityClampUpper = .005;
-    double velocityClampLower = -0.005;
+    double velocityClampUpper = .05;
+    double velocityClampLower = -0.05;
     // inertia
     double inertia = .9;
     boolean regression;
