@@ -155,4 +155,5 @@ public class Network
     public ArrayList<Layer> getLayers() {
         return layers;
     }
+
 }
