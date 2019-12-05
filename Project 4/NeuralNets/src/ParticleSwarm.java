@@ -59,7 +59,7 @@ public class ParticleSwarm implements Comparator<Node> {
             // check fitness of new states
             calculateFitness();
             // if progress stagnates end swarming
-            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.00001){
+            if(Math.abs(prevGroupBestScore - groupBestScore) < 0.001){
                 noImprovementCounter++;
             }else{
                 noImprovementCounter = 0;

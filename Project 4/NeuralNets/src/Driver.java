@@ -35,13 +35,13 @@ public class Driver {
         // add categorical sets for our MLP network
         //cData.add(car);
         //cData.add(abalone);
-        cData.add(segmentation);
+        //cData.add(segmentation);
 
         // add regression sets for our MLP network
         //rData.add(forestFire);
         //rData.add(machine);
-        //rData.add(redWine);
-        rData.add(whiteWine);
+        rData.add(redWine);
+        //rData.add(whiteWine);
 
         /*
         double bpLearningRate = 0.3;
@@ -158,7 +158,7 @@ public class Driver {
          */
 
         // runs all the particle swarm tests
-        runParticleSwarmTests(rData, cData, 50);
+        runParticleSwarmTests(rData, cData, 30);
 
 
 
@@ -198,7 +198,7 @@ public class Driver {
             for (int [] sizes : hiddenLayers) {
                 ParticleSwarm pSwarm = new ParticleSwarm(data);
                 for (int i = 0; i < 10; i++) {
-                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 10, sizes, failureLimit,  false, i);
+                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  false, i);
                     System.out.println(results);
                     printer.print(results.get(0) + ",");
                     printer.print(results.get(1) + ",");
