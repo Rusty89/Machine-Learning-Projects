@@ -18,9 +18,10 @@ public class GeneticAlgorithm {
     public Network best;
 
     // Tunable Parameters for the class
-    public double crossoverChance = 0.10;
-    public double mutationChance = 0.10;
-    public int numNetworks = 4; // must be even number, min 4
+    public double crossoverChance = 0.3;
+    public double mutationChance = 0.3;
+    public double mutationRate = 0.05;
+    public int numNetworks = 10; // must be even number, min 4
 
     // Constructor
     public GeneticAlgorithm(ArrayList<ArrayList<String>> trainSet, int[] hLayers, int numClasses, boolean regression){
@@ -153,10 +154,10 @@ public class GeneticAlgorithm {
                         Node n1 = matingPair.get(0).layers.get(i + 1).getNode(k);
                         // Coin flip on whether mutation adds or subtracts from amount
                         if (rand.nextDouble() > 0.50){
-                            weights.put(n1, weights.get(n1) + (0.01 * weights.get(n1)));
+                            weights.put(n1, weights.get(n1) + (mutationRate * weights.get(n1)));
                         }
                         else {
-                            weights.put(n1, weights.get(n1) - (0.01 * weights.get(n1)));
+                            weights.put(n1, weights.get(n1) - (mutationRate * weights.get(n1)));
                         }
                     }
                 }
@@ -173,10 +174,10 @@ public class GeneticAlgorithm {
                         Node n2 = matingPair.get(1).layers.get(i + 1).getNode(k);
                         // Coin flip on whether mutation adds or subtracts from amount
                         if (rand.nextDouble() > 0.50){
-                            weights.put(n2, weights.get(n2) + (0.01 * weights.get(n2)));
+                            weights.put(n2, weights.get(n2) + (mutationRate * weights.get(n2)));
                         }
                         else {
-                            weights.put(n2, weights.get(n2) - (0.01 * weights.get(n2)));
+                            weights.put(n2, weights.get(n2) - (mutationRate * weights.get(n2)));
                         }
                     }
                 }
