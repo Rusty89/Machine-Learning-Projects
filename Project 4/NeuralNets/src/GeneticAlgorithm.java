@@ -14,11 +14,13 @@ public class GeneticAlgorithm {
     public int numClasses;
     public boolean regression;
     public ArrayList<Network> generation;
+    // Best network
+    public Network best;
 
     // Tunable Parameters for the class
-    public double crossoverChance = 0.20;
-    public double mutationChance = 0.01;
-    public int numNetworks = 10;
+    public double crossoverChance = 0.10;
+    public double mutationChance = 0.10;
+    public int numNetworks = 4; // must be even number, min 4
 
     // Constructor
     public GeneticAlgorithm(ArrayList<ArrayList<String>> trainSet, int[] hLayers, int numClasses, boolean regression){
@@ -27,6 +29,7 @@ public class GeneticAlgorithm {
         this.numClasses = numClasses;
         this.regression = regression;
         this.generation = originGen();
+        findBest(generation);
     }
 
     // Will execute each step in the GA and update the generation
@@ -43,9 +46,12 @@ public class GeneticAlgorithm {
             // Add offspring to next generation
             nextGen.addAll(matingPair);
             i++;
+
         }
         // Update generation
         this.generation = nextGen;
+        // Update best found so far
+        findBest(generation);
     }
 
     // Initialize the first generation with random weights
@@ -147,10 +153,10 @@ public class GeneticAlgorithm {
                         Node n1 = matingPair.get(0).layers.get(i + 1).getNode(k);
                         // Coin flip on whether mutation adds or subtracts from amount
                         if (rand.nextDouble() > 0.50){
-                            weights.put(n1, weights.get(n1) + 0.1);
+                            weights.put(n1, weights.get(n1) + (0.01 * weights.get(n1)));
                         }
                         else {
-                            weights.put(n1, weights.get(n1) - 0.1);
+                            weights.put(n1, weights.get(n1) - (0.01 * weights.get(n1)));
                         }
                     }
                 }
@@ -167,10 +173,10 @@ public class GeneticAlgorithm {
                         Node n2 = matingPair.get(1).layers.get(i + 1).getNode(k);
                         // Coin flip on whether mutation adds or subtracts from amount
                         if (rand.nextDouble() > 0.50){
-                            weights.put(n2, weights.get(n2) + 0.1);
+                            weights.put(n2, weights.get(n2) + (0.01 * weights.get(n2)));
                         }
                         else {
-                            weights.put(n2, weights.get(n2) - 0.1);
+                            weights.put(n2, weights.get(n2) - (0.01 * weights.get(n2)));
                         }
                     }
                 }
@@ -182,13 +188,22 @@ public class GeneticAlgorithm {
     }
 
     // Fitness Test(s)
+    public double fitnessTest(Network n) {
+        if (regression) {
+            return rfitnessTest(n);
+        }
+        else {
+            return cfitnessTest(n);
+        }
+    }
     // Regression Test
     public double rfitnessTest(Network n){
         // Calculate and return absolute error
         double error = 0;
-        for (int i = 0; i < trainSet.size() - 1; i++) {
+        for (int i = 0; i < trainSet.size(); i++) {
             n.initializeInputLayer(trainSet.get(i));
             n.feedForward();
+            n.calcErr();
             error += Math.abs(n.error);
         }
         error /= trainSet.size();
@@ -199,8 +214,7 @@ public class GeneticAlgorithm {
     public double cfitnessTest(Network n) {
         // Calculate and return accuracy
         double accuracy;
-        n.guessHistory.clear();
-        for (int i = 0; i < trainSet.size() - 1; i++) {
+        for (int i = 0; i < trainSet.size(); i++) {
             n.initializeInputLayer(trainSet.get(i));
             n.feedForward();
             n.guessHistory.add(n.getClassNumber() + "");
@@ -208,6 +222,31 @@ public class GeneticAlgorithm {
         ArrayList<String> loss = MathFunction.processConfusionMatrix(n.guessHistory, trainSet);
         //TODO guessHistory is one smaller than trainSet. They should be the same length.
         accuracy = Double.parseDouble(loss.get(2));
+        n.guessHistory.clear();
         return accuracy;
+    }
+
+    public void findBest(ArrayList<Network> gen){
+        // Start with any network
+        if (best == null){
+            best = gen.get(0);
+        }
+        // update best found so far from all generations
+        // regression
+        if (regression) {
+            for (Network network: gen) {
+                if (rfitnessTest(network) < rfitnessTest(best)){
+                    best = network;
+                }
+            }
+        }
+        // categorical
+        else {
+            for (Network network: gen) {
+                if (cfitnessTest(network) > cfitnessTest(best)){
+                    best = network;
+                }
+            }
+        }
     }
 }

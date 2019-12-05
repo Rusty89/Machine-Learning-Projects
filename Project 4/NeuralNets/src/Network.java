@@ -173,4 +173,10 @@ public class Network
             backprop(layer.getPreviousLayer(), newWeights);
         }
     }
+
+    public void calcErr(){
+        Layer output = layers.get(layers.size() - 1);
+        Node n = output.getNode(0);
+        error =  n.output - regressionTarget;
+    }
 }

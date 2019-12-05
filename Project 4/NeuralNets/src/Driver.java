@@ -5,6 +5,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -17,19 +18,116 @@ public class Driver {
 
     public static void main(String[] args) throws Exception {
 
+        ArrayList<Data> cData = new ArrayList<>();
+        ArrayList<Data> rData = new ArrayList<>();
         // read in our categorical sets
-        Data car = new CarData(new File("./DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("./DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("./DataSets/segmentation.data"));
+        Data car = new CarData(new File("../../Machine-Learning-Projects/DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("../../Machine-Learning-Projects/DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("../../Machine-Learning-Projects/DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("./DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("./DataSets/machine.data"));
-        Data redWine = new WineData(new File("./DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("./DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("../../Machine-Learning-Projects/DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("../../Machine-Learning-Projects/DataSets/machine.data"));
+        Data redWine = new WineData(new File("../../Machine-Learning-Projects/DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("../../Machine-Learning-Projects/DataSets/winequality-white.csv"));
 
-        GeneticAlgorithm eugene = new GeneticAlgorithm(car.dataSets.trainingSets.get(0), new int[] {6, 3}, 4, false);
-        eugene.runAlgorithm();
+        cData.add(car);
+        cData.add(abalone);
+        cData.add(segmentation);
+
+        rData.add(forestFire);
+        rData.add(machine);
+        rData.add(redWine);
+        rData.add(whiteWine);
+
+        for (Data d : cData) {
+            for (int i = 0; i < 3; i++) {
+                int[] layers = new int[2 + i];
+                for (int j = 0; j < layers.length; j++) {
+                    if (j == layers.length - 1) {
+                        layers[j] = d.numClasses;
+                    } else {
+                        layers[j] = d.dataSets.trainingSets.get(0).get(0).size() - 1;
+                    }
+                }
+                GeneticAlgorithm GA = new GeneticAlgorithm(d.dataSets.trainingSets.get(0), layers, d.numClasses, false);
+                // test on 10 generations for each training set
+                for (ArrayList<ArrayList<String>> trainingSet : d.dataSets.trainingSets) {
+                    GA.trainSet = trainingSet;
+                    for (int k = 0; k < 5; k++) {
+                        GA.runAlgorithm();
+                    }
+                }
+                // Grab best GA
+                Network bestGA = GA.best;
+
+                // calculate results
+                ArrayList<Double> GAprecision = new ArrayList<>();
+                ArrayList<Double> GArecall = new ArrayList<>();
+                ArrayList<Double> GAaccuracy = new ArrayList<>();
+                for (ArrayList<ArrayList<String>> testSet : d.dataSets.testSets) {
+                    for (ArrayList<String> test : testSet) {
+                        bestGA.initializeInputLayer(test);
+                        bestGA.feedForward();
+                        bestGA.guessHistory.add(bestGA.getClassNumber() + "");
+                    }
+                    ArrayList<String> GAloss = MathFunction.processConfusionMatrix(bestGA.guessHistory, testSet);
+                    bestGA.guessHistory.clear();
+                    GAprecision.add(Double.parseDouble(GAloss.get(0)));
+                    GArecall.add(Double.parseDouble(GAloss.get(1)));
+                    GAaccuracy.add(Double.parseDouble(GAloss.get(2)));
+                }
+                System.out.println("Hidden Layers = " + i);
+                printRangeAndMean(d.toString() + " data - GAPrecision: ", GAprecision);
+                printRangeAndMean(d.toString() + " data -    GARecall: ", GArecall);
+                printRangeAndMean(d.toString() + " data -  GAAccuracy: ", GAaccuracy);
+            }
+        }
+
+        for (Data d : rData) {
+            for (int i = 0; i < 3; i++) {
+                int[] layers = new int[2 + i];
+                for (int j = 0; j < layers.length; j++) {
+                    if (j == layers.length - 1) {
+                        layers[j] = 1;
+                    } else {
+                        layers[j] = d.dataSets.trainingSets.get(0).get(0).size() - 1;
+                    }
+                }
+                GeneticAlgorithm GA = new GeneticAlgorithm(d.dataSets.trainingSets.get(0), layers, 1, true);
+                // test on 10 generations for each training set
+                for (ArrayList<ArrayList<String>> trainingSet : d.dataSets.trainingSets) {
+                    GA.trainSet = trainingSet;
+                    for (int k = 0; k < 5; k++) {
+                        GA.runAlgorithm();
+                    }
+                }
+                // Grab best GA
+                Network bestGA = GA.best;
+
+                // calculate results
+                ArrayList<Double> aeResults = new ArrayList<>();
+                ArrayList<Double> mseResults = new ArrayList<>();
+                for (ArrayList<ArrayList<String>> testSet : d.dataSets.testSets) {
+                    double absErr = 0;
+                    double meanErr = 0;
+                    for (ArrayList<String> test : testSet) {
+                        bestGA.initializeInputLayer(test);
+                        bestGA.feedForward();
+                        bestGA.calcErr();
+                        absErr += Math.abs(bestGA.error);
+                        meanErr += Math.pow(bestGA.error, 2);
+                    }
+                    absErr /= testSet.size();
+                    meanErr /= testSet.size();
+                    aeResults.add(absErr);
+                    mseResults.add(meanErr);
+                }
+                System.out.println("Hidden Layers = " + i);
+                printRangeAndMean(d.toString() + " data -     Absolute Error: ", aeResults);
+                printRangeAndMean(d.toString() + " data - Mean Squared Error: ", mseResults);
+            }
+        }
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
