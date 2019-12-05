@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Network
 {
-    private ArrayList<Layer> layers;
+    public ArrayList<Layer> layers;
     public double learningRate;
     private int correctClass;
     public double regressionTarget;
@@ -20,6 +20,30 @@ public class Network
     public Network (int[] layerSizes, double learningRate)
     {
         this.learningRate = learningRate;
+        guessHistory = new ArrayList<>();
+        // create a layer for each entry in layerSizes.
+        // each layer will be the size of the corresponding int in layerSizes.
+        layers = new ArrayList<>();
+        for (int size: layerSizes)
+            layers.add(new Layer(size));
+
+        // inform each layer of its neighbors. setPreviousLayer() also updates the previous layer's nextLayer.
+        Layer previousLayer = null;
+        for (Layer layer: layers)
+        {
+            if (previousLayer != null)
+                layer.setPreviousLayer(previousLayer);
+            previousLayer = layer;
+        }
+
+        // initializes the weights of nodes in each layer
+        for (int a = 0; a < layers.size() - 1; a++)
+            layers.get(a).initializeWeights(.005, .095);
+    }
+
+    // Adding 2nd constructor that doesn't take in a learning rate for GA
+    public Network (int[] layerSizes)
+    {
         guessHistory = new ArrayList<>();
         // create a layer for each entry in layerSizes.
         // each layer will be the size of the corresponding int in layerSizes.
@@ -151,9 +175,14 @@ public class Network
         }
     }
 
+    public void calcErr(){
+        Layer output = layers.get(layers.size() - 1);
+        Node n = output.getNode(0);
+        error =  n.output - regressionTarget;
+    }
+
     //getter method for layers
     public ArrayList<Layer> getLayers() {
         return layers;
     }
-
 }
