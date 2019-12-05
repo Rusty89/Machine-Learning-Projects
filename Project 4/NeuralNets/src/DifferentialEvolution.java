@@ -8,20 +8,16 @@ public class DifferentialEvolution  implements Comparator<Node>{
     ArrayList<ArrayList<String>> trainingSet;
     int [] sizes;
     Data inputData;
-    final int numNetworks;
+    int numNetworks;
     final double crossOverRate = 0.9;
     final double betaConstant = 0.5;
-    final int stoppingCriteria = 1000;
+    final int stoppingCriteria = 100;
     boolean regression;
+    Network bestNet;
 
-    DifferentialEvolution(Data inputData, ArrayList<ArrayList<String>> trainingSet, int sizes [], int numNetworks, boolean regression){
-        this.sizes = sizes;
-        this.trainingSet = trainingSet;
+    DifferentialEvolution(Data inputData) {
         this.inputData = inputData;
-        this.numNetworks = numNetworks;
-        this.regression = regression;
     }
-
     // function to train the network
     public Network evolve() {
         // creates the population of networks
@@ -213,6 +209,49 @@ public class DifferentialEvolution  implements Comparator<Node>{
             }
         }
     }
+
+
+
+    public  ArrayList<Double> runTest(int numNetworks, int [] sizes, boolean regression, int setNum){
+        // resets values prior to a run, making it ready to start
+        this.sizes = sizes;
+        this.trainingSet = inputData.dataSets.trainingSets.get(setNum);
+        this.numNetworks = numNetworks;
+        this.regression = regression;
+
+        ArrayList<Double> results = new ArrayList<>();
+        bestNet = evolve();
+
+        // runs the test with the best net
+        bestNet.guessHistory.clear();
+        if(regression){
+            for (ArrayList<String> test : inputData.dataSets.testSets.get(setNum)) {
+                bestNet.initializeInputLayer(test);
+                bestNet.feedForward();
+                bestNet.guessHistory.add(bestNet.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
+            }
+            String loss = MathFunction.rootMeanSquaredError(bestNet.guessHistory, inputData.dataSets.testSets.get(setNum), inputData.fullSet);
+            String loss2 = MathFunction.meanAbsoluteError(bestNet.guessHistory, inputData.dataSets.testSets.get(setNum), inputData.fullSet);
+            results.add(Double.parseDouble(loss));
+            results.add(Double.parseDouble(loss2));
+        }else{
+            for (ArrayList<String> test : inputData.dataSets.testSets.get(0)) {
+                bestNet.initializeInputLayer(test);
+                bestNet.feedForward();
+                bestNet.guessHistory.add(bestNet.getClassNumber() + "");
+            }
+            ArrayList<String> loss = MathFunction.processConfusionMatrix(bestNet.guessHistory, inputData.dataSets.testSets.get(0));
+
+            results.add(Double.parseDouble(loss.get(0)));
+            results.add(Double.parseDouble(loss.get(1)));
+            results.add(Double.parseDouble(loss.get(2)));
+        }
+
+        return results;
+
+    }
+
+
 
     @Override
     public int compare(Node a, Node b) {

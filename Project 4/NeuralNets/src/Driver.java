@@ -18,15 +18,15 @@ public class Driver {
     public static void main(String args[])throws Exception {
 
         // read in our categorical sets
-        Data car = new CarData(new File("DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
+        Data car = new CarData(new File("../DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("../DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("../DataSets/segmentation.data"));
 
         // read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("DataSets/machine.data"));
-        Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("../DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("../DataSets/machine.data"));
+        Data redWine = new WineData(new File("../DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("../DataSets/winequality-white.csv"));
 
         // ------------------------------- begin driver for MLP Network -------------------------------
         ArrayList<Data> cData = new ArrayList<>();
@@ -155,39 +155,9 @@ public class Driver {
         }
 */
 
-        for (int i = 0; i < 5; i++) {
-            // testing on a classification set
-            int numFeatures = segmentation.fullSet.get(0).size() - 1;
-            int[] sizes = {numFeatures, numFeatures, segmentation.numClasses};
-            DifferentialEvolution diffCar = new DifferentialEvolution(segmentation, segmentation.dataSets.trainingSets.get(0), sizes, 5 * numFeatures, false);
-            Network best = diffCar.evolve();
+        runDifferentialEvoltionTests(rData, cData);
 
-            for (ArrayList<String> test : segmentation.dataSets.testSets.get(0)) {
-                best.initializeInputLayer(test);
-                best.feedForward();
-                best.guessHistory.add(best.getClassNumber() + "");
-            }
-            ArrayList<String> lossDiffEv = MathFunction.processConfusionMatrix(best.guessHistory, segmentation.dataSets.testSets.get(0));
 
-            System.out.println(lossDiffEv);
-        }
-
-/*
-        // testing on a regression set
-        int numFeatures = redWine.fullSet.get(0).size()-1;
-        int [] sizes = {numFeatures,1};
-        DifferentialEvolution diffForest = new DifferentialEvolution(redWine, redWine.dataSets.trainingSets.get(0), sizes, 20, true);
-        Network best = diffForest.evolve();
-
-        for (ArrayList<String> test : redWine.dataSets.testSets.get(0)) {
-            best.initializeInputLayer(test);
-            best.feedForward();
-            best.guessHistory.add(best.getLayers().get(sizes.length-1).getNodes().get(0).output + "");
-        }
-        String lossDiffEv = MathFunction.rootMeanSquaredError(best.guessHistory, redWine.dataSets.testSets.get(0), redWine.fullSet);
-
-        System.out.println(lossDiffEv);
-*/
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
@@ -205,4 +175,67 @@ public class Driver {
         System.out.println(name + " from " + decimalFormat.format(min) + " to " + decimalFormat.format(max) +
                 " with a mean of " + decimalFormat.format(sum/results.size()) + ".");
     }
+
+    // function to run all Differential Evolution
+    private static void runDifferentialEvoltionTests(ArrayList<Data> rData, ArrayList<Data> cData) throws IOException {
+        for (Data data : cData) {
+            FileWriter filer = new FileWriter(data.toString() + "DEresults.csv");
+            PrintWriter printer = new PrintWriter(filer);
+            System.out.println("Running PSO tests for " + data.toString());
+
+            // testing on a classification sets
+            ArrayList<int []> hiddenLayers = new ArrayList<>();
+            int numFeatures = data.fullSet.get(0).size()-1;
+            // creates the parameters to make 0, 1 and 2 hidden layers
+            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
+            // iterates over the 0, 1 and 2 hidden layers tests
+            for (int [] sizes : hiddenLayers) {
+                DifferentialEvolution DE = new DifferentialEvolution(data);
+                for (int i = 0; i < 10; i++) {
+                    ArrayList<Double> results = DE.runTest(numFeatures * 3, sizes,false, i);
+                    System.out.println(results);
+                    printer.print(results.get(0) + ",");
+                    printer.print(results.get(1) + ",");
+                    printer.print(results.get(2) + ",");
+                    printer.println();
+                }
+            }
+            printer.close();
+            filer.close();
+        }
+
+        for (Data data : rData) {
+            // testing on a regression sets
+            FileWriter filer = new FileWriter(data.toString() + "PSOresults.csv");
+            PrintWriter printer = new PrintWriter(filer);
+            System.out.println("Running PSO tests for " + data.toString());
+            ArrayList<int []> hiddenLayers = new ArrayList<>();
+            int numFeatures = data.fullSet.get(0).size()-1;
+            // creates the parameters to make 0, 1 and 2 hidden layrs
+            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
+            // iterates over the 0, 1 and 2 hidden layers tests
+            for (int [] sizes : hiddenLayers) {
+                DifferentialEvolution DE = new DifferentialEvolution(data);
+                for (int i = 0; i < 10; i++) {
+
+                    ArrayList<Double> results = DE.runTest(numFeatures * 3, sizes, true, i);
+                    System.out.println(results);
+                    printer.print(results.get(0) +",");
+                    printer.print(results.get(1) +",");
+                    printer.println();
+                }
+            }
+            printer.close();
+            filer.close();
+        }
+    }
 }
+
+
+
+
+
