@@ -16,6 +16,7 @@ public class Network
     public double error;
     public ArrayList<String> guessHistory;
 
+
     public Network (int[] layerSizes, double learningRate)
     {
         this.learningRate = learningRate;
@@ -178,5 +179,10 @@ public class Network
         Layer output = layers.get(layers.size() - 1);
         Node n = output.getNode(0);
         error =  n.output - regressionTarget;
+    }
+
+    //getter method for layers
+    public ArrayList<Layer> getLayers() {
+        return layers;
     }
 }
