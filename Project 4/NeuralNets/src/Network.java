@@ -17,7 +17,6 @@ public class Network
     public ArrayList<String> guessHistory;
 
 
-
     public Network (int[] layerSizes, double learningRate)
     {
         this.learningRate = learningRate;
@@ -156,6 +155,5 @@ public class Network
     public ArrayList<Layer> getLayers() {
         return layers;
     }
-
 
 }

@@ -42,7 +42,8 @@ public class Driver {
         rData.add(machine);
         rData.add(redWine);
         rData.add(whiteWine);
-/*
+
+        /*
         double bpLearningRate = 0.3;
         System.out.println("\n    Starting MLP using a learning rate of " + bpLearningRate);
         // start creating the MLP networks
@@ -153,9 +154,14 @@ public class Driver {
                 printRangeAndMean("Mean squared error", mseResults);
             }
         }
-*/
+
+
+         */
+
+        runParticleSwarmTests(rData, cData, 30);
 
         runDifferentialEvoltionTests(rData, cData);
+
 
 
     }
@@ -176,6 +182,65 @@ public class Driver {
                 " with a mean of " + decimalFormat.format(sum/results.size()) + ".");
     }
 
+
+    // function to run all Particle Swarm tests
+    private static void runParticleSwarmTests(ArrayList<Data> rData, ArrayList<Data> cData, int failureLimit) throws IOException {
+        for (Data data : cData) {
+            FileWriter filer = new FileWriter(data.toString() + "PSOresults.csv");
+            PrintWriter printer = new PrintWriter(filer);
+            System.out.println("Running PSO tests for " + data.toString());
+
+            // testing on a classification sets
+            ArrayList<int []> hiddenLayers = new ArrayList<>();
+            int numFeatures = data.fullSet.get(0).size()-1;
+            // creates the parameters to make 0, 1 and 2 hidden layers
+            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
+            // iterates over the 0, 1 and 2 hidden layers tests
+            for (int [] sizes : hiddenLayers) {
+                ParticleSwarm pSwarm = new ParticleSwarm(data);
+                for (int i = 0; i < 10; i++) {
+                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  false, i);
+                    System.out.println(results);
+                    printer.print(results.get(0) + ",");
+                    printer.print(results.get(1) + ",");
+                    printer.print(results.get(2) + ",");
+                    printer.println();
+                }
+            }
+            printer.close();
+            filer.close();
+        }
+
+        for (Data data : rData) {
+            // testing on a regression sets
+            FileWriter filer = new FileWriter(data.toString() + "PSOresults.csv");
+            PrintWriter printer = new PrintWriter(filer);
+            System.out.println("Running PSO tests for " + data.toString());
+            ArrayList<int []> hiddenLayers = new ArrayList<>();
+            int numFeatures = data.fullSet.get(0).size()-1;
+            // creates the parameters to make 0, 1 and 2 hidden layrs
+            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
+            hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
+            // iterates over the 0, 1 and 2 hidden layers tests
+            for (int [] sizes : hiddenLayers) {
+                ParticleSwarm pSwarm = new ParticleSwarm(data);
+                for (int i = 0; i < 10; i++) {
+                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  true, i);
+                    System.out.println(results);
+                    printer.print(results.get(0) +",");
+                    printer.print(results.get(1) +",");
+                    printer.println();
+                }
+            }
+            printer.close();
+            filer.close();
+        }
+    }
+
+
     // function to run all Differential Evolution
     private static void runDifferentialEvoltionTests(ArrayList<Data> rData, ArrayList<Data> cData) throws IOException {
         for (Data data : cData) {
@@ -192,6 +257,7 @@ public class Driver {
             hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
             // iterates over the 0, 1 and 2 hidden layers tests
             for (int [] sizes : hiddenLayers) {
+
                 DifferentialEvolution DE = new DifferentialEvolution(data);
                 for (int i = 0; i < 10; i++) {
                     ArrayList<Double> results = DE.runTest(numFeatures * 3, sizes,false, i);
@@ -219,9 +285,9 @@ public class Driver {
             hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
             // iterates over the 0, 1 and 2 hidden layers tests
             for (int [] sizes : hiddenLayers) {
+
                 DifferentialEvolution DE = new DifferentialEvolution(data);
                 for (int i = 0; i < 10; i++) {
-
                     ArrayList<Double> results = DE.runTest(numFeatures * 3, sizes, true, i);
                     System.out.println(results);
                     printer.print(results.get(0) +",");
@@ -233,9 +299,5 @@ public class Driver {
             filer.close();
         }
     }
+
 }
-
-
-
-
-

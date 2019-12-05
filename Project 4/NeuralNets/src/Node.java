@@ -15,6 +15,7 @@ public class Node
     public double dOut;
     public HashMap<Node, Double> connectionValues;
     public int id;
+
     public Node (Layer layer)
     {
         this.layer = layer;
