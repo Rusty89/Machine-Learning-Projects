@@ -33,14 +33,14 @@ public class Driver {
         ArrayList<Data> rData = new ArrayList<>();
 
         // add categorical sets for our MLP network
-        //cData.add(car);
+        cData.add(car);
         //cData.add(abalone);
-        cData.add(segmentation);
+        //cData.add(segmentation);
 
         // add regression sets for our MLP network
-        rData.add(forestFire);
-        rData.add(machine);
-        rData.add(redWine);
+        //rData.add(forestFire);
+        //rData.add(machine);
+        //rData.add(redWine);
         rData.add(whiteWine);
 
         /*
@@ -191,14 +191,14 @@ public class Driver {
             ArrayList<int []> hiddenLayers = new ArrayList<>();
             int numFeatures = data.fullSet.get(0).size()-1;
             // creates the parameters to make 0, 1 and 2 hidden layers
-            hiddenLayers.add(new int []{numFeatures,  data.numClasses});
+            //hiddenLayers.add(new int []{numFeatures,  data.numClasses});
             hiddenLayers.add(new int []{numFeatures, numFeatures, data.numClasses});
             hiddenLayers.add(new int []{numFeatures, numFeatures, numFeatures, data.numClasses});
             // iterates over the 0, 1 and 2 hidden layers tests
             for (int [] sizes : hiddenLayers) {
                 ParticleSwarm pSwarm = new ParticleSwarm(data);
                 for (int i = 0; i < 10; i++) {
-                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 3, sizes, failureLimit,  false, i);
+                    ArrayList<Double> results = pSwarm.runTest(numFeatures * 10, sizes, failureLimit,  false, i);
                     System.out.println(results);
                     printer.print(results.get(0) + ",");
                     printer.print(results.get(1) + ",");

@@ -9,14 +9,14 @@ public class ParticleSwarm implements Comparator<Node> {
     int numNetworks;
     int failureLimit;
     // constant for weight on personal Best
-    double c1 = 2;
+    double c1 = .5;
     // constant for weight on group best
-    double c2 = 2;
+    double c2 = 3.5;
     // velocity limits
-    double velocityClampUpper = 1;
-    double velocityClampLower = -1;
+    double velocityClampUpper = .005;
+    double velocityClampLower = -0.005;
     // inertia
-    double inertia = 1;
+    double inertia = .9;
     boolean regression;
 
     int indexOfBest = 0;
@@ -45,7 +45,7 @@ public class ParticleSwarm implements Comparator<Node> {
         //update position of all networks
         createNetworks(sizes);
         // hard stopping point to ensure termination
-        int stoppingPoint = 10000;
+        int stoppingPoint = 1000;
         int noImprovementCounter = 0;
         calculateFitness();
         for (int i = 0; i < stoppingPoint; i++) {
@@ -67,13 +67,8 @@ public class ParticleSwarm implements Comparator<Node> {
             if(noImprovementCounter > failureLimit){
                 i = stoppingPoint;
             }
-            // lowers inertia over time, allowing
-            // swarm to settle, and resets to one for
-            // new motion if swarm settles too far
-            inertia -= 0.0005;
-            if(inertia <= 0.5){
-                inertia = 0.5;
-            }
+
+
         }
         // sets bestNet to the best network
         // from all generations
@@ -120,7 +115,7 @@ public class ParticleSwarm implements Comparator<Node> {
                         personalBests.get(i).add(valOfRand);
                         currentState.get(i).add(val);
                         // initializes all velocities to 0;
-                        velocity.get(i).add(0.0);
+                        velocity.get(i).add(10.0);
                         if(regression){
                             personalBestScores.set(i, Double.MAX_VALUE);
                             groupBestScore = Double.MAX_VALUE;
