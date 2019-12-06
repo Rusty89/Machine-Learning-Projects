@@ -38,7 +38,7 @@ public class Network
 
         // initializes the weights of nodes in each layer
         for (int a = 0; a < layers.size() - 1; a++)
-            layers.get(a).initializeWeights(.005, .095);
+            layers.get(a).initializeWeights(.2, .5);
     }
 
     // Adding 2nd constructor that doesn't take in a learning rate for GA
