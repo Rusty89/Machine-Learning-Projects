@@ -10,7 +10,7 @@ public class DifferentialEvolution  implements Comparator<Node>{
     Data inputData;
     int numNetworks;
     final double crossOverRate = 0.9;
-    final double betaConstant = 0.5;
+    final double betaConstant = 0.05;
     final int stoppingCriteria = 100;
     boolean regression;
     Network bestNet;
