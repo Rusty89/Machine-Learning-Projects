@@ -16,21 +16,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Driver {
-    private static final int oneTenthNumGenerations = 20;
+    private static final int oneTenthNumGenerations = 10;
 
     public static void main(String[] args) throws Exception {
 
         // Process Data
         // Read in our categorical sets
-        Data car = new CarData(new File("DataSets/car.data"));
-        Data abalone = new AbaloneData(new File("DataSets/abalone.data"));
-        Data segmentation = new ImageData(new File("DataSets/segmentation.data"));
+        Data car = new CarData(new File("../../Machine-Learning-Projects/DataSets/car.data"));
+        Data abalone = new AbaloneData(new File("../../Machine-Learning-Projects/DataSets/abalone.data"));
+        Data segmentation = new ImageData(new File("../../Machine-Learning-Projects/DataSets/segmentation.data"));
 
         // Read in our regression sets, use regression and euclidean parameters for all these sets
-        Data forestFire = new FireData(new File("DataSets/forestfires.data"));
-        Data machine = new MachineData(new File("DataSets/machine.data"));
-        Data redWine = new WineData(new File("DataSets/winequality-red.csv"));
-        Data whiteWine = new WineData(new File("DataSets/winequality-white.csv"));
+        Data forestFire = new FireData(new File("../../Machine-Learning-Projects/DataSets/forestfires.data"));
+        Data machine = new MachineData(new File("../../Machine-Learning-Projects/DataSets/machine.data"));
+        Data redWine = new WineData(new File("../../Machine-Learning-Projects/DataSets/winequality-red.csv"));
+        Data whiteWine = new WineData(new File("../../Machine-Learning-Projects/DataSets/winequality-white.csv"));
 
         // Store data by categorical and regression
         ArrayList<Data> cData = new ArrayList<>();
@@ -38,14 +38,14 @@ public class Driver {
 
         // Categorical
         cData.add(car);
-        //cData.add(abalone);
-        //cData.add(segmentation);
+        cData.add(abalone);
+        cData.add(segmentation);
 
         // Regression
-        //rData.add(forestFire);
-        //rData.add(machine);
-        //rData.add(redWine);
-        //rData.add(whiteWine);
+        rData.add(forestFire);
+        rData.add(machine);
+        rData.add(redWine);
+        rData.add(whiteWine);
 
         runGeneticAlgorithmTests(rData, cData);
 

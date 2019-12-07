@@ -62,7 +62,7 @@ public class Network
 
         // initializes the weights of nodes in each layer
         for (int a = 0; a < layers.size() - 1; a++)
-            layers.get(a).initializeWeights(.005, .095);
+            layers.get(a).initializeWeights(.1, .1);
     }
 
     // assumes the last entry in the ArrayList is the class and sets it as the correct answer!

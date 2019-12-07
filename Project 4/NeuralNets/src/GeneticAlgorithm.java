@@ -19,9 +19,9 @@ public class GeneticAlgorithm {
 
     // Tunable Parameters for the class
     public double crossoverChance = 0.25;
-    public double mutationChance = 0.75;
-    public double mutationRate = 0.005;
-    public int numNetworks = 100; // must be even number, min 4
+    public double mutationChance = 0.50;
+    public double mutationRate = 0.15;
+    public int numNetworks = 150; // must be even number, min 4
 
     // Constructor
     public GeneticAlgorithm(ArrayList<ArrayList<String>> trainSet, int[] hLayers, int numClasses, boolean regression){
