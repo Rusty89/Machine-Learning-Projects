@@ -75,7 +75,6 @@ public class Driver {
     private static void runGeneticAlgorithmTests (ArrayList<Data> rData, ArrayList<Data> cData)
     {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        Network[] best = new Network[3];
 
         // Train and test categorical data
         for (Data d : cData) {
@@ -130,8 +129,6 @@ public class Driver {
                     printRangeAndMean(d.toString() + " data - GAPrecision: ", GAprecision);
                     printRangeAndMean(d.toString() + " data -    GARecall: ", GArecall);
                     printRangeAndMean(d.toString() + " data -  GAAccuracy: ", GAaccuracy);
-
-                    best[finalI] = bestGA;
                 });
             }
         }
@@ -203,10 +200,6 @@ public class Driver {
         catch (InterruptedException e)
         {
             
-        }
-      
-        for (Network goodOne: best) {
-            System.out.println(goodOne);
         }
     }
 
