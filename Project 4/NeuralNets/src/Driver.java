@@ -1,19 +1,15 @@
 /* A class that holds our main method for running our algorithms on the dataset. It uses the methods of the Data class
-    to perform the algorithms on all data sets after reading in the data from files in the directory.
+    to perform the algorithms on all data sets after reading in the data from files in the directory. It creates
+    feedforward neural networks and uses four different algorithms to train them. They are: back propagation,
+    genetic algorithm, differential evolution, and particle swarm optimization.
  */
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Driver {
 
@@ -50,12 +46,13 @@ public class Driver {
         rData.add(redWine);
         rData.add(whiteWine);
 
-        // run the tests for the three genetic aproaches
+        // run the tests for the three genetic approaches
         runGeneticAlgorithmTests(rData, cData);
         runParticleSwarmTests(rData, cData, numFailuresAllowed);
         runDifferentialEvolutionTests(rData, cData);
     }
 
+    // used to output results for the genetic algorithm
     private static void printRangeAndMean (String name, ArrayList<Double> results)
     {
         DecimalFormat decimalFormat = new DecimalFormat("#.#########");
@@ -72,16 +69,14 @@ public class Driver {
                 " with a mean of " + decimalFormat.format(sum/results.size()) + ".");
     }
 
+    // drives our GA tests using cross validation sets
     private static void runGeneticAlgorithmTests (ArrayList<Data> rData, ArrayList<Data> cData)
     {
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
         // Train and test categorical data
         for (Data d : cData) {
             // For hidden layers 0, 1, and 2
             for (int i = 0; i < 3; i++) {
                 int finalI = i;  //save i as a new int for the runnable to use
-                executorService.execute(() -> {
                     int[] layers = new int[2 + finalI];
                     for (int j = 0; j < layers.length; j++) {
                         if (j == layers.length - 1) {
@@ -129,7 +124,6 @@ public class Driver {
                     printRangeAndMean(d.toString() + " data - GAPrecision: ", GAprecision);
                     printRangeAndMean(d.toString() + " data -    GARecall: ", GArecall);
                     printRangeAndMean(d.toString() + " data -  GAAccuracy: ", GAaccuracy);
-                });
             }
         }
 
@@ -138,7 +132,6 @@ public class Driver {
             // For hidden layers 0, 1, 2
             for (int i = 0; i < 3; i++) {
                 int finalI = i;
-                executorService.execute(() -> {
                     int[] layers = new int[2 + finalI];
                     for (int j = 0; j < layers.length; j++) {
                         if (j == layers.length - 1) {
@@ -188,22 +181,11 @@ public class Driver {
                     System.out.println("Hidden Layers = " + finalI);
                     printRangeAndMean(d.toString() + " data -     Absolute Error: ", aeResults);
                     printRangeAndMean(d.toString() + " data - Mean Squared Error: ", mseResults);
-                });
             }
-        }
-
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        }
-
-        catch (InterruptedException e)
-        {
-            
         }
     }
 
-    // function to run all Particle Swarm tests
+    // drives our PSO tests using cross validation sets
     private static void runParticleSwarmTests(ArrayList<Data> rData, ArrayList<Data> cData, int failureLimit) throws IOException {
         for (Data data : cData) {
 
@@ -271,7 +253,7 @@ public class Driver {
         }
     }
 
-    // function to run all Differential Evolution
+    // drives our DE tests using cross validation sets
     private static void runDifferentialEvolutionTests(ArrayList<Data> rData, ArrayList<Data> cData) throws IOException {
         for (Data data : cData) {
             // testing on a classification sets
