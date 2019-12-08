@@ -53,7 +53,7 @@ public class Driver {
         // run the tests for the three genetic aproaches
         runGeneticAlgorithmTests(rData, cData);
         runParticleSwarmTests(rData, cData, numFailuresAllowed);
-        runDifferentialEvoltionTests(rData, cData);
+        runDifferentialEvolutionTests(rData, cData);
     }
 
     private static void printRangeAndMean (String name, ArrayList<Double> results)
