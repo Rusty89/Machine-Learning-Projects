@@ -18,10 +18,10 @@ public class GeneticAlgorithm {
     public Network best;
 
     // Tunable Parameters for the class
-    public double crossoverChance = 0.3;
-    public double mutationChance = 0.3;
-    public double mutationRate = 0.05;
-    public int numNetworks = 10; // must be even number, min 4
+    public double crossoverChance = 0.25;
+    public double mutationChance = 0.50;
+    public double mutationRate = 0.15;
+    public int numNetworks = 150; // must be even number, min 4
 
     // Constructor
     public GeneticAlgorithm(ArrayList<ArrayList<String>> trainSet, int[] hLayers, int numClasses, boolean regression){
@@ -83,7 +83,7 @@ public class GeneticAlgorithm {
             Network n1 = generation.get(randInt1);
             Network n2 = generation.get(randInt2);
             // Pick the best of the two
-            // If Regression data...
+            // If regression data...
             if (regression){
                 // take the one with the lowest error
                 if (rfitnessTest(n1) < rfitnessTest(n2)) {
@@ -92,7 +92,7 @@ public class GeneticAlgorithm {
                     matingPair.add(n2);
                 }
             }
-            // If Categorical data...
+            // If categorical data...
             else {
                 // take the one with the highest accuracy
                 if (cfitnessTest(n1) > cfitnessTest(n2)) {
@@ -221,7 +221,6 @@ public class GeneticAlgorithm {
             n.guessHistory.add(n.getClassNumber() + "");
         }
         ArrayList<String> loss = MathFunction.processConfusionMatrix(n.guessHistory, trainSet);
-        //TODO guessHistory is one smaller than trainSet. They should be the same length.
         accuracy = Double.parseDouble(loss.get(2));
         n.guessHistory.clear();
         return accuracy;
