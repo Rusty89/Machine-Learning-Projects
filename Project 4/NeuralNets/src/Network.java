@@ -129,7 +129,7 @@ public class Network
         }
     }
 
-    // starts backpropagation for regression data sets
+    // starts back propagation for regression data sets
     public void rBackprop()
     {
         Layer output = layers.get(layers.size() - 1);
@@ -181,7 +181,7 @@ public class Network
         error =  n.output - regressionTarget;
     }
 
-    //getter method for layers
+    // getter method for layers
     public ArrayList<Layer> getLayers() {
         return layers;
     }

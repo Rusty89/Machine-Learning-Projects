@@ -1,5 +1,7 @@
+/* A class that holds our Particle Swarm Optimization Algorithm. This is an evolutionary approach method to train our
+    feedforward neural networks.
+ */
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ParticleSwarm implements Comparator<Node> {
@@ -81,6 +83,7 @@ public class ParticleSwarm implements Comparator<Node> {
 
         // puts connection values back into hashmap of network
         // by iterating over the keys and states in order
+
         updateConnections(groupBest, bestNet);
     }
 
@@ -226,9 +229,8 @@ public class ParticleSwarm implements Comparator<Node> {
 
                 }
                 ArrayList<String> loss = MathFunction.processConfusionMatrix(currNetwork.guessHistory, trainingSet);
-                // check accuracy
-                double score = Double.parseDouble(loss.get(2));
 
+                double score = Double.parseDouble(loss.get(2)); // check accuracy
 
                 if(score > personalBestScores.get(i)){
                     // update personal best with new state
@@ -263,6 +265,7 @@ public class ParticleSwarm implements Comparator<Node> {
                 }
                 String loss = MathFunction.rootMeanSquaredError(currNetwork.guessHistory, trainingSet, inputData.fullSet);
                 double score = Double.parseDouble(loss);
+
                 // check error
                 if(score < personalBestScores.get(i)){
 
@@ -300,7 +303,7 @@ public class ParticleSwarm implements Comparator<Node> {
         this.regression = regression;
         this.failureLimit = failureLimit;
         ArrayList<Double> results = new ArrayList<>();
-        swarm();
+        swarm(); // call to perform actual swarming
 
         // runs the test with the best net
         bestNet.guessHistory.clear();
@@ -352,27 +355,25 @@ public class ParticleSwarm implements Comparator<Node> {
     // regroups nodes between layers after iterating through the hashmap
     private void updateConnections(ArrayList<Double> connectionList, Network currentNetwork){
 
-        Iterator<Double> it1 = connectionList.iterator();
+        Iterator<Double> iterator1 = connectionList.iterator();
         for (int j = 0; j < currentNetwork.getLayers().size() ; j++){
             ArrayList<Node> nodes = currentNetwork.getLayers().get(j).getNodes();
             for (int k = 0; k < nodes.size() ; k++) {
 
                 // updates the network with the new connection values
                 Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
-                Iterator<Node> it2 = nodeSet.iterator();
-
+                Iterator<Node> iterator2 = nodeSet.iterator();
                 ArrayList<Node> nodeSet2 = new ArrayList<>();
 
-                while(it2.hasNext()){
-                    nodeSet2.add(it2.next());
+                while(iterator2.hasNext()){
+                    nodeSet2.add(iterator2.next());
                 }
 
                 nodeSet2.sort(this::compare);
-                it2 = nodeSet2.iterator();
-
-                while(it2.hasNext()){
-                    Node key = it2.next();
-                    double valToBeStored = it1.next();
+                iterator2 = nodeSet2.iterator();
+                while(iterator2.hasNext()){
+                    Node key = iterator2.next();
+                    double valToBeStored = iterator1.next();
                     nodes.get(k).connectionValues.put(key, valToBeStored);
                 }
             }

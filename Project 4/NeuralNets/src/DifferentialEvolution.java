@@ -1,6 +1,7 @@
-import java.awt.desktop.SystemEventListener;
-import java.lang.reflect.Array;
-import java.nio.channels.ClosedSelectorException;
+/* A class that holds our Differential Evolution algorithm. This is an evolutionary approach method to train our 
+    feedforward neural networks.
+ */
+
 import java.util.*;
 
 public class DifferentialEvolution  implements Comparator<Node>{
@@ -20,8 +21,10 @@ public class DifferentialEvolution  implements Comparator<Node>{
     }
     // function to train the network
     public Network evolve() {
+
         // creates the population of networks
         ArrayList<Network> networks = createNetworks(sizes);
+
         // stops after a certain number of iterations of training
         for (int i = 0; i < stoppingCriteria ; i++) {
             for (int j = 0; j < numNetworks; j++) {
@@ -95,10 +98,12 @@ public class DifferentialEvolution  implements Comparator<Node>{
         }
         Network trial = new Network(sizes, 0);
         updateConnections(mutant, trial);
+
         //return a trial vector
         return trial;
     }
 
+    // selects if the trial or original network is better
     private Network selection(Network trial, Network original){
         original.guessHistory = new ArrayList<>();
         trial.guessHistory = new ArrayList<>();
@@ -138,9 +143,6 @@ public class DifferentialEvolution  implements Comparator<Node>{
                 return  trial;
             }
         }
-
-
-
     }
 
     // draws three distinct random networks from the pool of networks and returns them
@@ -156,14 +158,14 @@ public class DifferentialEvolution  implements Comparator<Node>{
         return selectedNetworks;
     }
 
-
-
     private ArrayList<Double> createChromosome(Network n){
         ArrayList<Double> result = new ArrayList<>();
+
         // iterating over each layer of the networks
         for (int i = 0; i < n.getLayers().size() ; i++) {
             ArrayList<Node> nodes0 = n.getLayers().get(i).getNodes();
             nodes0.sort(this::compare);
+
             // adding the weights of each connection at each node in each network
             // to their respective arraylists
             for (int j = 0; j < nodes0.size() ; j++) {
@@ -185,34 +187,35 @@ public class DifferentialEvolution  implements Comparator<Node>{
         return result;
     }
 
-
-    private void updateConnections(ArrayList<Double> connectionList, Network currentNetwork){
-        Iterator<Double> it1 = connectionList.iterator();
+    // regroups nodes between layers after iterating through the hashmap
+    public void updateConnections(ArrayList<Double> connectionList, Network currentNetwork){
+        Iterator<Double> iterator1 = connectionList.iterator();
         for (int j = 0; j < currentNetwork.getLayers().size() ; j++){
             ArrayList<Node> nodes = currentNetwork.getLayers().get(j).getNodes();
             for (int k = 0; k < nodes.size() ; k++) {
+                
                 // updates the network with the new connection values
                 Collection<Node> nodeSet = nodes.get(k).connectionValues.keySet();
-                Iterator<Node> it2 = nodeSet.iterator();
-
+                Iterator<Node> iterator2 = nodeSet.iterator();
                 ArrayList<Node> nodeSet2 = new ArrayList<>();
-                while(it2.hasNext()){
-                    nodeSet2.add(it2.next());
+                
+                while(iterator2.hasNext()){
+                    nodeSet2.add(iterator2.next());
                 }
+                
                 nodeSet2.sort(this::compare);
-                it2 = nodeSet2.iterator();
-                while(it2.hasNext()){
-                    Node key = it2.next();
-                    double valToBeStored = it1.next();
+                iterator2 = nodeSet2.iterator();
+                while(iterator2.hasNext()){
+                    Node key = iterator2.next();
+                    double valToBeStored = iterator1.next();
                     nodes.get(k).connectionValues.put(key, valToBeStored);
                 }
             }
         }
     }
-
-
-
-    public  ArrayList<Double> runTest(int numNetworks, int [] sizes, boolean regression, int setNum){
+    
+    public  ArrayList<Double> runTest(int numNetworks, int [] sizes, boolean regression, int setNum) {
+        
         // resets values prior to a run, making it ready to start
         this.sizes = sizes;
         this.trainingSet = inputData.dataSets.trainingSets.get(setNum);
@@ -222,7 +225,7 @@ public class DifferentialEvolution  implements Comparator<Node>{
         ArrayList<Double> results = new ArrayList<>();
         bestNet = evolve();
 
-        // runs the test with the best net
+        // runs the test with the best network
         bestNet.guessHistory.clear();
         if(regression){
             for (ArrayList<String> test : inputData.dataSets.testSets.get(setNum)) {
@@ -246,13 +249,10 @@ public class DifferentialEvolution  implements Comparator<Node>{
             results.add(Double.parseDouble(loss.get(1)));
             results.add(Double.parseDouble(loss.get(2)));
         }
-
         return results;
-
     }
 
-
-
+    
     @Override
     public int compare(Node a, Node b) {
         return a.id - b.id;

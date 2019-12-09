@@ -3,9 +3,6 @@
  */
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 public class Data {
@@ -14,8 +11,6 @@ public class Data {
     public CVS dataSets = new CVS();
     private final int numTrainingSets = 10; // defines training sets for 10-fold cross validation
     public int numClassifications = 0;
-
-    // private DecimalFormat df = new DecimalFormat("#.###");
 
     // method to read in our data sets and convert them to an Java ArrayList for parsing
     public void fileTo2dStringArrayList(File inputFile) throws Exception {
@@ -153,6 +148,7 @@ public class Data {
         }
     }
 
+    // sets the number of different classifications that can exist in categorical data sets
     public void findNumClassifications() {
         ArrayList<String>possibleOutcomes= new ArrayList<>();
         for (int i = 0; i < fullSet.size(); i++) {
@@ -163,7 +159,4 @@ public class Data {
         this.numClassifications = set.size();
 
     }
-
-
-
 }
